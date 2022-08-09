@@ -1,5 +1,5 @@
 import { t, Selector } from 'testcafe';
-import { XPathSelector } from '../../utils/xpath-selector';
+import { XPathSelector } from '../../utils';
 
 import { ErrorDialog } from '../page-object/dialogs/errorDailog';
 import { Warehouse } from '../page-object/dialogs/wareHouse';

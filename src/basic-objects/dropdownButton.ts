@@ -1,6 +1,5 @@
 import { Selector, t } from "testcafe"
-import { XPathSelector } from '../../utils/xpath-selector';
-import { StringOptions} from '../../utils/helpers';
+import { StringOptions, XPathSelector } from '../../utils';
 
 export class DropdownButton {
 
