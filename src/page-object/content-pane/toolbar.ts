@@ -1,5 +1,5 @@
 import { t, Selector } from 'testcafe';
-import { Button } from '../../basic-objects/button';
+import { Button } from '../../basic-objects/';
 
 export class Toolbar {
 

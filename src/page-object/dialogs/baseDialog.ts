@@ -1,6 +1,7 @@
 import { t, Selector } from 'testcafe';
-import { Button } from '../../basic-objects/button';
-import xpathSelector from '../../utils/xpath-selector';
+import { XPathSelector }  from '../../../utils/';
+import { Button } from '../../basic-objects';
+
 
 export abstract class BaseDialog {
 
@@ -8,7 +9,7 @@ export abstract class BaseDialog {
     public OK: Button;
     constructor(selector: Selector){
         this._container = selector;
-        this.OK= new Button(xpathSelector("//kendo-dialog-actions //button[text()= 'OK']"));
+        this.OK= new Button(XPathSelector("//kendo-dialog-actions //button[text()= 'OK']"));
     }
     
     public async Close(): Promise<void> {

@@ -1,6 +1,6 @@
 import { Selector, t } from 'testcafe';
-import { Button } from '../../basic-objects/button';
-import XPathSelector from '../../utils/xpath-selector';
+import { XPathSelector } from '../../../utils';
+
 
 export class MenuItem {
     private _container: Selector;

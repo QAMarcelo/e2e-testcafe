@@ -1,7 +1,8 @@
 import {t, Selector} from 'testcafe';
-import { Button, Combobox } from '../../index';
-import xpathSelector from '../../utils/xpath-selector';
+import { XPathSelector } from '../../../utils/';
+import { Button, Combobox } from '../../basic-objects';
 import { BaseDialog } from './baseDialog';
+
 
 export class Warehouse extends BaseDialog {
 
@@ -11,7 +12,7 @@ export class Warehouse extends BaseDialog {
     constructor() {
         super(Selector('[data-testid="warehouse-dlg"] div[role=dialog]'));
         this.selectWarehouse = new Combobox(Selector('[data-testid="warehouse-select"]'));
-        this.OK= new Button(xpathSelector("//kendo-dialog-actions //button[text()= 'OK']"));
+        this.OK= new Button(XPathSelector("//kendo-dialog-actions //button[text()= 'OK']"));
     }
 
   

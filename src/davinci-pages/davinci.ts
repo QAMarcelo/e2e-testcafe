@@ -1,10 +1,9 @@
 import { t, Selector } from 'testcafe';
-import { Login } from './login/login';
-import { menu } from '../page-object/menu/menu';
-import { Warehouse } from '../page-object/dialogs/wareHouse';
-import { HomeHeader } from '../page-object/homeHeader/homeHeader';
-import xpathSelector from '../utils/xpath-selector';
-import { ErrorDialog } from '../page-object/dialogs/errorDailog';
+import { XPathSelector } from '../../utils/xpath-selector';
+
+import { ErrorDialog, HomeHeader, menu, Warehouse } from '../page-object';
+import { Login } from './login';
+
 //import { TelnetJS } from '../utils/telnet';
 
 
@@ -33,12 +32,12 @@ export class davinci{
 
     public async verifyAPIVersion(): Promise<boolean>{
         t.ctx.API_V= process.env["TEST_API_V"];
-        return await xpathSelector(`//*[contains(text(), 'API')][contains(text(), '${t.ctx.API_V}')]`).exists;
+        return await XPathSelector(`//*[contains(text(), 'API')][contains(text(), '${t.ctx.API_V}')]`).exists;
     }
     
     public async verifyClientVersion(): Promise<boolean>{
         t.ctx.CLIENT_V = process.env["TEST_CLIENT_V"];
-        return await xpathSelector(`//*[contains(text(), 'Client')][contains(text(), '${t.ctx.CLIENT_V}')]`).exists;
+        return await XPathSelector(`//*[contains(text(), 'Client')][contains(text(), '${t.ctx.CLIENT_V}')]`).exists;
     }
 
     public getAPIVersion(){

@@ -1,14 +1,14 @@
 import { Selector, t } from 'testcafe';
-import { Davinci, Dialogs, Menu } from '../../davinci-pages/davinci';
-import { StringOptions } from '../../utils/helpers';
-import { Init } from '../../utils/initializer';
-
+import  {davinci, Davinci, Dialogs, Menu}  from '../../src/davinci-pages';
+import { Init, StringOptions } from '../../utils';
 
 fixture(`Smoke tests`)
     .meta({fixtureType: 'smoke'})
+
     .beforeEach(async t=>{
-       await Init.Load({});
+       await Init.Load({url:'http://localhost:4200', credentials: {user: 'jgkyker@wdgcorp.com', password: '1DAVINCI', database: 'marcelo'}});
     })
+    
 
 /* 
     [SMOKE] verify login and log out
@@ -50,7 +50,7 @@ test
 */
 test
     .meta({testType: 'smoke', UITest: 'true', testGoal: 'Navigation'})
-    ('Navigation', async t =>{
+    ('Navigation 1', async t =>{
         //Log in as admin
         await Davinci.Login.Email.SetText(Davinci.getUser());
         await Davinci.Login.Next.Click();

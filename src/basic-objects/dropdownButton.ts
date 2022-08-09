@@ -1,6 +1,6 @@
 import { Selector, t } from "testcafe"
-import { StringOptions } from "../utils/helpers";
-import xpathSelector from "../utils/xpath-selector";
+import { StringOptions, XPathSelector } from "./index";
+
 
 
 export class DropdownButton {
@@ -32,7 +32,7 @@ export class DropdownButton {
                 partialSelector = `//li[.//*[contains(text(),'${text}')]]`;
                 break;
         }
-        await t.click(xpathSelector(`//kendo-button-list[@id='${areaowns}'] ${partialSelector}`));
+        await t.click(XPathSelector(`//kendo-button-list[@id='${areaowns}'] ${partialSelector}`));
     }
    
     public async Click(): Promise<void> { 

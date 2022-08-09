@@ -1,5 +1,5 @@
 import { Selector, t } from 'testcafe';
-import { Button, TextBox, Dropdown } from '../../index';
+import { Button, Dropdown, TextBox } from '../../basic-objects';
 
 export class Login{
 

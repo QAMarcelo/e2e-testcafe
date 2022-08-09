@@ -1,5 +1,4 @@
 import { t, Selector } from 'testcafe';
-import { Toolbar } from './tabToolbar';
 
 export class Tab {
 

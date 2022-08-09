@@ -5,6 +5,7 @@ export class Table {
     _container : Selector;
 
     private Headers: string[];
+    
     constructor( selector: Selector ){
         this._container = selector;
     }

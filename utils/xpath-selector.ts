@@ -14,6 +14,7 @@ const getElementsByXPath = Selector(xpath => {
     return items;
 });
 
-export default function (xpath) {
-    return Selector(getElementsByXPath(xpath));
+const XPathSelector = (xpath) => { return Selector(getElementsByXPath(xpath));}
+export {
+    XPathSelector
 }

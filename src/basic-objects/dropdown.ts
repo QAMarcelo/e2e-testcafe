@@ -1,6 +1,5 @@
 import { t } from "testcafe";
-import XPathSelector from '../utils/xpath-selector';
-
+import { XPathSelector } from "./index";
 
 export class Dropdown  {
 

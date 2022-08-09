@@ -1,5 +1,5 @@
 import { t } from "testcafe";
-import { Dialogs } from "../davinci-pages/davinci";
+import { Dialogs } from "../src/davinci-pages";
 
 interface Credentials{
     user: string, 
@@ -18,8 +18,8 @@ class Initializer {
     //load the url from args or the pipeline variable
     private async loadURL(args: initArgs ): Promise<void>{
         t.ctx.url = args?.url?? process.env["TEST_URL"];
-        
         await t.navigateTo(t.ctx.url);
+       
     }
 
     private async Login(args: initArgs): Promise<void>{
@@ -44,9 +44,6 @@ class Initializer {
     public async Load(args: initArgs): Promise<void>{
         await this.loadURL(args);
         await this.Login(args);
-
-       
-
     }
 }
 
