@@ -1,7 +1,6 @@
 import { Selector, t } from 'testcafe';
 import { Davinci, Dialogs, Menu}  from '../../src/davinci-pages/davinci';
-import { StringOptions } from '../../utils/helpers';
-import { Init } from '../../utils/initializer';
+import { StringOptions, Init } from '../../utils';
 
 fixture(`Smoke tests`)
     .meta({fixtureType: 'smoke'})
