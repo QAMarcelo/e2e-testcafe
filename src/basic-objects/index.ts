@@ -8,5 +8,3 @@ export { Label } from "./label";
 export { MenuButton } from "./menuButton";
 export { TextArea } from "./textArea";
 export { TextBox } from "./textbox";
-
-export * from '../../utils';

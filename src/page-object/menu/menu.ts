@@ -1,4 +1,5 @@
 import { t } from "testcafe";
+import { Menu } from "../../davinci-pages";
 import { MenuItem } from "./menuItem";
 
 
@@ -47,8 +48,8 @@ export class menu {
 
     Yard : MenuItem;
         Equipment: MenuItem;
-        Appointments: MenuItem;
-        Locations: MenuItem;
+        YardAppointments: MenuItem;
+        YardLocations: MenuItem;
 
     BusinessPartners : MenuItem;
         Accounts: MenuItem;
@@ -86,6 +87,9 @@ export class menu {
         Setting_WarehouseTerminal: MenuItem;
 
     Reports: MenuItem;
+        ReportDesigner: MenuItem;
+        ReportsList : MenuItem;
+        
     Import: MenuItem;
 
     Dahsboard: MenuItem;
@@ -121,14 +125,64 @@ export class menu {
             this.PrintQueue = new MenuItem('Print Queue', this.Warehouse);
 
         this.Transportation = new MenuItem('Transportation');
+            this.Dispatch= new MenuItem('Dispatch', this.Transportation);
+            this.Loads= new MenuItem('Loads', this.Transportation);
+            this.Shipments= new MenuItem('Shipments', this.Transportation);
+            this.RateTariffs= new MenuItem('Rate Tariffs', this.Transportation);
+            this.CarrierQuoteHistory= new MenuItem('Carrier Quote History', this.Transportation);
+            this.PendingQuotes= new MenuItem('Pending Quotes', this.Transportation);
+            this.ServiceLanes= new MenuItem('Service Lanes', this.Transportation);
+
         this.Yard = new MenuItem('Yard');
+            this.Equipment = new MenuItem('Equipment', this.Yard);
+            this.YardAppointments = new MenuItem('Yard Appointments', this.Yard);
+            this.YardLocations = new MenuItem('Yard Locations', this.Yard);
+
         this.BusinessPartners = new MenuItem('Business Partners');
+            this.Accounts = new MenuItem('Accounts', this.BusinessPartners);
+            this.Carriers = new MenuItem('Carriers', this.BusinessPartners);
+            this.Customers = new MenuItem('Customers', this.BusinessPartners);
+            this.Shippers = new MenuItem('Shippers', this.BusinessPartners);
+            this.Suppliers = new MenuItem('Suppliers', this.BusinessPartners);
+
         this.Channels = new MenuItem('Channels');
+            this.IntegrationStore =new MenuItem('Integration Store', this.Channels);
+            this.OutboundChannel =new MenuItem('Outbound Channel', this.Channels);
+            this.ReceivingChannel =new MenuItem('Receiving Channel', this.Channels);
+            this.ShippingChannel =new MenuItem('Shipping Channel', this.Channels);
+
         this.AccountingIntegration = new MenuItem('Accounting Integration');
+            this.Invoicing = new MenuItem('Accounting Integration', this.AccountingIntegration);
+
         this.Settings = new MenuItem('Settings');
+            this.setting_Cartonization =new MenuItem('Cartonization', this.Settings);
+                this.CartonizationRules =new MenuItem('Cartonization Rules', this.setting_Cartonization);
+                this.CartonizationItemGroups =new MenuItem('Cartonization Item Groups', this.setting_Cartonization);
+            this.Setting_Exceptions =new MenuItem('Exceptions', this.Settings);
+            this.Setting_Hazmat =new MenuItem('Hazmat', this.Settings);
+            this.Setting_ReportAdmin =new MenuItem('Report Admin', this.Settings);
+            this.Setting_ReportFiles =new MenuItem('Report Files', this.Settings);
+            this.Setting_Security =new MenuItem('Security', this.Settings);
+                this.Security_Users =new MenuItem('Users', this.Setting_Security);
+                this.Security_Drivers =new MenuItem('Drivers', this.Setting_Security);
+                this.Security_UserGroups =new MenuItem('User Groups', this.Setting_Security);
+            this.Setting_Sequences =new MenuItem('Sequences', this.Settings);
+            this.Setting_ServiceClasses =new MenuItem('Service Classes', this.Settings);
+            this.Setting_SessionManagement =new MenuItem('Session Management', this.Settings);
+            this.Setting_SystemDocuments =new MenuItem('System Documents', this.Settings);
+            this.Setting_SystemParemeters = new MenuItem('System Parameters', this.Settings);
+            this.Setting_WarehouseTerminal =new MenuItem('Warehouse-Terminal', this.Settings);
+
         this.Reports = new MenuItem('Reports');
+            this.ReportDesigner = new MenuItem('Report Designer', this.Reports);
+            this.ReportDesigner = new MenuItem('Reports list', this.Reports);
+
         this.Import = new MenuItem('Import');
+
         this.Dahsboard = new MenuItem('Dahsboard');
+            this.SmallParcelErrors = new MenuItem('Small Parcel Errors', this.Dahsboard);
+            this.UserMessages = new MenuItem('User Messages', this.Dahsboard);
+            
         this.NeedHelp = new MenuItem('Need Help?');
     }
 }

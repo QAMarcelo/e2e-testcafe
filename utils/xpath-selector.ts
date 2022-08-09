@@ -14,7 +14,12 @@ const getElementsByXPath = Selector(xpath => {
     return items;
 });
 
-const XPathSelector = (xpath) => { return Selector(getElementsByXPath(xpath));}
+
+function XPathSelector(xpath) {
+    return Selector(getElementsByXPath(xpath));
+}
+
+
 export {
     XPathSelector
 }

@@ -1,5 +1,5 @@
 import { Selector, t } from 'testcafe';
-import  {davinci, Davinci, Dialogs, Menu}  from '../../src/davinci-pages';
+import { Davinci, Dialogs, Menu}  from '../../src/davinci-pages';
 import { Init, StringOptions } from '../../utils';
 
 fixture(`Smoke tests`)

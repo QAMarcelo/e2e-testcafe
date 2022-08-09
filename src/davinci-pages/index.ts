@@ -1,2 +1,2 @@
 export * from './davinci';
-export * from './login/'
+export * from './login/';
