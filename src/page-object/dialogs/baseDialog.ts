@@ -1,6 +1,6 @@
 import { t, Selector } from 'testcafe';
-import { XPathSelector }  from '../../../utils/';
-import { Button } from '../../basic-objects';
+import { XPathSelector }  from '../../../utils/xpath-selector';
+import { Button } from '../../basic-objects/button';
 
 
 export abstract class BaseDialog {

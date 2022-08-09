@@ -1,5 +1,5 @@
 import { t } from "testcafe";
-import { Dialogs } from "../src/davinci-pages";
+import { Dialogs } from "../src/davinci-pages/davinci";
 
 interface Credentials{
     user: string, 

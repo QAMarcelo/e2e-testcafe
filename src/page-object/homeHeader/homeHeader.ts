@@ -1,5 +1,5 @@
 import { Selector, t } from "testcafe"
-import { DropdownButton } from "../../basic-objects";
+import { DropdownButton } from "../../basic-objects/dropdownButton";
 
 
 export class HomeHeader{

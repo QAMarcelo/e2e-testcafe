@@ -1,5 +1,5 @@
 import { t, Selector } from 'testcafe';
-import { XPathSelector } from '../../utils';
+import { XPathSelector } from '../../utils/xpath-selector';
 import { Button } from './button';
 
 export class Combobox {

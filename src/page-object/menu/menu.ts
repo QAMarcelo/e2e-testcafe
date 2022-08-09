@@ -1,7 +1,6 @@
 import { t } from "testcafe";
-import { Menu } from "../../davinci-pages";
-import { MenuItem } from "./menuItem";
 
+import { MenuItem } from "./menuItem";
 
 export class menu { 
 

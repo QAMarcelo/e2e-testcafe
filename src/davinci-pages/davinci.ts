@@ -1,8 +1,11 @@
 import { t, Selector } from 'testcafe';
-import { XPathSelector } from '../../utils/';
+import { XPathSelector } from '../../utils/xpath-selector';
 
-import { ErrorDialog, HomeHeader, menu, Warehouse } from '../page-object';
-import { Login } from './login';
+import { ErrorDialog } from '../page-object/dialogs/errorDailog';
+import { Warehouse } from '../page-object/dialogs/wareHouse';
+import { HomeHeader } from '../page-object/homeHeader/homeHeader';
+import { menu } from '../page-object/menu/menu';
+import { Login } from './login/login';
 
 //import { TelnetJS } from '../utils/telnet';
 
@@ -68,7 +71,3 @@ export class davinci{
 export let Davinci = new davinci();
 export let Menu = new menu();
 export let Dialogs = new dialog();
-
-
-
-
