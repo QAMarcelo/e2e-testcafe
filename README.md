@@ -21,12 +21,13 @@ npx testcafe chrome:headless tests/
 To run these tests locally we must set some values such as URL, User/email Password and Database.
 ### 1st option
 create environment variables 
+
 | Variable  | value |
 | ------    | ------ |
-|TEST_URL   | http://localhost:4200/ |
-|TEST_USR   | LDAP@wdgcorp.com |
-|TEST_PSS   | XXXXXX |
-|TEST_DB    | db_name |
+| TEST_URL  | http://localhost:4200/ |
+| TEST_USR  | LDAP@wdgcorp.com |
+| TEST_PSS  | XXXXXX |
+| TEST_DB   | db_name |
 
 ### 2nd option
 pass as parameters these values in json format inside the fixture:
