@@ -6,7 +6,7 @@ fixture(`Smoke tests`)
     .meta({fixtureType: 'smoke'})
 
     .beforeEach(async t=>{
-       await Init.Load({url:'http://localhost:4200', credentials: {user: 'jgkyker@wdgcorp.com', password: '1DAVINCI', database: 'marcelo'}});
+       await Init.Load({});
     })
     
 
