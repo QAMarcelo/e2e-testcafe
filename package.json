@@ -1,0 +1,14 @@
+{
+  "name": "automation-core-modules",
+  "version": "1.0.0",
+  "description": "automation core functionality",
+  "main": "davinci.ts",
+  "scripts": {
+    "test": "npx testcafe chrome tests/ --test-meta testType=smoke,UITest=true"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "testcafe": "^1.20.0"
+  }
+}
