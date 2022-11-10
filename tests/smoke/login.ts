@@ -23,8 +23,8 @@ test
         await Davinci.Login.Password.SetText(Davinci.getPassword());
         await Davinci.Login.Database.SelectByText(Davinci.getDatabase());
 
-        //await t.expect(await Davinci.verifyAPIVersion()).ok(`Error Client version: Version number dont match, ${Davinci.getAPIVersion()}`)
-        //await t.expect(await Davinci.verifyClientVersion()).ok(`Error Client version: Version number dont match ${Davinci.getClientVersion()}`)
+        await t.expect(await Davinci.verifyAPIVersion()).ok(`Error Client version: Version number dont match, ${Davinci.getAPIVersion()}`)
+        await t.expect(await Davinci.verifyClientVersion()).ok(`Error Client version: Version number dont match ${Davinci.getClientVersion()}`)
         
         await Davinci.Login.Login.Click();
         
