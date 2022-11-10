@@ -17,7 +17,8 @@ export class MenuButton {
         this.Click();
         switch (value) {
             case String.toString():
-                await t.click(this._container.find(`.k-popup.k-menu-popup li [ng-reflect-display-text="${value}"] button`));
+                //await t.click(this._container.find(`.k-popup.k-menu-popup li [ng-reflect-display-text="${value}"] button`));
+                await t.click(this._container.find(`.k-popup.k-menu-popup li button`).withText(value));
                 break;
             case Number.toString():
                 await t.click(this._container.find(`.k-popup.k-menu-popup li:nth-child(${value}) button`));

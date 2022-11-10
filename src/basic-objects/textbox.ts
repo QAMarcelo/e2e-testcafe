@@ -1,15 +1,14 @@
 import { t } from "testcafe";
+import { BaseObject } from "./baseObject";
 
 
-export class TextBox {
+export class TextBox extends BaseObject{
     
-    private _container : Selector;
-
-    constructor(selector: Selector) {
-        this._container = selector;
-    }
+   constructor(selector: Selector) {
+       super(selector);
+   }
     
-    public async SetText(text: string): Promise<void>{
-       await t.typeText(this._container, text)
-    }
+   public async SetText(text: string): Promise<void>{
+      await t.typeText(this._container, text)
+   }
 }

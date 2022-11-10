@@ -1,11 +1,11 @@
 import { t, Selector } from 'testcafe';
+import { BaseObject } from './baseObject';
 
-export class TextArea {
+export class TextArea extends BaseObject{
 
-    private _container : Selector;
 
     constructor(selector: Selector) {
-        this._container = selector;
+        super(selector);
     }
 
 }

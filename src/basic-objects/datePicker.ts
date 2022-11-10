@@ -1,12 +1,11 @@
 import { t, Selector } from 'testcafe';
+import { BaseObject } from './baseObject';
 
 
-export class DatePicker {
-
-    private _container : Selector;
+export class DatePicker extends BaseObject{
 
     constructor(selector: Selector) {
-        this._container = selector;
+       super(selector);
     }
 
 }

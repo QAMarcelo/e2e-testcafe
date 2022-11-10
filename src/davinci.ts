@@ -1,11 +1,8 @@
 import { t, Selector } from 'testcafe';
-import { XPathSelector } from '../../utils';
+import { XPathSelector } from '../utils';
 
-import { ErrorDialog, Warehouse, HomeHeader, menu } from '../page-object/';
-import { Login } from './login/login';
-
-//import { TelnetJS } from '../utils/telnet';
-
+import { ErrorDialog, Warehouse, HomeHeader, menu } from './page-object';
+import { Login } from './login';
 
 export class dialog{
 

@@ -15,7 +15,7 @@ export class MenuItem {
     
     public async GoTo(): Promise<void>{
         if(this.Parent == null){
-            await t.hover(Selector('[data-testid="toolbar.menu"]')); //click on the toolbar menu icon
+            await t.click(Selector('[data-testid="toolbar.menu"]')); //click on the toolbar menu icon
         }else{
             await this.Parent.GoTo();
         }
@@ -25,7 +25,7 @@ export class MenuItem {
 
     public async click(): Promise<void> {
         if( await this._container.hasAttribute('aria-expanded') )
-            await t.hover(this._container);
+            await t.click(this._container);
         else
             await t.click(this._container);
     }

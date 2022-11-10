@@ -1,12 +1,12 @@
 import { Selector, t } from "testcafe"
 import { StringOptions, XPathSelector } from '../../utils';
+import { BaseObject } from "./baseObject";
 
-export class DropdownButton {
+export class DropdownButton extends BaseObject{
 
-    private _container : Selector;
-
+ 
     constructor(selector: Selector) {
-        this._container = selector;
+        super(selector);
     }
 
     public async SelectByIndex(index: number) : Promise<void>
