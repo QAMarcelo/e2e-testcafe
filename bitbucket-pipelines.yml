@@ -25,4 +25,6 @@ pipelines:
             - export TEST_CLIENT_V=${TEST_CLIENT_V}
             - export TEST_API_V=${TEST_API_V}
             - /opt/testcafe/docker/testcafe-docker.sh 'chromium:headless --no-sandbox --disable-dev-shm-usage' tests/ --test-meta testType=smoke -s takeOnFails=true
+          artifacts:
+            - testcafe/screenshots/**
               
