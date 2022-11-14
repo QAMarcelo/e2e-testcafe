@@ -14,7 +14,7 @@ export class Combobox extends BaseObject{
 
     public async SelectByText(text: string): Promise<void>{
         await this.button.Click();
-        await t.click(Selector('.k-list-ul li').withText(text));
+        await t.click(this._container.find('.k-list-ul li').withText(text));
     }
 
     public async SelectByIndex(index: number): Promise<void>{
