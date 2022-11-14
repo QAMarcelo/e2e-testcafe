@@ -1,5 +1,5 @@
 import {t, Selector} from 'testcafe';
-import { XPathSelector } from '../../../utils';
+import { XPathSelector } from '../../utils';
 import { Button } from '../../basic-objects';
 import { BaseDialog } from './baseDialog';
 

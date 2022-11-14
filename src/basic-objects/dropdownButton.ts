@@ -1,5 +1,5 @@
 import { Selector, t } from "testcafe"
-import { StringOptions, XPathSelector } from '../../utils';
+import { StringOptions, XPathSelector } from '../utils';
 import { BaseObject } from "./baseObject";
 
 export class DropdownButton extends BaseObject{

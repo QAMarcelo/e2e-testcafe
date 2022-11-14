@@ -1,5 +1,4 @@
 import { t, Selector } from 'testcafe';
-import { XPathSelector } from '../../utils';
 import { BaseObject } from './baseObject';
 import { Button } from './button';
 

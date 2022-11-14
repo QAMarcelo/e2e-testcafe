@@ -1,5 +1,5 @@
 import { Selector, t } from 'testcafe';
-import { XPathSelector } from '../../../utils';
+import { XPathSelector } from '../../utils';
 
 
 export class MenuItem {

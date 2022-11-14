@@ -1,5 +1,5 @@
 import { t, Selector } from 'testcafe';
-import { XPathSelector } from '../../../utils';
+import { XPathSelector } from '../../utils';
 
 interface TableQuery {
     rowTitle : string,

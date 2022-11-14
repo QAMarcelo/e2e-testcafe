@@ -1,5 +1,4 @@
 import { Button } from "../../basic-objects";
-import { BaseObject } from "../../basic-objects/baseObject";
 import { BaseDialog } from "./baseDialog";
 
 

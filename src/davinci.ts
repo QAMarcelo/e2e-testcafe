@@ -1,10 +1,10 @@
 import { t, Selector } from 'testcafe';
-import { XPathSelector } from '../utils';
+import { XPathSelector } from './utils';
 
 import { ErrorDialog, Warehouse, HomeHeader, menu } from './page-object';
 import { Login } from './login';
 
-export class dialog{
+class dialog{
 
     WareHouse : Warehouse;
     Error: ErrorDialog;
@@ -14,7 +14,7 @@ export class dialog{
     }
 }
 
-export class davinci{
+class davinci{
 
     Login : Login;
     Menu : menu;
