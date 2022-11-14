@@ -11,7 +11,7 @@ export class Warehouse extends BaseDialog {
     public OK: Button;
 
     constructor() {
-        super(Selector('[data-testid="warehouse-dlg"] div[role=dialog]'));
+        super(Selector('[data-testid="warehouse-dlg"]'));
         this.selectWarehouse = new Combobox(this._container.find('[data-testid="warehouse-select"]'));
         this.OK= new Button(XPathSelector("//kendo-dialog-actions //button[text()= 'OK']"));
     }
