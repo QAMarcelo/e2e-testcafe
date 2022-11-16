@@ -32,12 +32,12 @@ test
         await t.expect(Selector('div[kendodraggable][data-sortable-index="0"]').exists).ok("Default dashboard page is not displayed");
 
         // if the Select warehouse dialog is displayed then close it
-        //if( await Dialogs.WareHouse.IsVisible() )
-        //{
+        if( await Dialogs.WareHouse.IsVisible() )
+        {
             await Dialogs.WareHouse.selectWarehouse.SelectByText('<1> WHSE1');
             await Dialogs.WareHouse.OK.Click();
             await t.expect(await Dialogs.WareHouse.Exists()).notOk("WareHouse dialog is still displayed");
-        //}
+        }
 
         //logout
         await Davinci.HomeHeader.Profile.SelectByText('Logout', StringOptions.contains);
@@ -60,12 +60,12 @@ test
         await Davinci.Login.Login.Click();
         
         // if the Select warehouse dialog is displayed then close it
-        //if( await Dialogs.WareHouse.IsVisible() )
-        //{
+        if( await Dialogs.WareHouse.IsVisible() )
+        {
             await Dialogs.WareHouse.selectWarehouse.SelectByText("<1> WHSE1");
             await Dialogs.WareHouse.OK.Click();
             await t.expect(await Dialogs.WareHouse.Exists()).notOk("WareHouse dialog is still displayed");
-       // }
+        }
 
         //within the menu go to Consolidated Bill of Lading
         await Menu.ShippingOrders.GoTo();

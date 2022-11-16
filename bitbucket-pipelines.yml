@@ -1,4 +1,4 @@
-image: testcafe/testcafe
+image: node:latest
 
 definitions:
   services:
