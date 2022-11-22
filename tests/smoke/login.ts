@@ -1,6 +1,6 @@
 import { Selector, t } from 'testcafe';
-import { Davinci, Dialogs, Menu}  from '../../src/davinci-pages/davinci';
-import { StringOptions, Init } from '../../utils';
+import { Davinci, Dialogs, Menu}  from '../../src/davinci';
+import { StringOptions, Init } from '../../src/utils';
 
 fixture(`Smoke tests`)
     .meta({fixtureType: 'smoke'})
@@ -34,7 +34,7 @@ test
         // if the Select warehouse dialog is displayed then close it
         if( await Dialogs.WareHouse.IsVisible() )
         {
-            await Dialogs.WareHouse.selectWarehouse.SelectByIndex(1);
+            await Dialogs.WareHouse.selectWarehouse.SelectByText('<1> WHSE1');
             await Dialogs.WareHouse.OK.Click();
             await t.expect(await Dialogs.WareHouse.Exists()).notOk("WareHouse dialog is still displayed");
         }
@@ -62,7 +62,7 @@ test
         // if the Select warehouse dialog is displayed then close it
         if( await Dialogs.WareHouse.IsVisible() )
         {
-            await Dialogs.WareHouse.selectWarehouse.SelectByIndex(1);
+            await Dialogs.WareHouse.selectWarehouse.SelectByText("<1> WHSE1");
             await Dialogs.WareHouse.OK.Click();
             await t.expect(await Dialogs.WareHouse.Exists()).notOk("WareHouse dialog is still displayed");
         }

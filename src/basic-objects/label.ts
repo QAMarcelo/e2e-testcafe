@@ -1,12 +1,12 @@
 import { t, Selector } from 'testcafe';
+import { BaseObject } from './baseObject';
 
 
-export class Label {
+export class Label  extends BaseObject{
 
-    private _container : Selector;
 
     constructor(selector: Selector) {
-        this._container = selector;
+        super(selector);
     }
 
     public async Text(): Promise<string> {

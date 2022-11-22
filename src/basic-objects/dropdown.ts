@@ -1,17 +1,16 @@
 import { t } from "testcafe";
-import { XPathSelector } from '../../utils';
+import { XPathSelector } from '../utils';
+import { BaseObject } from "./baseObject";
 
-export class Dropdown  {
-
-    private _container : Selector;
+export class Dropdown extends BaseObject{
 
     constructor(selector: Selector){
-        this._container = selector;
+        super(selector);
     }
 
     public async SelectByText(text: string): Promise<void>{
         this.Click();
-        await t.click(XPathSelector(`//kendo-list //span[text()="${text}"]`))
+        await t.click(XPathSelector(`//kendo-list //*[text()="${text}"]`))
     }
 
     public async SelectByIndex(index: number): Promise<void>{

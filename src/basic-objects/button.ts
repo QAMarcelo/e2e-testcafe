@@ -1,19 +1,14 @@
 import { t } from "testcafe";
+import { BaseObject } from "./baseObject";
 
 
-export class Button {
+export class Button extends BaseObject{
     
     _container : Selector;
 
     constructor(selector: Selector){
-        this._container = selector;
+        super(selector)
     }
 
-    public async Click(): Promise<void> { 
-        await t.click(this._container)
-    }
-
-    public async IsVisible(): Promise<boolean> {
-        return await this._container.visible;
-    }
+  
 }

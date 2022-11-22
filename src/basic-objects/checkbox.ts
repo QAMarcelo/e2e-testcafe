@@ -1,13 +1,13 @@
 import { t } from "testcafe"
+import { BaseObject } from "./baseObject";
 import { Label } from "./label";
 
-export class Checkbox {
+export class Checkbox extends BaseObject{
 
     public text : Label;
-    private _container : Selector;
 
     constructor(selector: Selector){
-        this._container = selector;
+        super(selector);
         this.text = new Label(this._container.find('label'));
     }
 

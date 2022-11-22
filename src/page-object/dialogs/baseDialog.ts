@@ -1,21 +1,25 @@
 import { t, Selector } from 'testcafe';
-import { XPathSelector }  from '../../../utils';
-import { Button } from '../../basic-objects/button';
-
 
 export abstract class BaseDialog {
 
     public _container : Selector;
-    public OK: Button;
+    
     constructor(selector: Selector){
         this._container = selector;
-        this.OK= new Button(XPathSelector("//kendo-dialog-actions //button[text()= 'OK']"));
     }
     
-    public async Close(): Promise<void> {
+    public async CloseDialog(): Promise<void> {
         await t.click(this._container.find('.k-dialog-close'));
     }
 
+    public async Save(): Promise<void> {
+        await t.click(this._container.find('span').withText('Save').parent('button'));
+    }
+
+    public async getTitle() {
+        return await this._container.find(".k-dialog-title").find(".title").innerText;
+
+    }
     public async Exists(): Promise<boolean> {
         return await this._container.exists;
     }
