@@ -1,4 +1,4 @@
-import { t } from "testcafe"
+import { Selector, t } from "testcafe"
 
 
 export class MenuButton {
@@ -10,18 +10,25 @@ export class MenuButton {
     }
 
     public async Click(): Promise<void> { 
-        await t.hover(this._container)
+        await t.click(this._container);
     }
 
-    public async SelectItem(value: string | number): Promise<void>{
-        this.Click();
-        switch (value) {
-            case String.toString():
+    public async Hover():Promise<void> {
+        await t.hover(this._container);
+    }
+    public async SelectValue(value: string | number): Promise<void>{
+        await this.Click();
+        let menupopup: Selector;
+        switch (typeof(value)) {
+
+            case "string":
                 //await t.click(this._container.find(`.k-popup.k-menu-popup li [ng-reflect-display-text="${value}"] button`));
-                await t.click(this._container.find(`.k-popup.k-menu-popup li button`).withText(value));
+                menupopup = Selector(`.k-popup.k-menu-popup li button`);
+                await t.click(menupopup.withText(value));
                 break;
-            case Number.toString():
-                await t.click(this._container.find(`.k-popup.k-menu-popup li:nth-child(${value}) button`));
+            case "number":
+                menupopup = Selector(`.k-popup.k-menu-popup li:nth-child(${value}) button`);
+                await t.click(menupopup);
                 break;
         }
     }

@@ -1,6 +1,6 @@
 import { t } from "testcafe";
 
-export abstract class BaseObject{
+export abstract class BaseObject {
 
     _container : Selector;
     

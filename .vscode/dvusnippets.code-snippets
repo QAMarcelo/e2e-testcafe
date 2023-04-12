@@ -1,0 +1,84 @@
+{
+	// Place your davinci-e2e-testcafe workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
+	// Placeholders with the same ids are connected.
+	// Example:
+	// "Print to console": {
+	// 	"scope": "javascript,typescript",
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+	// }
+
+	"New Scenario": {
+		"scope": "javascript,typescript",
+		"prefix": "nsc",
+		"body": [
+			"/*************** IMPORTS ***************/",
+			"import { InventoryAdjustment_Status } from '../../../src/api-folder/inventory';",
+			"import { Item_UOMType } from '../../../src/api-folder/itemSKUS';",
+			"import { UniqueValue, scenario } from '../../../src/utils';",
+			"\n",
+			"/*************** CONSTANS & VARIABLES ***************/",
+			"const warehouse =  UniqueValue({text: 'Warehouse'});",
+			"const itemCode = UniqueValue({text: 'item1'});",
+			"const account = UniqueValue({text: 'Account1'});",
+			"const storage1 = UniqueValue({text:'Storage1'});",
+			"const lpn1 = UniqueValue({text: 'LPN1'});",
+			"\n",
+			"/*************** SCENARIO DEFINITION ***************/",
+			"export const GeneralRFScenario: scenario = {",
+				"\twarehouse: {",
+					"\t\tdescription: warehouse",
+				"\t},",
+
+				"\tbusinessPartners: [",
+					"\t\t{",
+						"\t\t\tAccountId: account,",
+						"\t\t\tDescription: account,",
+					"\t\t}",
+				"\t],",
+
+				"\tstorageLocations: {",
+					"\t\tLocations:[",
+						"\t\t\t{",
+							"\t\t\t\tDescription: storage1,",
+							"\t\t\t\tHeight: 99999,",
+							"\t\t\t\tLength: 99999,",
+							"\t\t\t\tMaxLPN: 99999,",
+							"\t\t\t\tMaxWeight: 999999,",
+							"\t\t\t\tWidth: 99999,",
+						"\t\t\t}",
+					"\t\t]",
+				"\t},",
+				"\titems: [",
+					"\t\t{",
+						"\t\t\tItemCode : itemCode, ",
+						"\t\t\tAccount: account,",
+						"\t\t\tEnabled: true,",
+						"\t\t\tUOM_type: Item_UOMType.Each",
+					"\t\t}",
+				"\t],",
+				"\tinventoryAdjustment: {",
+					"\t\titemAdjustment: [",
+						"\t\t\t{",
+							"\t\t\t\titemCode: itemCode,",
+							"\t\t\t\tlpn: lpn1,",
+							"\t\t\t\tqty: 100,",
+							"\t\t\t\tstatus: InventoryAdjustment_Status.available,",
+							"\t\t\t\tstorageIdentifier: storage1,",
+
+						"\t\t\t}",
+					"\t\t]",
+				"\t},",
+			"}",
+		],
+		"description": "Create a template for a new Scenario"
+	}
+}
