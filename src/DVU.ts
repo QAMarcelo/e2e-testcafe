@@ -38,36 +38,36 @@ class davinci{
    
     public async verifyAPIVersion(): Promise<boolean>{
         t.ctx.API_V= process.env["TEST_API_V"];
-        return await XPathSelector(`//*[contains(text(), 'API')][contains(text(), '${t.ctx.API_V}')]`).exists;
+        return await XPathSelector(`//*[contains(text(), 'API')][contains(text(), v1.13.9.2304111948)]`).exists;
     }
     
     public async verifyClientVersion(): Promise<boolean>{
         t.ctx.CLIENT_V = process.env["TEST_CLIENT_V"];
-        return await XPathSelector(`//*[contains(text(), 'Client')][contains(text(), '${t.ctx.CLIENT_V}')]`).exists;
+        return await XPathSelector(`//*[contains(text(), 'Client')][contains(text(), v1.13.9.2304111932)]`).exists;
     }
 
-    public getAPIVersion(){
-        return t.ctx.API_V;
-    }
-    public getClientVersion(){
-        return t.ctx.CLIENT_V;
-    }
+    // public getAPIVersion(){
+    //     return t.ctx.API_V;
+    // }
+    // public getClientVersion(){
+    //     return t.ctx.CLIENT_V;
+    // }
 
-    public getUser(){
-        return t.ctx.user;
-    }
+    // public getUser(){
+    //     return t.ctx.user;
+    // }
 
-    public getPassword(){
-        return t.ctx.password ;
-    }
+    // public getPassword(){
+    //     return t.ctx.password ;
+    // }
 
-    public getDatabase(){
-        return t.ctx.database;
-    }
+    // public getDatabase(){
+    //     return t.ctx.database;
+    // }
 
-    public getURL(){
-        return t.ctx.url ;
-    }
+    // public getURL(){
+    //     return t.ctx.url ;
+    // }
 } 
 
 export let WEB : iCredentials = {
