@@ -4,14 +4,20 @@ import { StorageChargeAPI } from "./bpsStorageChargeAPI";
 
 export interface BusinessPartnerAPI {
     Id?: number,
-    AccountId? : string,
+    Vendor? : string,
     Description?: string,
     Enable?: boolean,
     RateMultiplier?: number,
     Type?: number,
     Attributes?: attributeAPI,
+    /** 
+     * @example StorageCharges: [ {Type: StorageCharge_Types.Inner_Pack_or_Equivalent, Description: 'XXX'}, {...} ]
+    */
     StorageCharges?: StorageChargeAPI[],
-    ChargeCode?: ChargeCodeAPI[],
+    /** 
+     * @example ChargeCodes: [ {Code: 'XXX', Description: 'XXX'}, {...} ]
+    */
+    ChargeCodes?: ChargeCodeAPI[],
     Mailing_address?: {
         Address1?: string,
         Address2?: string,
@@ -29,6 +35,4 @@ export interface BusinessPartnerAPI {
         Country?: string,
         state?: string,
     }
-
-    
 }

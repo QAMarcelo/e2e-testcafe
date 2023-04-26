@@ -16,10 +16,10 @@ export interface iBusinessPartnerAPI {
     notes?:                 any[];
     scripts?:               any[];
     itemStorageCharges?:    iItemStorageChargeAPI[];
-    autoChargeCodes?:       any[];
-    shippingPreDefTitles?:  iPreDefTitles;
-    receivingPreDefTitles?: iPreDefTitles;
-    workOrderPreDefTitles?: iPreDefTitles;
+    autoChargeCodes?:       iAutoChargeCodeAPI[];
+    shippingPreDefTitles?:  iPreDefTitlesAPI;
+    receivingPreDefTitles?: iPreDefTitlesAPI;
+    workOrderPreDefTitles?: iPreDefTitlesAPI;
     shipmentPreDefTitles?:  iShipmentPreDefTitlesAPI;
     defaultBillings?:       iDefaultBillingAPI[];
     events?:                Event[];
@@ -41,16 +41,16 @@ export interface iAttributeAPI {
     attribute?:         number;
     ival?:              number;
     dval?:              number;
-    sval?:              string;
+    sval?:              number;
     aval?:              any[];
 }
 
 export interface iChargeCodeAPI {
     id?:                number;
-    code:               string;
-    type:               number;
+    code?:               string;
+    type?:               number;
     businessPartnerId?: number;
-    description:        string;
+    description?:        string;
     rate?:              number;
     visibleOnScanner?:  number;
     minCharge?:         number;
@@ -60,6 +60,10 @@ export interface iChargeCodeAPI {
     valueTo?:           number;
     rateAssoc?:         number;
     glCode?:            string;
+    ranges?:            iRangesAPI[],
+    tieredBilling?:     number; //boolean
+    associatedItemId?:   string,
+    typeText?:           string;
 }
 
 export interface iDefaultBillingAPI {
@@ -95,21 +99,28 @@ export interface iItemStorageChargeAPI {
     rate?:                number;
     minChg?:              number;
     glcode?:              string;
-    chargeClass?:         number;
-    valFrom?:             number;
-    valTo?:               number;
+    //chargeClass?:         number;
+    //valFrom?:             number;
+    //valTo?:               number;
     billingScheduleType?: number;
-    billingSchedules?:    iBillingScheduleAPI[];
+    billingSchedules?:    iStorageRangesAPI[];
 }
 
-export interface iBillingScheduleAPI {
-    id?:      number;
-    rate?:    number;
-    valFrom?: number;
-    valTo?:   number;
+export interface iRangesAPI {
+    id?: number,
+    valueFrom: number,
+    valueTo: number,
+    rate: number
 }
 
-export interface iPreDefTitles {
+export interface iStorageRangesAPI {
+    id?: number,
+    valFrom: number,
+    valTo: number,
+    rate: number
+}
+
+export interface iPreDefTitlesAPI {
     id?:       number;
     vendorId?: number;
     type?:     number;
@@ -119,3 +130,12 @@ export interface iShipmentPreDefTitlesAPI {
     id?:       number;
     vendorId?: number;
 }
+
+export interface iAutoChargeCodeAPI
+{
+    id?: number,
+    type?: number,
+    businessPartnerId?: number,
+    chargeCodeId?: number
+}
+

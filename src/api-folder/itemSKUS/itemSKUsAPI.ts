@@ -1,5 +1,6 @@
 
-import { Velocity } from "../APIHelper/APIHelper";
+
+import { Velocity } from "../APIHelper/StorageLocationLoader";
 import { InventoryAdjustmentAPI } from "../inventory";
 
 
@@ -10,12 +11,12 @@ export enum Item_UOMType{
 }
 
 export interface UPCAPI {
+    id?: number,
     description: string,
+    upc: string,
+    itemId?: number,
     lotCode?: string,
     subLoteCode?: string
-    upc: string,
-    itemId?: number
-
 }
 export interface UOMAPI {
     id?: number,
@@ -33,6 +34,7 @@ export interface UOMAPI {
     GrossLBS?: number, //Weight
     Height?: number, 
     Tare?: number, //Tare
+    caseMaxStackWeight?: number,
     QTY_IP_CS?: number, //eaCaseQty
     QTY_EA_IP?: number, //ipCaseQty
     
@@ -46,13 +48,29 @@ export interface ItemsAPI {
     Items: ItemAPI[]
 }
 
+export interface ReplenishmentItemAPI {
+    
+        id?: number,
+        itemId?: number,
+        lot?: string,
+        sublot?: string,
+        warehouseId?: number,
+        enabled?: boolean,
+        auto?: boolean,
+        thresholdQty?: number,
+        replenQty?: number,
+        maxQty?: number,
+        storageGroupId?: number
+      
+}
+
 export interface ItemAPI {
     Id?: number,
     type?: number,
     Enabled?: boolean,
     ItemCode: string,
     Description?: string,
-    Account: string,
+    Vendor: string,
     AccoundId?: number,
     SKU?: string,
     UOM_type : Item_UOMType, 
@@ -64,5 +82,7 @@ export interface ItemAPI {
     MaxTemp? : number,
     MinTemp?: number,
     SpecialInstructions? : string,
-    inventoryAdjustment?: InventoryAdjustmentAPI[]
+    inventoryAdjustment?: InventoryAdjustmentAPI[],
+    defaultOuom?: number,
+    Replenishment?: ReplenishmentItemAPI[]
 }

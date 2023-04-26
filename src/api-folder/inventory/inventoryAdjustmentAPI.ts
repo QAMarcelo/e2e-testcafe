@@ -17,12 +17,15 @@ import { WarehouseAPI } from "../warehouses"
   }
   
   export interface InventoryAdjustmentAPI{
-    itemCode: string,
+    emptyInventory?: boolean;
+    itemCode?: string,
+    itemId?: number,
     status: InventoryAdjustment_Status,
     qty: number,
     storageIdentifier: string,
-    lpn: string,
+    lpn?: string,
     lot?: string,
-    sublot?: string
-    warehouseId?: number
+    sublot?: string,
+    warehouseId?: number,
+    gWeigth?: number,
   }

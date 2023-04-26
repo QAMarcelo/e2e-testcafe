@@ -2,9 +2,8 @@ import { Selector, t } from 'testcafe';
 import { DVU, RF, WEB }  from '../../src/DVU';
 import { Init, Keys, UniqueValue } from '../../src/utils';
 import { NJTelnet } from '../../src/utils/telnet';
-import { Relocate_by_LPN } from '../../scenarios/Regression/GeneralRF/Relocate_by_LPN';
-
-
+import { Relocate_by_LPN } from '../../scenarios/Regression/GeneralRF/E_RelocatebyLPN';
+import { Replenishment } from '../../scenarios/1.14/E_Replenishment';
 
 fixture(`API tests`)
     .meta({fixtureType: 'API'})
@@ -12,9 +11,9 @@ fixture(`API tests`)
     .beforeEach(async t=>{
 
        await Init.Load({ 
-            CredentialGroup: 'Marcelo'
+            //CredentialGroup: 'TRIAL',
             // Scenario: PutawayScenario,
-            //Scenario: Relocate_by_LPN
+            Scenario: Relocate_by_LPN,
             //UILogin:true
         });
     })

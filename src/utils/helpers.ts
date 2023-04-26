@@ -56,7 +56,7 @@ export const setPrefix = (text: string) => {
 
 interface UniqueValueProps {
   suffix?: boolean,
-  text: string,
+  text?: string,
   separator?: string,
 } 
 
@@ -67,14 +67,21 @@ interface UniqueValueProps {
 * @argument suffix is optional, true=generated text will be suffix; false=generated text will be postfix
 * @argument separator separator are optional, separate the mandatory text from the suffix/postfix
 */
-export const UniqueValue = (props: UniqueValueProps) => {
+export const UniqueValue = (props?: UniqueValueProps) => {
   const now = new Date();
   let output : string = "";
-  if(props.suffix){
-    output = `${now.getMonth()}${now.getDay()}${now.getFullYear().toString().substring(1, 3)}${now.getMilliseconds()}${props.separator??''}${props.text}`;
+  const uniqueVal = `${now.getMonth()}${now.getDay()}${now.getFullYear().toString().substring(1, 3)}${now.getMilliseconds()}`;
+  if(props)
+  {
+    if(props.suffix){
+      output = `${uniqueVal}${props.separator??''}${props.text}`;
+    }else{
+      output = `${props.text}${props.separator?? ''}${uniqueVal}`;
+    }
   }else{
-    output = `${props.text}${props.separator?? ''}${now.getMonth()}${now.getDay()}${now.getFullYear().toString().substring(1, 3)}${now.getMilliseconds()}`;
+    output = uniqueVal;
   }
+  
   return output
 
 }

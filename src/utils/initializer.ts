@@ -3,16 +3,13 @@ import { t } from "testcafe";
 //API
 import { BusinessPartnerAPI } from '../api-folder/businessPartners';
 import { StorageLocationsAPI } from "../api-folder/storageLocations";
-import { InventoryAdjustmentAPI, InventoryAdjustmentsAPI } from '../api-folder/inventory';
-import { ItemAPI, Item_UOMType } from "../api-folder/itemSKUS";
+import { InventoryAdjustmentsAPI } from '../api-folder/inventory';
+import { ItemAPI } from "../api-folder/itemSKUS";
 import { API, SetAPICredentials, SetRFCredentials, SetUICredentials, DVU, WEB } from "../DVU";
-import { APIClass, APIMethods } from "../api-folder/APIClass";
+import { APIClass  } from "../api-folder/APIClass";
 import { WarehouseAPI } from "../api-folder/warehouses/warehousesAPI";
 import { iUserCredentials } from "./helpers";
-import { iWarehouseAPI } from "../api-folder/interfaces/iWarehouseAPI";
-import { iBusinessPartnerAPI } from "../api-folder/interfaces/iBusinessPartnerAPI";
 
- 
 export interface iCredentials{
     user: string, 
     password: string,
@@ -50,6 +47,10 @@ export interface initArgs{
  */
 export interface scenario {
     /**
+     * @abstract This credential group has priority over the credential group in the testing object scenario
+     */
+    CredentialGroup? : string,
+    /**
      * @example warehouse: {description: 'warehouseX', mode: WarehouseMode.barcodeScanning},
      */
     warehouse: WarehouseAPI,
@@ -62,13 +63,17 @@ export interface scenario {
 
 class Initializer {
 
+    public async Load(args: initArgs): Promise<void>{
+        await this.LoadScenario(args);
+        await this.loadURL(args);
+        await this.Login(args);
+    }
+
     //load the url from args or the pipeline variable
     private async loadURL(args: initArgs): Promise<void>{
        
-       
         await t.navigateTo(WEB?.url);
 
-        
         if(!args.UILogin || !args.UILogin ){ // authenticate without going throught the login page by injecting cookies
             //TODO
         }else{ //authenticate going throught the login page
@@ -82,125 +87,48 @@ class Initializer {
     }
 
     private async Login(args: initArgs): Promise<void>{
-        
 
     }
     
     public async LoadScenario(args: initArgs): Promise<void> {
         
-        SetUICredentials(args?.CredentialGroup, args?.Credentials?.UI);
-        SetRFCredentials(args?.CredentialGroup, args?.Credentials?.RF);
-        SetAPICredentials(args?.CredentialGroup, args?.Credentials?.API);
-
-        //console.log(`${API.url}:${API.port}/${API.version}/${API.license}/${API.database}`);
+        const credentialGroup : string | undefined =  args.CredentialGroup ?? args?.Scenario?.CredentialGroup; 
+        SetUICredentials(credentialGroup, args?.Credentials?.UI);
+        SetRFCredentials(credentialGroup, args?.Credentials?.RF);
+        SetAPICredentials(credentialGroup, args?.Credentials?.API);
 
         if(args?.Scenario){
-            const call = new APIClass(
-                `${API.url}:${API.port}/${API.version}/${API.license}/${API.database}`,
-                {
-                    'Authorization': API.authorization,
-                    'Content-Type': 'application/json'
-                }
-            );
-            let whResp;
-            whResp = await call.getWarehouse(args.Scenario.warehouse);
-            //whResp =  callWHResponse['data'];
-            console.log(`Warehouse = ${whResp? 'Success' : 'Error'}`)
             
-            let bpResp: iBusinessPartnerAPI[] = [];
-            bpResp = await call.getVendors(args.Scenario.businessPartners);
-           
-            const scenarioBPCount = args.Scenario.businessPartners.length;
-            const bpCountResp = bpResp.length;
-            console.log(`Business Partners accounts expected: ${scenarioBPCount} ; business partner created/existing ${bpCountResp}`);
-            
-            let sLocationResponse: StorageLocationsAPI[] = [{Locations: []}];
-            sLocationResponse.pop();
-            if(args.Scenario.storageLocations){
-                sLocationResponse = await call.getStorageLocations(args.Scenario.storageLocations, whResp.id!);
-                console.log("Storage Locations =" + sLocationResponse);
-            }
+            const APICall = this.InitAPI();
 
-            let itemsResponse: ItemAPI[] = [{Account: '', ItemCode: '', UOM_type: Item_UOMType.Each}];
-            itemsResponse.pop();
-            if(args.Scenario.items){
-                itemsResponse = await call.getItems(args.Scenario.items); 
-                console.log("Items  =" + itemsResponse);
-            }
-            
-            let invAdjResponse: InventoryAdjustmentAPI[];
-            if(args.Scenario.inventoryAdjustment){
-                invAdjResponse = await call.getInventoryAdjustment(args.Scenario.inventoryAdjustment, whResp?.id!);
-                console.log("inventory Adjustment =" + invAdjResponse['status']);
-            }
+            const whResp = await APICall.getWarehouse(args.Scenario);
+            if(!whResp) throw new Error(`Error: the warehouse ${args.Scenario.warehouse.description} was not correcly udpated/saved`);
+
+            const bpResp = await APICall.getVendors(args.Scenario);
+            if(bpResp.length != args.Scenario.businessPartners.length) throw new Error(`Error: not all the accounts were created/updated`);
+
+            const sLocationResponse = await APICall.getStorageLocations(args.Scenario, whResp.id!);
+            if(sLocationResponse.length != args.Scenario.storageLocations?.Locations.length) throw new Error(`Error: not all the Storage Locations were created/updated`);
+
+            const itemsResponse =  await APICall.getItems(args.Scenario); 
+            if(itemsResponse.length != args.Scenario.items?.length) throw new Error(`Error: not all the items were created/updated`);
+
+            const invAdjResponse = await APICall.getInventoryAdjustment(args.Scenario, whResp?.id!);
+            if(invAdjResponse.length != args.Scenario.inventoryAdjustment?.itemAdjustment.length) throw new Error(`Error: not all the inventory adjustment were created/updated`);
+
         }
     }
 
-    private async searchVendor(account: string) : Promise<string> {
-        const urlWParams = `/bps?type=1&pageOffset=10&description=${account}&enabled=1&sortColumn:description`;
-        return await this.API(urlWParams, APIMethods.GET);
-      
+    private InitAPI(): APIClass {
+        const call = new APIClass(
+            `${API.url}:${API.port}/${API.version}/${API.license}/${API.database}`,
+            {
+                'Authorization': API.authorization,
+                'Content-Type': 'application/json'
+            }
+        );
+        return call;
     }
-    private baseURL: string;
-    private headers: { };
-
-    public async Load(args: initArgs): Promise<void>{
-        await this.LoadScenario(args);
-        await this.loadURL(args);
-        await this.Login(args);
-    }
-
-    private async getSession(): Promise<string>{
-        var axios = require('axios');
-        var result = "";
-        var config = {
-            method: APIMethods.POST,
-            url: this.baseURL+"/session",
-            headers: this.headers,
-            //data : `{ "email": ${t.ctx.user}, "password": ${t.ctx.password}}`
-            data: `{ "email": "${API.user}", "password": "${API.password}" }`,
-        };
-
-        await axios(config)
-        .then(function (response) {
-           result= response.data['sessionId'];
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-        return result;
-    }
-
-    
-    public API = async(url: string, method: APIMethods, data: {}={}, params: {}={})=>{
-        var axios = require('axios');
-        var result = "";
-        
-        if(!t.ctx.Session){
-            t.ctx.Session = await this.getSession();
-            console.log(t.ctx.Session);
-        }
-        console.log(this.baseURL + "/" + t.ctx.Session + url)
-        var config = {
-            method: method,
-            url: this.baseURL + "/" + t.ctx.Session + url,
-            params: params,
-            headers: this.headers,
-            data : data,
-            
-        };
-
-        await axios(config)
-        .then(function (response) {
-            //console.log(response.data);
-            result = response;
-        })
-        .catch(function (error) {
-            console.log(error.data);
-        });
-        return result;
-    }
-  
 }
 
 export let Init = new Initializer();

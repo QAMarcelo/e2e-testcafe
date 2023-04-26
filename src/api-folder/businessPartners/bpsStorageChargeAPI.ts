@@ -1,9 +1,16 @@
-export interface BillingSchedule {
-    Range_From: number,
-    Range_To: number,
-    Rate: number
-}
+// export interface BillingSchedule {
+//     Range_From: number,
+//     Range_To: number,
+//     Rate: number,
+//     id?: number
+
+import { DefaultBilling_UOMType, RangesAPI } from "./bpsChargeCodeAPI";
+
+
+
+// }
 export enum StorageCharge_rateAssoc {
+    All = 1,
     Each_or_Equivalent= 0,
     Inner_Pack_Or_Equivalent=5, 
     Case_or_Equivalent= 2,
@@ -35,13 +42,13 @@ export enum BillingScheduleType {
 }
 export interface StorageChargeAPI {
     id?: number,
-    Code: string,
+    //Code: string,
     Type: StorageCharge_Types,
  
     businessPartnerId?: number,
     Description: string,
     Rate: number,
-    Per?: StorageCharge_rateAssoc,
+    Per: StorageCharge_rateAssoc,
 
     Range_From?: number,
     Range_To?: number,
@@ -49,8 +56,12 @@ export interface StorageChargeAPI {
     Max?: number,
     GLCode?: string,
     Class?: number,
-    BillingScheduleType?: BillingScheduleType
-    BillingSchedules?: BillingSchedule[];
+    BillingScheduleType?: BillingScheduleType,
+    BillingSchedules?: RangesAPI[],
+
+    DefaultBilling?: [{
+            UOMType: DefaultBilling_UOMType,
+    }]
 };
 
 export interface ListStorageCharges{

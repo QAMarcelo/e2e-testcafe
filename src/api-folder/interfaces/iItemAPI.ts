@@ -63,7 +63,7 @@ export interface iItemAPI {
     kitSubItems?:                any[];
     upcs?:                       iUPCAPI[];
     itemWarehouses?:             any[];
-    replenishmentPlans?:         any[];
+    replenishmentPlans?:         iReplenishmentItemAPI[];
     // vendorBrief?:                File;
     // userDefined?:                iUserDefined;
     buildable?:                  number;
@@ -71,13 +71,29 @@ export interface iItemAPI {
     vendor?:                     iVendorAPI;
     aliases?:                    any[];
     events?:                     Event[];
-    storageLocations?:           any[];
+    storageLocations?:           StorageAPI[];
     // nmfcCode?:                   File;
     // hazmat?:                     File;
     // storageCharge?:              iStorageCharge;
     // inboundStorage?:             File;
     // inboundHandling?:            File;
     // outboundShipping?:           File;
+}
+
+export interface iReplenishmentItemAPI {
+    
+    id?: number,
+    itemId?: number,
+    lot?: string,
+    sublot?: string,
+    warehouseId?: number,
+    enabled?: boolean,
+    auto?: boolean,
+    thresholdQty?: number,
+    replenQty?: number,
+    maxQty?: number,
+    storageGroupId?: number
+  
 }
 export interface iUPCAPI {
     id?: number,
@@ -152,15 +168,34 @@ export interface iUOMAPI {
     style?:                number;
     vendorId?:             number;
 }
-export interface iIventoryAdjustmentAPI {
-    itemId: number,
-    status: number,
-    qty: number,
-    lot?: string,
-    storageId: number,
-    lpn?: string,
-    sublot?: string
+
+
+export interface replenishmentPlansAPI {
+        id?: number,
+        itemId?: number,
+        lot?: string,
+        sublot?: string,
+        warehouseId?: number,
+        enabled?: number,
+        auto?: number,
+        thresholdQty?: number,
+        replenQty?: number,
+        maxQty?: number,
+        storageGroupId?: number,
 }
+
+export enum StorageTypeAPI{
+    PrimaryPickLocation = 1,
+    ReplenishmentLocations = 2,
+    PutAwayLocations = 3,
+}
+
+export interface StorageAPI{
+    id?: number,
+    type: StorageTypeAPI,
+    itemId: number,
+    storageStartId?: number,
+  }
 // export interface iUserDefined {
 //     id?:     number;
 //     itemId?: number;

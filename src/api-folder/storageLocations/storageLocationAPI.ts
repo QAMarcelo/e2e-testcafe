@@ -18,7 +18,7 @@ export enum OnRelocate_ConvertUnitOfMeasureAPI {
 
 export interface StorageLocationsAPI {
     warehouseId?: WarehouseAPI,
-    account?: string,
+    Vendor?: string,
     Locations: StorageLocationAPI[]
 }
 
