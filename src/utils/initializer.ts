@@ -32,7 +32,7 @@ export interface initArgs{
         API?: iUserCredentials,
     }
     Scenario?: scenario,
-    UILogin?: boolean
+    Headless?: boolean
 }
 
 /**
@@ -72,12 +72,15 @@ class Initializer {
     //load the url from args or the pipeline variable
     private async loadURL(args: initArgs): Promise<void>{
        
-        await t.navigateTo(WEB?.url);
+       
+        if(args.Headless!=undefined && args.Headless==true ){
+            await t.navigateTo(WEB?.url);
+        }
 
-        if(!args.UILogin || !args.UILogin ){ // authenticate without going throught the login page by injecting cookies
+        if(!args.Headless || !args.Headless ){ // authenticate without going throught the login page by injecting cookies
             //TODO
         }else{ //authenticate going throught the login page
-           
+            
             //Localhost is displaying an error, adding if statement to handle it
             //one that the local environment works like qa then this statement should be removed
             if (await DVU.Dialogs.Error.IsVisible()){

@@ -40,6 +40,7 @@ export enum BillingScheduleType {
     Quantity_Schedule= 2,
     Quantity_Aging= 3,
 }
+
 export interface StorageChargeAPI {
     id?: number,
     //Code: string,

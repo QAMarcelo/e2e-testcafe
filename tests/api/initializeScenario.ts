@@ -4,6 +4,7 @@ import { Init, Keys, UniqueValue } from '../../src/utils';
 import { NJTelnet } from '../../src/utils/telnet';
 import { Relocate_by_LPN } from '../../scenarios/Regression/GeneralRF/E_RelocatebyLPN';
 import { Replenishment } from '../../scenarios/1.14/E_Replenishment';
+import { newScenario } from '../../scenarios/newScenario';
 
 fixture(`API tests`)
     .meta({fixtureType: 'API'})
@@ -13,8 +14,9 @@ fixture(`API tests`)
        await Init.Load({ 
             //CredentialGroup: 'TRIAL',
             // Scenario: PutawayScenario,
-            Scenario: Relocate_by_LPN,
-            //UILogin:true
+            // Scenario: Relocate_by_LPN,
+            Scenario: newScenario,
+            Headless: false
         });
     })
 

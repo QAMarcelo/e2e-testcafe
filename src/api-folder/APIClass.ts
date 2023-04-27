@@ -54,36 +54,78 @@ export class APIClass {
                 whResponse = await this.createWarehouse(whLoaded);
             }
            
-            await this.assignUsersToWarehouse(whResponse?.id!);
+            await this.assignWarehouseToUsers(whResponse?.id!);
         }
         return whResponse;
     }
     
-    public assignUsersToWarehouse = async(warehouseId : number):Promise<void> =>{
-        
+    /**
+     * assign the businessparterns to the credential groups WEB, RF and API
+     * @param bpId vendor Id number
+     */
+    public assignVendorsToUsers = async (bpId: number): Promise<void> => {
         const WEBUser : iUser = await this.searchUsers(WEB.user);
         const RFUser : iUser = await this.searchUsers(RF.user);
         const APIUser : iUser = await this.searchUsers(API.user);
 
-        //******* the web user has access to the new Warehouse if it is new */
-        let Flag : boolean| undefined;
-        
         let WEBResponse;
-        if(!WEBUser.warehouses?.some(warehouse=>{ return warehouse.warehouseId == warehouseId; })){
-            WEBUser.warehouses?.push({ userId: WEBUser.id, warehouseId });
+        const webUserWhs = WEBUser.businessPartners?.find(vendor=>{ return vendor.bpId == bpId; });
+        if(!webUserWhs){
+            WEBUser.businessPartners?.push({ userId: WEBUser.id, bpId });
             WEBResponse = await this.updateUsers(WEBUser);
         }
 
         //******* the RF user has access to the new Warehouse if it is new */
         let RFResponse;
-        if(!RFUser.warehouses?.some(warehouse=>{ return warehouse.warehouseId == warehouseId; })){
-            RFUser.warehouses?.push({ userId: RFUser.id, warehouseId });
+        const rfUserWhs = RFUser.businessPartners?.find(vendor=>{ return vendor.bpId == bpId; });
+        if(!rfUserWhs){
+            RFUser.businessPartners?.push({ userId: RFUser.id, bpId });
             RFResponse = await this.updateUsers(RFUser);
         }
 
         //******* the API user has access to the new Warehouse if it is new */
         let APIResponse;
-        if(!APIUser.warehouses?.some(warehouse=> {return warehouse.warehouseId == warehouseId; })){
+        const apiUserWhs = APIUser.businessPartners?.find(vendor=> {return vendor.bpId == bpId; });
+        if(!apiUserWhs){
+            APIUser.businessPartners?.push({ userId: APIUser.id, bpId });
+            APIResponse = await this.updateUsers(APIUser);
+        }
+
+
+    }
+
+    /**
+     * assign the warehouse to the credential groups WEB, RF and API
+     * @param warehouseId warehouse Id number
+     */
+    public assignWarehouseToUsers = async(warehouseId : number):Promise<void> =>{
+        
+        const WEBUser : iUser = await this.searchUsers(WEB.user);
+        const RFUser : iUser = await this.searchUsers(RF.user);
+        const APIUser : iUser = await this.searchUsers(API.user);
+
+        //******* the web user has access to the new  Business Partner if it is new */
+       
+        
+        let WEBResponse;
+        const webUserWhs = WEBUser.warehouses?.find(warehouse=>{ return warehouse.warehouseId == warehouseId; });
+        if(!webUserWhs){
+            WEBUser.warehouses?.push({ userId: WEBUser.id, warehouseId });
+            WEBResponse = await this.updateUsers(WEBUser);
+        }
+
+        //******* the RF user has access to the new Business Partner if it is new */
+        let RFResponse;
+        const rfUserWhs = RFUser.warehouses?.find(warehouse=>{ return warehouse.warehouseId == warehouseId; });
+        if(!rfUserWhs){
+            RFUser.warehouses?.push({ userId: RFUser.id, warehouseId });
+            RFResponse = await this.updateUsers(RFUser);
+        }
+
+        //******* the API user has access to the new  Business Partner if it is new */
+        let APIResponse;
+        const apiUserWhs = APIUser.warehouses?.find(warehouse=> {return warehouse.warehouseId == warehouseId; });
+        if(!apiUserWhs){
             APIUser.warehouses?.push({ userId: APIUser.id, warehouseId });
             APIResponse = await this.updateUsers(APIUser);
         }
@@ -146,6 +188,7 @@ export class APIClass {
                 }else{
                     bpLoaded= LoadVendorData(vendor);
                     bpResponse= await this.createVendor( bpLoaded ) as iBusinessPartnerAPI;
+                    await this.assignVendorsToUsers(bpResponse.id!);
                 }
 
                 const loadAssignedCodes = LoadVendorAssignedCodes(vendor, bpResponse);
@@ -209,8 +252,8 @@ export class APIClass {
 
         if(scenario.items){
             for await (const item of scenario.items) {
-
-                const existItem = await this.searchItem(item.ItemCode);
+                
+                const existItem = await this.searchItem(item.ItemCode); 
 
                 let itemResponse: iItemAPI | undefined = undefined
                 let itemLoaded : iItemAPI;
@@ -235,7 +278,7 @@ export class APIClass {
         return itemList;
     }
 
-    private cleanInvenory = async(ItemId: number, warehouseId: number):Promise<void> => {
+    private cleanInventory = async(ItemId: number, warehouseId: number):Promise<void> => {
         //let itemObject = this.searchItem(ItemCode) as iItemAPI;
         //if(itemObject){
             const uri = `/whses/${warehouseId}/inv/detail?itemType=1&exact=lotCode&exact=sublotCode&exact=lpn&lotCode=&sublotCode=&pageSize=10000&pageOffset=1&itemId=${ItemId}`;
@@ -275,30 +318,28 @@ export class APIClass {
 
     public getInventoryAdjustment = async(Scenario: scenario, warehouseId: number) : Promise<iInventoryAdjustmentAPI[]> => {
         
-
         let inventoryAdjustment: InventoryAdjustmentsAPI = Scenario.inventoryAdjustment!;
 
-        //let invAdjustResponse: iInventoryAdjustmentAPI[] = [{itemCode: '', lpn: '', qty: 0, status: InventoryAdjustment_Status.available, storageIdentifier: ''}];
         let invAdjustResponse : iInventoryAdjustmentAPI[] = [];
-        //invAdjustResponse.pop();
-        //const uri = `/whses/${warehouseId}/inv/adjustment`;
+      
         for await (const invA of inventoryAdjustment.itemAdjustment) {
             
             //const itemUri = `/items?itemCode=${invA.itemCode}`;
             const whId = inventoryAdjustment.warehouse?.id ?? (invA.warehouseId ?? warehouseId);
-            const itemId = (await this.searchItem(invA.itemCode!))?.id!; //(await this.searchItem(invA.itemCode))["data"][0]["id"];
-            const storageId = (await this.searchStorageLocation(invA.storageIdentifier, whId!))?.id!; //(await this.searchStorageLocation(invA.storageIdentifier, whId!))["data"][0]["id"];
-            if(invA.emptyInventory){
-                await this.cleanInvenory(invA.itemId!, whId)
-            }
+            const item = (await this.searchItem(invA.itemCode!)); 
+            const sLocation = (await this.searchStorageLocation(invA.storageIdentifier, whId!)); 
+
+            //if(invA.emptyInventory){
+            await this.cleanInventory(invA.itemId!, whId)
+            //}
             
             const invAdjLoaded : iInventoryAdjustmentAPI = {
-                itemId: itemId,
+                itemId: item?.id!,
                 lot: invA.lot,
                 lpn: invA.lpn,
                 qty: invA.qty,
                 status: invA.status,
-                storageId: storageId,
+                storageId: sLocation?.id!,
                 sublot: invA.sublot,
                 unitGwt: invA.gWeigth,
             }
@@ -307,6 +348,8 @@ export class APIClass {
             if(invAdjsCall['status']){
                 const invAdjResponse: iInventoryAdjustmentAPI = invAdjsCall['data'];
                 invAdjustResponse.push( invAdjResponse );
+            }else{
+                throw new Error(`Error: item ${item?.itemCode} not possible to do inventory adjustment in location ${sLocation?.description}`);
             }
         }
         return invAdjustResponse;
@@ -403,6 +446,11 @@ export class APIClass {
         return newWarehouse;
     }
 
+    /**
+     * search for a given full warehouse data
+     * @param warehouseId warehouse Id number
+     * @returns  warehosue object
+     */
     private searchFullWarehouse = async(warehouseId: number): Promise< iWarehouseAPI | undefined> => {
         let fullWarehouse : iWarehouseAPI | undefined = undefined;
 
@@ -415,7 +463,7 @@ export class APIClass {
         return fullWarehouse as iWarehouseAPI;
     }
     /**
-     * search for a given warehouse
+     * search for a given partial warehouse data
      * @param warehouse: string. Warehouse description or Idenifier 
      * @returns iWarehouseAPI Object or undefined if there is an error
      */
@@ -477,7 +525,7 @@ export class APIClass {
         return account;
     }
     /**
-     * Get full data of a vendor
+     * Get full vendor data
      * @param accountId : Vendor ID
      * @returns : iBusinessPartnerAPI object
      */
@@ -493,7 +541,7 @@ export class APIClass {
         return fullVendor;
     }
     /**
-     * Search a given Account using a API endpoint
+     * Search a given partial vendor data
      * @param account: string. Account Description or accountId
      * @returns iBusinessPartnerAPI object or undefined if there is an error
      */
@@ -524,14 +572,16 @@ export class APIClass {
      * @returns ItemAPI object or undefined if there is an error
      */
     private searchItem = async(itemCode: string) : Promise<iItemAPI | undefined> => {
-        const itemUri = `/items?enabled=1&type=1&pageSize=10&pageOffset=1&itemCode=${itemCode}&sortColumn=itemCode`;
+        
+        const itemUri = `/items?enabled=1&enabled=0&type=1&pageSize=10000&pageOffset=1&itemCode=${itemCode}&sortColumn=itemCode`;
         const result = await this.Call({Url: itemUri, method: APIMethods.GET});
+
         let existItem : iWarehouseAPI | undefined = undefined;
         
         if(result['status']==200){
             const itemList : iItemAPI[] = result['data'];
             itemList.forEach(value => {
-                if(value.itemCode == value){
+                if(value.itemCode == itemCode){
                     existItem = value;
                 }
             });
