@@ -3,8 +3,9 @@ import { DVU, RF, WEB }  from '../../src/DVU';
 import { Init, Keys, UniqueValue } from '../../src/utils';
 import { NJTelnet } from '../../src/utils/telnet';
 import { Relocate_by_LPN } from '../../scenarios/Regression/GeneralRF/E_RelocatebyLPN';
-import { Replenishment } from '../../scenarios/1.14/E_Replenishment';
+import { Replenishment } from '../../scenarios/1.14/Replenishment/E_Replenishment';
 import { newScenario } from '../../scenarios/newScenario';
+import { Paper_based_without_LPNs } from '../../scenarios/1.14/Receiving/Paper_based_without_LPNs';
 
 fixture(`API tests`)
     .meta({fixtureType: 'API'})
@@ -14,8 +15,8 @@ fixture(`API tests`)
        await Init.Load({ 
             //CredentialGroup: 'TRIAL',
             // Scenario: PutawayScenario,
-            // Scenario: Relocate_by_LPN,
-            Scenario: newScenario,
+            //Scenario: Relocate_by_LPN,
+            Scenario: Paper_based_without_LPNs,
             Headless: false
         });
     })

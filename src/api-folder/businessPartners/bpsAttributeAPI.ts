@@ -36,8 +36,10 @@ export const attributesIds = {
     Work_Orders:{
         Mode: 1021,
         Barcode_Scanning: 354,
+        Auto_Generate_Word_Orders_Number: 388,
         Replenish_on_Pick_Ticket_creation: 1022,
         Replenish_on_Pick_Ticket_Completion: 1023,
+        Work_Order_Sequence: 389,
     }
 }
 export enum WorkOrders_Modes {
@@ -156,6 +158,8 @@ export interface attributeAPI {
         Replenish_on_Pick_Ticket_creation?: boolean,
         Replenish_on_Pick_Ticket_Completion?: boolean,
         Mode?: WorkOrders_Modes,
+        Auto_Generate_Word_Orders_Number?: boolean,
+        Work_Order_Sequence?: string,
     }
 }
 
