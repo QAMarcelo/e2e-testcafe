@@ -190,16 +190,21 @@ export const LoadVendorAttributes = (vendorAttributes: attributeAPI | undefined 
     for(const area in vendorAttributes){
 
         for(const attr in vendorAttributes[area]){
+            const valType = typeof((vendorAttributes[area])[attr]);
+            const val = (vendorAttributes[area])[attr];
+            const ival = ['number', 'boolean'].includes(valType)? Number(val) : -1;
+            const sval = ["string"].includes(valType)? val : "";
+            const dval = -1;
             attributes.push({
                 attribute: (attributesIds[area])[attr],
-                ival : Number((vendorAttributes[area])[attr]),
-                dval: 0
+                ival: ival, // Number((vendorAttributes[area])[attr]),
+                dval: dval,
+                sval: sval,
             })
         }
     }
     return attributes;
 }
-
 
 export const LoadChargeCodes = (vendor: BusinessPartnerAPI, iChargeCode?: iChargeCodeAPI[] ): iChargeCodeAPI[] => {
     
