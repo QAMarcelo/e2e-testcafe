@@ -2,7 +2,7 @@
 import { t } from 'testcafe';
 import { LoadItemData, LoadStorageLocationsData, LoadVendorAssignedCodes, LoadVendorData, LoadVendorDefaultBilling, LoadWarehouseData } from './APIHelper/APIHelper';
 import { BusinessPartnerAPI } from './businessPartners';
-import { iBusinessPartnerAPI, iInvAdjustmentDetailAPI, iInventoryAdjustmentAPI, iItemAPI, iStorageLocationAPI, iUser, iWarehouseAPI } from './interfaces/';
+import { iSequenceAPI, iBusinessPartnerAPI, iInvAdjustmentDetailAPI, iInventoryAdjustmentAPI, iItemAPI, iStorageLocationAPI, iUser, iWarehouseAPI } from './interfaces/';
 
 import { InventoryAdjustmentsAPI } from './inventory';
 import { StorageLocationsAPI } from './storageLocations';
@@ -31,11 +31,87 @@ export class APIClass {
 
     private baseURL: string;
     private headers: { };
-    constructor(baseURL: string, headers: {}){
-        this.baseURL = baseURL; 
-        this.headers = headers;
+
+    constructor(){
+    //constructor(baseURL: string, headers: {}){
+        // this.baseURL = baseURL; 
+        // this.headers = headers;
     }
 
+    public setBaseURL = (baseURL: string):APIClass => {
+        this.baseURL = baseURL;
+        return this;
+    }
+
+    public setHeaders = (headers: {}): APIClass => {
+        this.headers = headers;
+        return this;
+    }
+    /**
+     * 
+     * @param ApiParams conections params
+     * @returns 
+     */
+    public Call = async( ApiParams: APIParams ):Promise<{}>=>{
+        var axios = require('axios');
+        var result:{}={};
+        
+        if(t.ctx.Session==undefined){
+            t.ctx.Session = await this.getSession();
+        }
+        var config = {
+            method: ApiParams.method,
+            url: this.baseURL + "/" + t.ctx.Session + ApiParams.Url,
+            params: ApiParams.params,
+            headers: this.headers,
+            data : ApiParams.data
+        };
+
+        console.log(config.url);
+        try{
+            await axios(config)
+                .then(function (response) {
+                    result = response;
+                })
+                .catch(function (error) {
+                    console.log('error = ' + error);
+                });
+        }
+        catch(e){
+            console.log(e);
+        }
+        return result;
+    }
+
+    /**
+     * Call the endpoint Session in order to generate a new session value
+     * @returns sessionId : string value
+     */
+    private getSession = async(): Promise<string> =>{
+        var axios = require('axios');
+        var result = "";
+        var config = {
+            method: APIMethods.POST,
+            url: this.baseURL+"/session",
+            headers: this.headers,
+            data : `{ "email": "${API.user}", "password": "${API.password}"}`
+        };
+
+        await axios(config)
+        .then(function (response) {
+            result= response.data['sessionId'];
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+        return result;
+    }
+
+    /**
+     * 
+     * @param Scenario 
+     * @returns 
+     */
     public getWarehouse = async(Scenario: scenario): Promise<iWarehouseAPI|undefined> => {
 
         let whResponse: iWarehouseAPI | undefined = {};
@@ -253,7 +329,7 @@ export class APIClass {
         if(scenario.items){
             for await (const item of scenario.items) {
                 
-                const existItem = await this.searchItem(item.ItemCode); 
+                const existItem = await this.searchItem(item.ItemCode, true); 
 
                 let itemResponse: iItemAPI | undefined = undefined
                 let itemLoaded : iItemAPI;
@@ -266,6 +342,7 @@ export class APIClass {
                 if(existItem){
                     itemLoaded = LoadItemData(item, existItem);
                     itemResponse = await this.updateItem(itemLoaded);
+                    console.log(itemResponse);
                 }else{
                     let itemLoaded = LoadItemData(item);
                     itemResponse = await this.createItem(itemLoaded);
@@ -322,7 +399,7 @@ export class APIClass {
 
         let invAdjustResponse : iInventoryAdjustmentAPI[] = [];
       
-        for await (const invA of inventoryAdjustment.itemAdjustment) {
+        for await (const invA of inventoryAdjustment?.itemAdjustment) {
             
             //const itemUri = `/items?itemCode=${invA.itemCode}`;
             const whId = inventoryAdjustment.warehouse?.id ?? (invA.warehouseId ?? warehouseId);
@@ -355,64 +432,28 @@ export class APIClass {
         return invAdjustResponse;
     }
 
-    /**
-     * 
-     * @param ApiParams conections params
-     * @returns 
-     */
-    public Call = async( ApiParams: APIParams ):Promise<{}>=>{
-        var axios = require('axios');
-        var result:{}={};
-        
-        if(t.ctx.Session==undefined){
-            t.ctx.Session = await this.getSession();
-        }
-        var config = {
-            method: ApiParams.method,
-            url: this.baseURL + "/" + t.ctx.Session + ApiParams.Url,
-            params: ApiParams.params,
-            headers: this.headers,
-            data : ApiParams.data
-        };
 
-        console.log(config.url);
-        try{
-            await axios(config)
-                .then(function (response) {
-                    result = response;
-                })
-                .catch(function (error) {
-                    console.log('error = ' + error);
-                });
-        }
-        catch(e){
-            console.log(e);
-        }
-        return result;
-    }
+    public getSequences = async(Scenario: scenario): Promise<iSequenceAPI[]> => {
 
-    /**
-     * Call the endpoint Session in order to generate a new session value
-     * @returns sessionId : string value
-     */
-    private getSession = async(): Promise<string> =>{
-        var axios = require('axios');
-        var result = "";
-        var config = {
-            method: APIMethods.POST,
-            url: this.baseURL+"/session",
-            headers: this.headers,
-            data : `{ "email": "${API.user}", "password": "${API.password}"}`
-        };
+        let seqResponse : iSequenceAPI[] = [];
 
-        await axios(config)
-        .then(function (response) {
-            result= response.data['sessionId'];
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-        return result;
+        if(Scenario?.sequences){
+            
+            const sequenceList: iSequenceAPI[] = await this.listSequences();
+            for await (const seq of Scenario?.sequences) {
+                const findSeq = sequenceList.find(val => {return val.name==seq.Sequence});
+                if(!findSeq){
+                    const seqRequest : iSequenceAPI = await this.createSequence({
+                        currentValue: seq.Value,
+                        name: seq.Sequence,
+                        type: seq.Type
+                    });
+                    seqResponse.push(seqRequest)
+                }
+            }
+        }
+
+        return seqResponse;
     }
 
     /**
@@ -430,6 +471,7 @@ export class APIClass {
         }
         return newWarehouse;
     }
+
     /**
      * Create a new warehouse using a API call
      * @param warehouse: iWarehouseAPI objec
@@ -462,6 +504,7 @@ export class APIClass {
         }
         return fullWarehouse as iWarehouseAPI;
     }
+
     /**
      * search for a given partial warehouse data
      * @param warehouse: string. Warehouse description or Idenifier 
@@ -506,7 +549,6 @@ export class APIClass {
         }
         return account;
     }
-
     /**
      * Create a Vendor using a API endpoint
      * @param businessPartner: iBusinessPartnerAPI object with the expected fields
@@ -565,30 +607,47 @@ export class APIClass {
         }
         return fullVendor;
     }
-
+    
      /**
      * Search a given Item using an API endpoint
      * @param ItemCode:(string)=> ItemCode
      * @returns ItemAPI object or undefined if there is an error
      */
-    private searchItem = async(itemCode: string) : Promise<iItemAPI | undefined> => {
+    private searchItem = async(itemCode: string, fullItem?: boolean) : Promise<iItemAPI | undefined> => {
         
         const itemUri = `/items?enabled=1&enabled=0&type=1&pageSize=10000&pageOffset=1&itemCode=${itemCode}&sortColumn=itemCode`;
         const result = await this.Call({Url: itemUri, method: APIMethods.GET});
 
-        let existItem : iWarehouseAPI | undefined = undefined;
+        let existItem : iItemAPI | undefined = undefined;
         
         if(result['status']==200){
             const itemList : iItemAPI[] = result['data'];
             itemList.forEach(value => {
                 if(value.itemCode == itemCode){
-                    existItem = value;
+                    existItem = value as iItemAPI;
                 }
             });
+
+            if(fullItem){
+                existItem = existItem! as iItemAPI;
+                existItem = await this.searchFullItem(existItem.id!);
+            }
          }else{
             throw new Error(`Error: search item: '${itemCode}', throw an error = ${result['status']}`);
         }
-        return existItem;
+        return existItem as iItemAPI;
+    }
+
+    private searchFullItem = async(itemID: number) : Promise<iItemAPI|undefined> => {
+        let fullItem : iItemAPI | undefined = undefined;
+
+        let fullItemResponse = await this.Call({Url: `/items/${itemID}`, method: APIMethods.GET});
+        if(fullItemResponse['status']==200){
+            fullItem = fullItemResponse['data'] as iItemAPI;
+        }else{
+            throw new Error(`Error: search full item data with ID:'${itemID}' , throw an error = ${fullItemResponse['status']}`);
+        }
+        return fullItem;
     }
 
      /**
@@ -596,15 +655,17 @@ export class APIClass {
      * @param item:(iItem) object
      * @returns iItemAPI object or undefined if there is an error
      */
-     private updateItem = async(item: iItemAPI): Promise<iItemAPI|undefined> => {
-        let itemval : iItemAPI|undefined = undefined;
+    private updateItem = async(item: iItemAPI): Promise<iItemAPI|undefined> => {
+        let iItem : iItemAPI|undefined = undefined;
+
         const iResponse = await this.Call({Url:'/items', method: APIMethods.PUT, data: item});
+        
         if(iResponse['status']==200){
-            itemval = iResponse['data'];
+            iItem = iResponse['data'];
         }else{
             throw new Error(`Error: API update-Item:'${item.description}' , throw an error = ${iResponse['status']}`);
         }
-        return itemval; 
+        return iItem as iItemAPI; 
     }
 
     /**
@@ -669,6 +730,7 @@ export class APIClass {
         }
         return account; 
     }
+
     /**
      * Create a Storage Location using an API endpoint
      * @param storageLocation:iStorageLocationAPI object
@@ -685,5 +747,37 @@ export class APIClass {
             throw new Error(`Error: Create-Storage Location:'${storageLocation.description}' , throw an error = ${slResponse['status']}`);
         }
         return storateResponse; 
+    }
+
+    /**
+     * Get the list of sequences
+     * @returns sequences array
+     */
+    private listSequences = async(): Promise<iSequenceAPI[]> => {
+        let sequences : iSequenceAPI[] = [];
+
+        const seqResponse = await this.Call({Url: '/sequence', method: APIMethods.GET});
+        if(seqResponse['status']==200){
+            sequences = seqResponse['data'] as iSequenceAPI[];
+        }else{
+            throw new Error(`Error: not able to get the list of sequences, error : ${seqResponse['status']}`);
+        }
+        return sequences;
+    }
+
+    /**
+     * Create a sequences using API endpoint
+     * @returns sequence object
+     */
+    private createSequence = async(seq: iSequenceAPI): Promise<iSequenceAPI> =>{
+        let sequence : iSequenceAPI = {};
+
+        const seqResponse = await this.Call({Url: '/sequence', method: APIMethods.GET});
+        if(seqResponse['status']==200){
+            sequence = seqResponse['data'] as iSequenceAPI;
+        }else{
+            throw new Error(`Error: not able to create a sequence, error : ${seqResponse['status']}`);
+        }
+        return sequence;
     }
 }

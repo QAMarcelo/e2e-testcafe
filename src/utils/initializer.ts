@@ -9,6 +9,9 @@ import { API, SetAPICredentials, SetRFCredentials, SetUICredentials, DVU, WEB } 
 import { APIClass  } from "../api-folder/APIClass";
 import { WarehouseAPI } from "../api-folder/warehouses/warehousesAPI";
 import { iUserCredentials } from "./helpers";
+import { SequenceAPI } from "../api-folder/Sequences/SequenceAPI";
+import { UserAPI } from "../api-folder/users/userAPI";
+import { UserGroupAPI } from "../api-folder/userGroup";
 
 export interface iCredentials{
     user: string, 
@@ -57,7 +60,12 @@ export interface scenario {
     businessPartners : BusinessPartnerAPI[],
     storageLocations? : StorageLocationsAPI,
     items?: ItemAPI[],
-    inventoryAdjustment?: InventoryAdjustmentsAPI
+    inventoryAdjustment?: InventoryAdjustmentsAPI,
+    
+    sequences?: SequenceAPI[],
+    users?: UserAPI[],
+    userGroups?: UserGroupAPI[],
+
     
 }
 
@@ -117,19 +125,27 @@ class Initializer {
             if(itemsResponse.length != args.Scenario.items?.length) throw new Error(`Error: not all the items were created/updated`);
 
             const invAdjResponse = await APICall.getInventoryAdjustment(args.Scenario, whResp?.id!);
-            if(invAdjResponse.length != args.Scenario.inventoryAdjustment?.itemAdjustment.length) throw new Error(`Error: not all the inventory adjustment were created/updated`);
+            if(invAdjResponse.length != args.Scenario.inventoryAdjustment?.itemAdjustment?.length) throw new Error(`Error: not all the inventory adjustment were created/updated`);
 
+            const seqResponse = await APICall.getSequences(args.Scenario);
+            if(seqResponse.length != args.Scenario.sequences?.length) throw new Error(`Error: not all the sequences were saved`);
         }
     }
 
-    private InitAPI(): APIClass {
-        const call = new APIClass(
-            `${API.url}:${API.port}/${API.version}/${API.license}/${API.database}`,
-            {
-                'Authorization': API.authorization,
-                'Content-Type': 'application/json'
-            }
-        );
+    private InitAPI = (): APIClass => {
+
+        const call = new APIClass( );
+        call.setBaseURL(`${API.url}:${API.port}/${API.version}/${API.license}/${API.database}`);
+        call.setHeaders({
+            'Authorization': API.authorization,
+            'Content-Type': 'application/json'
+        })
+            // `${API.url}:${API.port}/${API.version}/${API.license}/${API.database}`,
+            // {
+            //     'Authorization': API.authorization,
+            //     'Content-Type': 'application/json'
+            // }
+        //);
         return call;
     }
 }
