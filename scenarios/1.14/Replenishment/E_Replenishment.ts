@@ -1,10 +1,10 @@
 /*************** IMPORTS ***************/
-import { GeneralProperties_AllocationMode, Inventory_AllocationMode, Receiving_BarcodeScanningStyles, Shipping_BarcodeScanningStyle, WorkOrders_Modes } from '../../src/api-folder/businessPartners';
-import { InventoryAdjustment_Status } from '../../src/api-folder/inventory';
-import { Item_UOMType } from '../../src/api-folder/itemSKUS';
-import { OnRelocate_ConvertUnitOfMeasureAPI } from '../../src/api-folder/storageLocations';
-import { WarehouseMode } from '../../src/api-folder/warehouses';
-import { UniqueValue, scenario } from '../../src/utils';
+import { GeneralProperties_AllocationMode, Inventory_AllocationMode, Receiving_BarcodeScanningStyles, Shipping_BarcodeScanningStyle, WorkOrders_Modes } from '../../../src/api-folder/businessPartners';
+import { InventoryAdjustment_Status } from '../../../src/api-folder/inventory';
+import { Item_UOMType } from '../../../src/api-folder/itemSKUS';
+import { OnRelocate_ConvertUnitOfMeasureAPI } from '../../../src/api-folder/storageLocations';
+import { WarehouseMode } from '../../../src/api-folder/warehouses';
+import { UniqueValue, scenario } from '../../../src/utils';
 
 
 /*************** CONSTANS & VARIABLES ***************/

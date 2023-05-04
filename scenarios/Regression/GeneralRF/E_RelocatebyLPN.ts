@@ -42,6 +42,10 @@ export const Relocate_by_LPN: scenario = {
                 Receiving: {
                     Barcode_Scanning: true,
                     Barcode_Scanning_style: Receiving_BarcodeScanningStyles.Line
+                },
+                Work_Orders: {
+                    Work_Order_Sequence: "WO0202216",
+                    Auto_Generate_Word_Orders_Number: true
                 }
             },
             
@@ -94,7 +98,7 @@ export const Relocate_by_LPN: scenario = {
                         }
                     ]
                 }
-            ]
+            ],
         }
     ],
     items: [
