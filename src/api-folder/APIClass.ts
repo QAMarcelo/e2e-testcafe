@@ -329,8 +329,8 @@ export class APIClass {
         if(scenario.items){
             for await (const item of scenario.items) {
                 
-                const existItem = await this.searchItem(item.ItemCode, true); 
-
+                const existItem = await this.searchItem(item.ItemCode, true) as iItemAPI; 
+                //const itemToCompare =  await this.updateItem(existItem) ;
                 let itemResponse: iItemAPI | undefined = undefined
                 let itemLoaded : iItemAPI;
 
@@ -340,11 +340,15 @@ export class APIClass {
                 }
 
                 if(existItem){
-                    itemLoaded = LoadItemData(item, existItem);
-                    itemResponse = await this.updateItem(itemLoaded);
-                    console.log(itemResponse);
+                    itemLoaded = LoadItemData(item, existItem) as iItemAPI;
+                    //const comparedItems = JSON.stringify(existItem) === JSON.stringify(itemLoaded);
+                    //if(!comparedItems){
+                        itemResponse = await this.updateItem(itemLoaded);
+                        console.log(itemResponse);
+                    //}
+                    
                 }else{
-                    let itemLoaded = LoadItemData(item);
+                    let itemLoaded = LoadItemData(item) as iItemAPI;
                     itemResponse = await this.createItem(itemLoaded);
                 }
                 if(itemResponse){
@@ -395,38 +399,40 @@ export class APIClass {
 
     public getInventoryAdjustment = async(Scenario: scenario, warehouseId: number) : Promise<iInventoryAdjustmentAPI[]> => {
         
-        let inventoryAdjustment: InventoryAdjustmentsAPI = Scenario.inventoryAdjustment!;
+        let inventoryAdjustment: InventoryAdjustmentsAPI | undefined= Scenario.inventoryAdjustment;
 
         let invAdjustResponse : iInventoryAdjustmentAPI[] = [];
       
-        for await (const invA of inventoryAdjustment?.itemAdjustment) {
-            
-            //const itemUri = `/items?itemCode=${invA.itemCode}`;
-            const whId = inventoryAdjustment.warehouse?.id ?? (invA.warehouseId ?? warehouseId);
-            const item = (await this.searchItem(invA.itemCode!)); 
-            const sLocation = (await this.searchStorageLocation(invA.storageIdentifier, whId!)); 
-
-            //if(invA.emptyInventory){
-            await this.cleanInventory(invA.itemId!, whId)
-            //}
-            
-            const invAdjLoaded : iInventoryAdjustmentAPI = {
-                itemId: item?.id!,
-                lot: invA.lot,
-                lpn: invA.lpn,
-                qty: invA.qty,
-                status: invA.status,
-                storageId: sLocation?.id!,
-                sublot: invA.sublot,
-                unitGwt: invA.gWeigth,
-            }
-            const whsesUri = `/whses/${whId}/inv/adjustment`;
-            const invAdjsCall = await this.Call({Url: whsesUri, method: APIMethods.POST, data: invAdjLoaded});
-            if(invAdjsCall['status']){
-                const invAdjResponse: iInventoryAdjustmentAPI = invAdjsCall['data'];
-                invAdjustResponse.push( invAdjResponse );
-            }else{
-                throw new Error(`Error: item ${item?.itemCode} not possible to do inventory adjustment in location ${sLocation?.description}`);
+        if(inventoryAdjustment){
+            for await (const invA of inventoryAdjustment?.itemAdjustment) {
+                
+                //const itemUri = `/items?itemCode=${invA.itemCode}`;
+                const whId = inventoryAdjustment.warehouse?.id ?? (invA.warehouseId ?? warehouseId);
+                const item = (await this.searchItem(invA.itemCode!)); 
+                const sLocation = (await this.searchStorageLocation(invA.storageIdentifier, whId!)); 
+    
+                //if(invA.emptyInventory){
+                await this.cleanInventory(invA.itemId!, whId);
+                //}
+                
+                const invAdjLoaded : iInventoryAdjustmentAPI = {
+                    itemId: item?.id!,
+                    lot: invA.lot,
+                    lpn: invA.lpn,
+                    qty: invA.qty,
+                    status: invA.status,
+                    storageId: sLocation?.id!,
+                    sublot: invA.sublot,
+                    unitGwt: invA.gWeigth,
+                }
+                const whsesUri = `/whses/${whId}/inv/adjustment`;
+                const invAdjsCall = await this.Call({Url: whsesUri, method: APIMethods.POST, data: invAdjLoaded});
+                if(invAdjsCall['status']){
+                    const invAdjResponse: iInventoryAdjustmentAPI = invAdjsCall['data'];
+                    invAdjustResponse.push( invAdjResponse );
+                }else{
+                    throw new Error(`Error: item ${item?.itemCode} not possible to do inventory adjustment in location ${sLocation?.description}`);
+                }
             }
         }
         return invAdjustResponse;
@@ -627,11 +633,12 @@ export class APIClass {
                     existItem = value as iItemAPI;
                 }
             });
-
-            if(fullItem){
+            
+            if(itemList.length>0 && fullItem){
                 existItem = existItem! as iItemAPI;
                 existItem = await this.searchFullItem(existItem.id!);
             }
+        
          }else{
             throw new Error(`Error: search item: '${itemCode}', throw an error = ${result['status']}`);
         }

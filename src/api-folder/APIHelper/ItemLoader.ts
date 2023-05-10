@@ -1,4 +1,4 @@
-import { iItemAPI, iUOMAPI, iUPCAPI } from "../interfaces/iItemAPI";
+import { iItemAPI, iItemUOMAPI, iItemUPCAPI } from "../interfaces/iItemAPI";
 import { ItemAPI, Item_UOMType, UPCAPI } from "../itemSKUS";
 import { Velocity } from "./StorageLocationLoader";
 
@@ -6,7 +6,7 @@ import { Velocity } from "./StorageLocationLoader";
 
 export const LoadItemData = (item: ItemAPI, iItem?: iItemAPI): iItemAPI => {
 
-    const idata : iItemAPI = {};
+    const idata = iItem? {...iItem} : {};
     
     idata.id= item.Id?? iItem?.id;
     idata.enabled= item.Enabled? Number(item.Enabled) : (iItem?.enabled?? 1);
@@ -35,8 +35,8 @@ export const LoadItemData = (item: ItemAPI, iItem?: iItemAPI): iItemAPI => {
     idata.vendorId= item.AccoundId ?? iItem?.vendorId;
     //idata.uomId?=                      number;
     idata.uom= loadUOMData(item, iItem);
-    idata.kitSubItems= iItem?.kitSubItems ?? [];
-    idata.upcs= item.UPC? loadUPCData(item.UPC) : iItem?.upcs;
+    //idata.kitSubItems= iItem?.kitSubItems ?? [];
+    idata.upcs= loadUPCData(item.UPC ?? [], iItem?.upcs) ;
     idata.itemWarehouses= iItem?.itemWarehouses ?? [];
     idata.replenishmentPlans= iItem?.replenishmentPlans?? [];
     //idata.vendorBrief= {};                
@@ -44,7 +44,7 @@ export const LoadItemData = (item: ItemAPI, iItem?: iItemAPI): iItemAPI => {
     idata.buildable= item.buildable ?? (iItem?.buildable?? 1);
     //idata.file?=                       File;
     //idata.vendor= {id: item.AccoundId};
-    idata.aliases= iItem?.aliases ?? [];
+    //idata.aliases= iItem?.aliases ?? [];
     //idata.events?=                     Event[];
     //idata.storageLocations?=           any[];
     //idata.nmfcCode=                   File;
@@ -56,11 +56,11 @@ export const LoadItemData = (item: ItemAPI, iItem?: iItemAPI): iItemAPI => {
     return idata;
 }
 
-const loadUOMData = (item: ItemAPI, iItem?: iItemAPI) : iUOMAPI => {
-    const iUom = iItem?.uom;
+const loadUOMData = (item: ItemAPI, iItem?: iItemAPI) : iItemUOMAPI => {
+    const iUom = {...iItem?.uom};
 
     item.UOM_type = item.UOM_type ?? iUom?.defaultOuom?? Item_UOMType.Each;
-    let uomValues: iUOMAPI = {}
+    let uomValues: iItemUOMAPI = {}
     switch (item.UOM_type) {
         case Item_UOMType.Case:
             uomValues = {
@@ -69,8 +69,8 @@ const loadUOMData = (item: ItemAPI, iItem?: iItemAPI) : iUOMAPI => {
                 caseDescription: item.UOM?.Description ?? iUom?.caseDescription?? "Case",
                 caseHasInnerpack: item.UOM?.HasInnerpack? Number(item.UOM?.HasInnerpack): iUom?.caseHasInnerpack,
                 caseHeight:  item.UOM?.Height?? iUom?.caseHeight,
-                caseMaxStackWeight: iUom?.caseMaxStackWeight?? 0,
-                caseTare: item.UOM?.GrossLBS?? iUom?.caseMaxStackWeight ?? iUom?.caseTare,
+                //caseMaxStackWeight: iUom?.caseMaxStackWeight?? 0,
+                caseTare: item.UOM?.GrossLBS?? iUom?.caseTare,
                 caseWeight:  item.UOM?.GrossLBS ?? iUom?.caseWeight,
                 caseWidth:  item.UOM?.Width ?? iUom?.caseWidth,
             };
@@ -102,29 +102,32 @@ const loadUOMData = (item: ItemAPI, iItem?: iItemAPI) : iUOMAPI => {
         default:
             break;
     }
-    const pallet: iUOMAPI = {
+    const pallet: iItemUOMAPI = {
         style: item.UOM?.style?? (iUom?.style ?? 1),
         defaultOuom: item.UOM_type ?? (iUom?.defaultOuom ?? 1),
         palletHigh: item.UOM?.Pallet_High?? iUom?.palletHeight,
         palletTie: item.UOM?.Pallet_Tie?? iUom?.palletTie,
-        palletMaxStackWeight: item.UOM?.Pallet_MaxStackWeight?? iUom?.palletMaxStackWeight
+        palletMaxStackWeight: item.UOM?.Pallet_MaxStackWeight?? iUom?.palletMaxStackWeight,
+        vendorId: item.UOM?.vendorId ?? iUom.vendorId,
     }
 
     return {...uomValues,...pallet};
 }
-export const loadUPCData = (ucps: UPCAPI[], iupcs?: iUOMAPI): iUPCAPI[] => {
+export const loadUPCData = (ucps: UPCAPI[], iupcs?: iItemUPCAPI[]): iItemUPCAPI[] => {
 
-    const upcLoaded: iUPCAPI[] = []
+    const upcLoaded: iItemUPCAPI[] = []
     ucps?.forEach(upc => {
+        let existingUPC = iupcs?.find(x=> {return x.upc == upc.upc && x.itemDescription == upc.description} )
         upcLoaded.push(
             {
-               itemDescription: upc.description,
-               upc: upc.upc,
-               lotCode: upc.lotCode,
-               sublotCode: upc.subLoteCode,
-               itemId: upc.itemId
+               itemDescription: existingUPC?.itemDescription ?? upc.description,
+               upc: existingUPC?.upc ?? upc.upc,
+               lotCode: existingUPC?.lotCode ?? upc.lotCode,
+               sublotCode: existingUPC?.sublotCode ?? upc.subLoteCode,
+               itemId: existingUPC?.itemId ?? upc.itemId
             }
         )
     });
-    return upcLoaded;
+    // return upcLoaded;
+    return []
 }
