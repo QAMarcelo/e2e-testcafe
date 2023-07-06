@@ -10,10 +10,10 @@ import { UniqueValue, scenario } from "../../../src/utils";
 
 /*************** CONSTANS & VARIABLES ***************/
 
-const warehouse =  `PaperBaseX`;
-const itemCode = `PaperItemX`;
-const account = 'PaperAccountX';
-const storage1 = `PaperLocationX`;
+const warehouse =  `PaperBase`;
+const itemCode = `PaperItem`;
+const account = 'PaperAccount';
+const storage1 = `PaperLocation`;
 const lpn1 = `LPN1`;
 
 
@@ -21,8 +21,9 @@ const lpn1 = `LPN1`;
 export const Paper_based_without_LPNs: scenario = {
     CredentialGroup: 'TRIAL',
     warehouse: {
+        
         description: warehouse,
-        mode: WarehouseMode.barcodeScanning,
+        mode: WarehouseMode.paper,
     },
     businessPartners: [
         {
@@ -50,11 +51,11 @@ export const Paper_based_without_LPNs: scenario = {
         Locations: [
             {
                 Description: storage1,
-                Length: 19999,
-                Width: 19999,
-                Height: 19999,
-                MaxWeight: 19999,
-                MaxLPN: 19999,
+                Length: 100,
+                Width: 100,
+                Height: 100,
+                MaxWeight: 100,
+                MaxLPN: 1,
                 LocationType: {
                     Bulk_Storage_Putaway: true,
                     Pick_Allocation: true,
@@ -77,10 +78,12 @@ export const Paper_based_without_LPNs: scenario = {
             Vendor: account,
             Enabled: true,
             UOM: {
-                Height: 20,
-                Length: 210,
-                Width: 20,
-                GrossLBS: 20,
+                Height: 10,
+                Length: 10,
+                Width: 10,
+                GrossLBS: 10,
+                Pallet_Tie: 4,
+                Pallet_High: 5
             }
         }
     ]

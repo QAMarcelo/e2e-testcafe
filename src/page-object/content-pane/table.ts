@@ -1,20 +1,20 @@
 import { t, Selector } from 'testcafe';
 import { XPathSelector } from '../../utils';
+import { BaseSelector } from '../../basic-objects/baseSelector';
 
-interface TableQuery {
+export interface TableQuery {
     rowTitle : string,
     rowValue: string,
 }
-export class Table {
+export class Table extends BaseSelector {
     _container : Selector;
-
     private Headers: string[];
     
-    constructor( selector: Selector ){
-        this._container = selector;
+    constructor( selector: Selector){
+        super(selector)
     }
 
-    public async clickRowByQuery(tableQuery : TableQuery[]){
+    public async clickRowByQuery(...tableQuery : TableQuery[]){
         var query = "";
         for await (const e of tableQuery) {
             var ariacolindex = await XPathSelector(`//*[@role='columnheader'][.//span[text()='${e.rowTitle}']]`).getAttribute('aria-colindex');
@@ -22,7 +22,9 @@ export class Table {
         }
 
         if(query.length>0){
+            query = query.substring(0, query.length-4);
             query = "//div[contains(@class, 'k-state-active')] //tr[ " + query + "]";
+            console.log(query);
             await t.click(XPathSelector(query));
         }
     }
@@ -42,6 +44,24 @@ export class Table {
         }
         
         return await this._container.find(findSelector).innerText;
+    }
+
+    public async existRowByQuery(...tableQuery : TableQuery[]){
+        var query = "";
+        let exist = false;
+        for await (const e of tableQuery) {
+            var ariacolindex = await XPathSelector(`//*[@role='columnheader'][.//span[text()='${e.rowTitle}']]`).getAttribute('aria-colindex');
+            query += `.//td[@aria-colindex='${ariacolindex}'][text()='${e.rowValue}'] and `;
+        }
+
+        if(query.length>0){
+            query = query.substring(0, query.length-4);
+            query = "//div[contains(@class, 'k-state-active')] //tr[ " + query + "]";
+            console.log(query);
+            exist = await XPathSelector(query).exists;
+        }
+
+        return exist;
     }
 
     

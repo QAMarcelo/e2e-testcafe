@@ -1,39 +1,43 @@
 import { t } from 'testcafe';
 import { XPathSelector, iCredentials, iUserCredentials } from './utils';
 
-import { ErrorDialog, Warehouse, HomeHeader, menu } from './page-object';
-import { Login } from './login';
-import { ReceivingOrders } from './davinci-tabs/receiving-orders/ReceivingOrders';
+import { errorDialog, warehouse, homeHeader, menu } from './page-object';
+import { login } from './login';
+import { receivingOrders } from './davinci-tabs/receiving-orders/ReceivingOrders';
 import { UserData } from './utils/userData';
-import { APIClass } from './api-folder/APIClass';
+
+import { OverReceivedDialog } from './page-object/dialogs/overReceivedDialog';
+import { itemInventory } from './davinci-tabs/item-inventory';
 
 
 class dialog{
 
-    WareHouse : Warehouse;
-    Error: ErrorDialog;
+    WareHouse : warehouse;
+    Error: errorDialog;
+    OverReceived: OverReceivedDialog;
     constructor (){
-        this.WareHouse = new Warehouse();
-        this.Error = new ErrorDialog();
+        this.WareHouse = new warehouse();
+        this.Error = new errorDialog();
+        this.OverReceived = new OverReceivedDialog();
     }
 }
 
 
 class davinci{
-    public Login : Login;
-    public Menu : menu;
-    public HomeHeader: HomeHeader;
-    public ReceivingOrders: ReceivingOrders;
-    public Dialogs : dialog;
+    // public Login : Login;
+    // public Menu : menu;
+    // public HomeHeader: HomeHeader;
+    // public ReceivingOrders: ReceivingOrders;
+    // public Dialogs : dialog;
    
 
     //Dialog : dialog;
     constructor (){
-        this.Login = new Login();
-        this.Menu = new menu();
-        this.HomeHeader = new HomeHeader();
-        this.ReceivingOrders = new ReceivingOrders();
-        this.Dialogs = new dialog();
+        // this.Login = new Login();
+        // this.Menu = new menu();
+        // this.HomeHeader = new HomeHeader();
+        // this.ReceivingOrders = new ReceivingOrders();
+        // this.Dialogs = new dialog();
     }
 
     public async verifyAPIVersion(): Promise<boolean>{
@@ -47,45 +51,9 @@ class davinci{
     }
 }
 
-export let WEB : iCredentials = {
-    user: '',
-    password: '',
-    database: '',
-    warehouse: '',
-    url: '',
-    version: '',
-    license: '',
-    port: '',
-    authorization: '',
-    language: '',
-    type: ''
-};
-export let RF : iCredentials = {
-    user: '',
-    password: '',
-    database: '',
-    warehouse: '',
-    url: '',
-    version: '',
-    license: '',
-    port: '',
-    authorization: '',
-    language: '',
-    type: ''
-};
-export let API : iCredentials={
-    user: '',
-    password: '',
-    database: '',
-    warehouse: '',
-    url: '',
-    version: '',
-    license: '',
-    port: '',
-    authorization: '',
-    language: '',
-    type: ''
-};
+export let WEB : iCredentials;
+export let RF : iCredentials;
+export let API : iCredentials;
 
 export const SetUICredentials = (credentialGroup: string | undefined, DVUCredentials: iUserCredentials| undefined) => {
     try {
@@ -149,3 +117,9 @@ export const SetAPICredentials = (credentialGroup: string | undefined, APICreden
 }
 
 export const DVU = new davinci();
+export const Login = new login();
+export const Menu = new menu();
+export const HomeHeader = new homeHeader();
+export const ReceivingOrders = new receivingOrders();
+export const ItemInventory = new itemInventory();
+export const Dialogs = new dialog();

@@ -1,5 +1,5 @@
 import { Selector, t } from "testcafe";
-import { Button, ComboboxWriteAndSearch, Dropdown, TextBox } from "../../basic-objects";
+import { Button, Combobox, ComboboxWriteAndSearch, Dropdown, TextBox } from "../../basic-objects";
 import { BaseObject } from "../../basic-objects/baseObject";
 import { ComboboxWithToolbar } from "../../basic-objects/comboboxWithToolbar";
 import { NumberBox } from "../../basic-objects/numberBox";
@@ -21,12 +21,12 @@ export class ReceivingOrdersModal extends BaseDialog{
     public LineEntries: LineEntries;
 
     constructor(selector: Selector){
-        super(selector);
+        super(selector.find('kendo-dialog.largeDialogBox'));
 
         this.SideMenu = new SideMenu(this._container.find('mat-sidenav'));
         this.LineEntries = new LineEntries(this._container.find('receiving-line-entries'));
 
-        this.Status = new Dropdown(this._container.find('span').withText('Status').nextSibling('kendo-dropdownlist'));
+        this.Status = new Dropdown(this._container.find('span').withText('Status').nextSibling('span').find('kendo-dropdownlist'));
         this.Account = new ComboboxWithToolbar(this._container.find('span').withText('Account').nextSibling('span.searchAndSearchButton'));
         this.Carrier = new ComboboxWithToolbar(this._container.find('span').withText('Carrier').nextSibling('span.searchAndSearchButton'));
         this.Supplier = new ComboboxWithToolbar(this._container.find('span').withText('Supplier').nextSibling('span.searchAndSearchButton'));
@@ -99,13 +99,17 @@ export class LineEntriesToolBar extends BaseObject{
 export class GeneralPanel extends BaseDialog{
     public ItemCode: ComboboxWriteAndSearch;
     public QtyPlanned: NumberBox;
+    public QtyReceived: NumberBox;
     public Insert: Button;
+    public Location : ComboboxWriteAndSearch;
 
 
     constructor(selector: Selector){
         super(selector);
         this.ItemCode = new ComboboxWriteAndSearch(this._container.find('item-code-combobox'));
         this.QtyPlanned = new NumberBox(this._container.find('span').withText('Qty Planned').nextSibling('kendo-numerictextbox'));
+        this.QtyReceived = new NumberBox(this._container.find('span').withText('Qty Received').nextSibling('kendo-numerictextbox'));
+        this.Location = new ComboboxWriteAndSearch(this._container.find('location-combobox'));
         this.Insert = new Button(this._container.find('.save button').withExactText('Insert'));
     }
 

@@ -3,7 +3,7 @@
 export interface iInventoryAdjustmentAPI {
     itemId: number,
     status: number,
-    qty: number,
+    qty?: number,
     lot?: string,
     storageId: number,
     lpn?: string,

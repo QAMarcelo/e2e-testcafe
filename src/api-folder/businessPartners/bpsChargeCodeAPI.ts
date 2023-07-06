@@ -125,6 +125,10 @@ export enum ChargeCode_Types {
     Work_Order_Material= 90
 }
 
+export interface DefaultBilling {
+    UOMType: DefaultBilling_UOMType,
+    ChargeType: DefaultBilling_ChargeType
+}
 export interface ChargeCodeAPI {
         
     id?: number,
@@ -144,10 +148,7 @@ export interface ChargeCodeAPI {
     Ranges? : RangesAPI[],
     tieredBilling?: boolean,
     AssignChargeCode?: ChargeCodes_AssignType,
-    DefaultBilling?: [{
-        UOMType: DefaultBilling_UOMType,
-        ChargeType: DefaultBilling_ChargeType
-    }]
+    DefaultBilling?: DefaultBilling[]
     //associatedItemId?:   string,
     //typeText?:           string;
 }

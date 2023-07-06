@@ -13,7 +13,7 @@ fixture(`API tests`)
        await Init.Load({ 
             CredentialGroup: 'TRIAL',
             Scenario: { 
-                warehouse: {description: 'PaperBase'},
+                warehouse: {description: 'Barcode Scanning'},
                 inventoryAdjustment: {
                    
                     itemAdjustment: [{
@@ -115,7 +115,7 @@ fixture(`API tests`)
                                                     {rowTitle: 'Available Qty', rowValue: '10'})).ok('The inventory was not updated even when the over receive was approved');
 
         //Log in as admin
-      
+
         // let RFTelnet = new NJTelnet();
         // await RFTelnet.Connect();
         // await RFTelnet.Login();

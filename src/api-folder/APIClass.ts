@@ -52,16 +52,16 @@ export class APIClass {
      * @param ApiParams conections params
      * @returns 
      */
-    public Call = async( ApiParams: APIParams ):Promise<{}>=>{
+    public Call = async( ApiParams: APIParams, setSession: boolean = true ):Promise<{}>=>{
         var axios = require('axios');
         var result:{}={};
         
-        if(t.ctx.Session==undefined){
+        if( (t.ctx.Session==undefined || t.ctx.Session=='') && setSession ){
             t.ctx.Session = await this.getSession();
         }
         var config = {
             method: ApiParams.method,
-            url: this.baseURL + "/" + t.ctx.Session + ApiParams.Url,
+            url: this.baseURL + (setSession? "/" + t.ctx.Session : "") + ApiParams.Url,
             params: ApiParams.params,
             headers: this.headers,
             data : ApiParams.data
@@ -78,6 +78,7 @@ export class APIClass {
                 });
         }
         catch(e){
+            console.log("cached error")
             console.log(e);
         }
         return result;
@@ -129,8 +130,9 @@ export class APIClass {
                 whLoaded = LoadWarehouseData(warehouse);
                 whResponse = await this.createWarehouse(whLoaded);
             }
-           
+
             await this.assignWarehouseToUsers(whResponse?.id!);
+            WEB.warehouse = whResponse?.description!;
         }
         return whResponse;
     }
@@ -293,9 +295,9 @@ export class APIClass {
         if(scenario.storageLocations){
 
             let storageLocations: StorageLocationsAPI = scenario.storageLocations!;
-            if(storageLocations){
+            if(storageLocations.Locations){
 
-                for await (const sLocation of storageLocations.Locations) {
+                for await (const sLocation of storageLocations?.Locations) {
                     const storageLocation = await this.searchStorageLocation(sLocation.Description, warehouseId);
                     var slLoaded: iStorageLocationAPI;
                     let response: iStorageLocationAPI|undefined = undefined;
@@ -344,7 +346,6 @@ export class APIClass {
                     //const comparedItems = JSON.stringify(existItem) === JSON.stringify(itemLoaded);
                     //if(!comparedItems){
                         itemResponse = await this.updateItem(itemLoaded);
-                        console.log(itemResponse);
                     //}
                     
                 }else{
@@ -359,11 +360,18 @@ export class APIClass {
         return itemList;
     }
 
-    private cleanInventory = async(ItemId: number, warehouseId: number):Promise<void> => {
+    private cleanInventory = async(itemCode: string|undefined = undefined, slocation: string|undefined = undefined,  warehouseId: number):Promise<void> => {
         //let itemObject = this.searchItem(ItemCode) as iItemAPI;
         //if(itemObject){
-            const uri = `/whses/${warehouseId}/inv/detail?itemType=1&exact=lotCode&exact=sublotCode&exact=lpn&lotCode=&sublotCode=&pageSize=10000&pageOffset=1&itemId=${ItemId}`;
-            const response = this.Call({Url: uri, method: APIMethods.GET});
+            ///const uri = `/whses/${warehouseId}/inv/detail?itemType=1&exact=lotCode&exact=sublotCode&exact=lpn&lotCode=&sublotCode=&pageSize=10000&pageOffset=1&itemId=${ItemId}`;
+            const itemCodeQuery = itemCode? `&itemCode=${itemCode}` : '';
+            const sLocationQuery = slocation? `&storageLocation=${slocation}`: '';
+            const uri = `/whses/${warehouseId}/inv/detail?itemType=1${itemCodeQuery}${sLocationQuery}&sortColumn=storageLocation`;
+
+           // /whses/15/inv/?itemType=1&pageSize=10000&pageOffset=1&itemCode=paperItem&vendorDescription=PaperAccount&sortColumn=itemCode&warehouseId=15
+            
+            const response = await this.Call({Url: uri, method: APIMethods.GET});
+
             if(response['status']==200){
 
                 const details = response['data'] as iInvAdjustmentDetailAPI[];
@@ -372,20 +380,21 @@ export class APIClass {
               
                     let invAdjustmentData: iInventoryAdjustmentAPI = 
                     {
-                        itemId: detail?.id!,
-                        qty: detail?.allocated! * -1,
+                        itemId: detail?.itemId!,
+                        qty: detail?.available! * -1,
                         status: 1,
                         storageId: detail?.storageId!,
                         lot: detail?.lotCode,
                         lpn: detail?.lpn,
                         sublot: detail?.sublotCode,
+                        unitGwt: detail?.lbs
                     };
 
-                    const invAdjusResponse = this.Call({Url: `/whses/${warehouseId}/inv/adjustment`, method: APIMethods.POST, data: invAdjustmentData})
+                    const invAdjusResponse = await this.Call({Url: `/whses/${warehouseId}/inv/adjustment`, method: APIMethods.POST, data: invAdjustmentData})
                     if(invAdjusResponse['status']==200){
 
                     }else{
-                        throw new Error(`was not able to adjust inventor : ${ItemId}`);
+                        throw new Error(`was not able to adjust inventory : ${itemCode}`);
                     }
 
                 }; 
@@ -399,7 +408,7 @@ export class APIClass {
 
     public getInventoryAdjustment = async(Scenario: scenario, warehouseId: number) : Promise<iInventoryAdjustmentAPI[]> => {
         
-        let inventoryAdjustment: InventoryAdjustmentsAPI | undefined= Scenario.inventoryAdjustment;
+        let inventoryAdjustment: InventoryAdjustmentsAPI | undefined = Scenario.inventoryAdjustment;
 
         let invAdjustResponse : iInventoryAdjustmentAPI[] = [];
       
@@ -407,31 +416,38 @@ export class APIClass {
             for await (const invA of inventoryAdjustment?.itemAdjustment) {
                 
                 //const itemUri = `/items?itemCode=${invA.itemCode}`;
-                const whId = inventoryAdjustment.warehouse?.id ?? (invA.warehouseId ?? warehouseId);
-                const item = (await this.searchItem(invA.itemCode!)); 
-                const sLocation = (await this.searchStorageLocation(invA.storageIdentifier, whId!)); 
-    
-                //if(invA.emptyInventory){
-                await this.cleanInventory(invA.itemId!, whId);
-                //}
-                
-                const invAdjLoaded : iInventoryAdjustmentAPI = {
-                    itemId: item?.id!,
-                    lot: invA.lot,
-                    lpn: invA.lpn,
-                    qty: invA.qty,
-                    status: invA.status,
-                    storageId: sLocation?.id!,
-                    sublot: invA.sublot,
-                    unitGwt: invA.gWeigth,
+                const whId = inventoryAdjustment.warehouse?.id ?? (invA.warehouseId ?? warehouseId) ?? (await this.searchWarehouse(inventoryAdjustment.warehouse?.description!))?.id;
+                const item = invA.itemCode ? (await this.searchItem(invA.itemCode)): undefined; 
+                const sLocation = invA.storageIdentifier ? (await this.searchStorageLocation(invA.storageIdentifier, whId!)) : undefined; 
+
+                if(invA.emptyInventory){
+                    await this.cleanInventory(
+                        item? item.itemCode: undefined, 
+                        sLocation ? sLocation.storageId : undefined , 
+                        whId
+                    );
                 }
-                const whsesUri = `/whses/${whId}/inv/adjustment`;
-                const invAdjsCall = await this.Call({Url: whsesUri, method: APIMethods.POST, data: invAdjLoaded});
-                if(invAdjsCall['status']){
-                    const invAdjResponse: iInventoryAdjustmentAPI = invAdjsCall['data'];
-                    invAdjustResponse.push( invAdjResponse );
-                }else{
-                    throw new Error(`Error: item ${item?.itemCode} not possible to do inventory adjustment in location ${sLocation?.description}`);
+                
+                if(sLocation && item && invA.qty && invA.qty > 0){
+                    const invAdjLoaded : iInventoryAdjustmentAPI = {
+                        itemId: item?.id!,
+                        lot: invA.lot,
+                        lpn: invA.lpn,
+                        qty: invA.qty,
+                        status: invA.status!,
+                        storageId: sLocation?.id!,
+                        sublot: invA.sublot,
+                        unitGwt: invA.gWeigth,
+                    }
+                    
+                    const whsesUri = `/whses/${whId}/inv/adjustment`;
+                    const invAdjsCall = await this.Call({Url: whsesUri, method: APIMethods.POST, data: invAdjLoaded});
+                    if(invAdjsCall['status']){
+                        const invAdjResponse: iInventoryAdjustmentAPI = invAdjsCall['data'];
+                        invAdjustResponse.push( invAdjResponse );
+                    }else{
+                        throw new Error(`Error: item ${item?.itemCode} not possible to do inventory adjustment in location ${sLocation?.description}`);
+                    }
                 }
             }
         }
@@ -462,6 +478,51 @@ export class APIClass {
         return seqResponse;
     }
 
+    /**
+     * Get list of Warehouses per User
+     */
+    public getRFWarehouses = async(): Promise<string[]>  => {
+        const uri = `/whses?enabled=1&sortColumn=description`;
+        const whsResponses = await this.Call({Url: uri, method: APIMethods.GET});
+        let whList: string[] = [];
+        
+        if(whsResponses['status']==200){
+            for await (const wh of whsResponses['data']) {
+                whList.push(wh['description']);
+            }
+        }
+        return whList;
+    }
+
+    /**
+     * Get list of databases per User
+     * @returns 
+     */
+    public getRFDatabases = async(): Promise<string[]>  => {
+        //const uri = `/whses?enabled=1&sortColumn=description`;
+        const whsResponses = await this.Call({Url: "", method: APIMethods.GET}, false);
+        let whList: string[] = [];
+        
+        if(whsResponses['status']==200){
+            for await (const wh of whsResponses['data']['object']['licenseDetail']['databases']) {
+                whList.push(wh['dbName']);
+            }
+        }
+        return whList;
+    }
+
+    public getRFReceivingOrderLists = async(warehouse: number): Promise<string[]>  => {
+        const uri = `/receivingorder?status=3&sortColumn=orderNumber&warehouseId=${warehouse}`;
+        const whsResponses = await this.Call({Url: uri, method: APIMethods.GET});
+        let whList: string[] = [];
+        
+        if(whsResponses['status']==200){
+            for await (const wh of whsResponses['data']) {
+                whList.push(wh['docNumber']);
+            }
+        }
+        return whList;
+    }
     /**
      * Update a given warehouse using API Call
      * @param warehouse: iWarehouseAPI Object
@@ -516,7 +577,7 @@ export class APIClass {
      * @param warehouse: string. Warehouse description or Idenifier 
      * @returns iWarehouseAPI Object or undefined if there is an error
      */
-    private searchWarehouse = async(warehouse: string, fullWarehouse: boolean=false) : Promise<iWarehouseAPI|undefined> =>{
+    public searchWarehouse = async(warehouse: string, fullWarehouse: boolean=false) : Promise<iWarehouseAPI|undefined> =>{
         const urlWHParams = `/whses?description=${warehouse}&enabled=1&enabled=0`;
         const result = await this.Call({Url: urlWHParams, method: APIMethods.GET});
         let existWarehouse : iWarehouseAPI | undefined = undefined;
@@ -543,7 +604,7 @@ export class APIClass {
      * @param businessPartner object 
      * @returns businessPartnerAPI object or undefined if there is an error
      */
-    private updateVendor = async (businessPartner: iBusinessPartnerAPI): Promise<iBusinessPartnerAPI|undefined> =>{
+    public updateVendor = async (businessPartner: iBusinessPartnerAPI): Promise<iBusinessPartnerAPI|undefined> =>{
         let account : iBusinessPartnerAPI|undefined = undefined;
         
         const bpResponse = await this.Call({Url:'/bps', method: APIMethods.PUT, data: businessPartner});
@@ -560,7 +621,7 @@ export class APIClass {
      * @param businessPartner: iBusinessPartnerAPI object with the expected fields
      * @returns iBusinessPartnerAPI object or undefined if there is an error
      */
-    private createVendor = async (businessPartner: iBusinessPartnerAPI): Promise<iBusinessPartnerAPI|undefined> =>{
+    public createVendor = async (businessPartner: iBusinessPartnerAPI): Promise<iBusinessPartnerAPI|undefined> =>{
         let account : iBusinessPartnerAPI|undefined = undefined;
 
         const bpResponse = await this.Call({Url:'/bps', method: APIMethods.POST, data: businessPartner});
@@ -577,7 +638,7 @@ export class APIClass {
      * @param accountId : Vendor ID
      * @returns : iBusinessPartnerAPI object
      */
-    private searchFullVendor = async(accountId: number) : Promise<iBusinessPartnerAPI|undefined> =>{
+    public searchFullVendor = async(accountId: number) : Promise<iBusinessPartnerAPI|undefined> =>{
         let fullVendor : iBusinessPartnerAPI | undefined = undefined;
 
         let fullVendorResponse = await this.Call({Url: `/bps/${accountId}`, method: APIMethods.GET});
@@ -593,7 +654,7 @@ export class APIClass {
      * @param account: string. Account Description or accountId
      * @returns iBusinessPartnerAPI object or undefined if there is an error
      */
-    private searchVendor = async(account: string, fullData: boolean = true) : Promise<iBusinessPartnerAPI|undefined> => {
+    public searchVendor = async(account: string, fullData: boolean = true) : Promise<iBusinessPartnerAPI|undefined> => {
         const urlWParams = `/bps?type=1&pageOffset=10&description=${account}&enabled=1&enabled=0&sortColumn:description`;
         const result = await this.Call({Url: urlWParams, method: APIMethods.GET});
         let vendor: iBusinessPartnerAPI | undefined = undefined;
@@ -619,7 +680,7 @@ export class APIClass {
      * @param ItemCode:(string)=> ItemCode
      * @returns ItemAPI object or undefined if there is an error
      */
-    private searchItem = async(itemCode: string, fullItem?: boolean) : Promise<iItemAPI | undefined> => {
+    public searchItem = async(itemCode: string, fullItem?: boolean) : Promise<iItemAPI | undefined> => {
         
         const itemUri = `/items?enabled=1&enabled=0&type=1&pageSize=10000&pageOffset=1&itemCode=${itemCode}&sortColumn=itemCode`;
         const result = await this.Call({Url: itemUri, method: APIMethods.GET});
@@ -645,7 +706,7 @@ export class APIClass {
         return existItem as iItemAPI;
     }
 
-    private searchFullItem = async(itemID: number) : Promise<iItemAPI|undefined> => {
+    public searchFullItem = async(itemID: number) : Promise<iItemAPI|undefined> => {
         let fullItem : iItemAPI | undefined = undefined;
 
         let fullItemResponse = await this.Call({Url: `/items/${itemID}`, method: APIMethods.GET});
@@ -662,7 +723,7 @@ export class APIClass {
      * @param item:(iItem) object
      * @returns iItemAPI object or undefined if there is an error
      */
-    private updateItem = async(item: iItemAPI): Promise<iItemAPI|undefined> => {
+    public updateItem = async(item: iItemAPI): Promise<iItemAPI|undefined> => {
         let iItem : iItemAPI|undefined = undefined;
 
         const iResponse = await this.Call({Url:'/items', method: APIMethods.PUT, data: item});
@@ -680,7 +741,7 @@ export class APIClass {
      * @param item:(iItem) object
      * @returns iItemAPI object or undefined if there is an error
      */
-    private createItem = async(item: iItemAPI): Promise<iItemAPI|undefined> => {
+    public createItem = async(item: iItemAPI): Promise<iItemAPI|undefined> => {
         let itemval : iItemAPI|undefined = undefined;
         const iResponse = await this.Call({Url:'/items', method: APIMethods.POST, data: item});
         if(iResponse['status']==200){
@@ -696,7 +757,7 @@ export class APIClass {
      * @param storageIdentifier:(string). Storage Location Identifier
      * @returns iStorageLocationAPI object or undefined if there is an error
      */
-    private searchStorageLocation = async(storageIdentifier: string, warehouseId: number): Promise <iStorageLocationAPI | undefined> => {
+    public searchStorageLocation = async(storageIdentifier: string, warehouseId: number): Promise <iStorageLocationAPI | undefined> => {
         const storageUri = `/storage?pageSize=10&enabled=1&enabled=0&storageId=${storageIdentifier}&sortColumn=storageId&warehouseId=${warehouseId}`;
         const result = await this.Call({Url: storageUri, method : APIMethods.GET});
         let slocation : iStorageLocationAPI|undefined = undefined;
@@ -727,7 +788,7 @@ export class APIClass {
      * @param storageLocation:(iStorageLocationAPI) object
      * @returns iStorageLocationAPI object or undefined if there is an error
      */
-    private updateStorageLocation = async(storageLocation: iStorageLocationAPI): Promise<iStorageLocationAPI|undefined> => {
+    public updateStorageLocation = async(storageLocation: iStorageLocationAPI): Promise<iStorageLocationAPI|undefined> => {
         let account : iStorageLocationAPI|undefined = undefined;
         const slResponse = await this.Call({Url:'/storage', method: APIMethods.PUT, data: storageLocation});
         if(slResponse['status']==200){
@@ -743,7 +804,7 @@ export class APIClass {
      * @param storageLocation:iStorageLocationAPI object
      * @returns iStorageLocationAPI object or undefined if there is an error
      */
-    private createStorageLocation = async(storageLocation: iStorageLocationAPI): Promise<iStorageLocationAPI|undefined> => {
+    public createStorageLocation = async(storageLocation: iStorageLocationAPI): Promise<iStorageLocationAPI|undefined> => {
         let storateResponse : iStorageLocationAPI|undefined = undefined;
 
         const slResponse = await this.Call({Url:'/storage', method: APIMethods.POST, data: storageLocation});
@@ -760,7 +821,7 @@ export class APIClass {
      * Get the list of sequences
      * @returns sequences array
      */
-    private listSequences = async(): Promise<iSequenceAPI[]> => {
+    public listSequences = async(): Promise<iSequenceAPI[]> => {
         let sequences : iSequenceAPI[] = [];
 
         const seqResponse = await this.Call({Url: '/sequence', method: APIMethods.GET});
@@ -776,7 +837,7 @@ export class APIClass {
      * Create a sequences using API endpoint
      * @returns sequence object
      */
-    private createSequence = async(seq: iSequenceAPI): Promise<iSequenceAPI> =>{
+    public createSequence = async(seq: iSequenceAPI): Promise<iSequenceAPI> =>{
         let sequence : iSequenceAPI = {};
 
         const seqResponse = await this.Call({Url: '/sequence', method: APIMethods.GET});

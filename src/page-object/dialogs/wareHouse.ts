@@ -5,7 +5,7 @@ import { Combobox } from '../../basic-objects/combobox';
 import { BaseDialog } from './baseDialog';
 
 
-export class Warehouse extends BaseDialog {
+export class warehouse extends BaseDialog {
 
     public selectWarehouse: Combobox;
     public OK: Button;

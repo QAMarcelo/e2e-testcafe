@@ -74,7 +74,7 @@ export const UserData =
             port : "8443", 
             license : "0000000008",
             url :"https://trial.wdgcorp.com",
-            authorization : "Basic YWRtaW5xYTEtdHJpYWxAd2RnY29ycC5jb206MTIz",
+            authorization : "Basic YXV0b3FhMS10cmlhbEB3ZGdjb3JwLmNvbToxMjM=",
             type : CredentialType.UI,
             language : CredentialLanguage.English
         },
@@ -87,7 +87,8 @@ export const UserData =
             port : "5023", 
             license : "0000000008",
             url : "trial.rf.wdgcorp.com",
-            authorization : "Basic YWRtaW5yZjEtdHJpYWxAd2RnY29ycC5jb206MTIz",
+            authorization : "Basic YXV0b3JmMS10cmlhbEB3ZGdjb3JwLmNvbToxMjM=",
+            language : CredentialLanguage.English
         }, 
         API : {
             user : "autoapi1-trial@wdgcorp.com",
@@ -98,7 +99,7 @@ export const UserData =
             port : "8443", 
             license : "0000000008",
             url : "https://trial.wdgcorp.com",
-            authorization : "Basic YWRtaW5hcGkxLXRyaWFsQHdkZ2NvcnAuY29tOjEyMw==",
+            authorization : "Basic YXV0b2FwaTEtdHJpYWxAd2RnY29ycC5jb206MTIz",
             type : CredentialType.API,
             language : CredentialLanguage.English,
         }

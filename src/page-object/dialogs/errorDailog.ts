@@ -5,7 +5,7 @@ import { BaseDialog } from './baseDialog';
 
 
 
-export class ErrorDialog extends BaseDialog {
+export class errorDialog extends BaseDialog {
 
     public OK: Button;
     constructor() {

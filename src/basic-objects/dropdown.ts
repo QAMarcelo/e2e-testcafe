@@ -9,16 +9,16 @@ export class Dropdown extends BaseObject{
     }
 
     public async SelectByText(text: string): Promise<void>{
-        this.Click();
+        await t.click(this._container);
         await t.click(XPathSelector(`//kendo-list //*[text()="${text}"]`))
     }
 
     public async SelectByIndex(index: number): Promise<void>{
-        this.Click();
+        await this.Click();
         await t.click(`kendo-list li:nth-child(${index})`);
     }
 
     public async Click(): Promise<void> { 
-        await t.click(this._container)
+        await t.click(this._container);
     }
 }

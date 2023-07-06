@@ -1,7 +1,8 @@
 import { t } from 'testcafe';
 import { Telnet } from "telnet-client";
 import {Socket} from 'net';
-import { RF } from '../DVU';
+import { API, RF } from '../DVU';
+import { InitAPI } from './initializer';
 
 export interface Params{
 	host: string,
@@ -11,30 +12,30 @@ export interface Params{
 	timeout?: number
 }
 
-export interface LoginParams{
-	language: string,
-	email: string,
-	password: string,
-	database: string,
-	warehouse: string
-}
+// export interface LoginParams{
+// 	language: string,
+// 	email: string,
+// 	password: string,
+// 	database: string,
+// 	warehouse: string
+// }
 
 
 
 export class NJTelnet {
 	public conn: Telnet;
 
-	private LoginParams: LoginParams;
+	// private LoginParams: LoginParams;
 	private Params: Params;
 	constructor(){
 		
-		this.LoginParams = {
-			language: RF.language!,
-			email: RF.user,
-			password: RF.password,
-			database: RF.database!,
-			warehouse: RF.warehouse!
-		}
+		// this.LoginParams = {
+		// 	language: RF.language!,
+		// 	email: RF.user,
+		// 	password: RF.password,
+		// 	database: RF.database!,
+		// 	warehouse: RF.warehouse!
+		// }
 
 		this.Params = {
 			host: RF.url,
@@ -44,9 +45,9 @@ export class NJTelnet {
 		}
 	}
 
-	public setLoginParams(loginParams: LoginParams){
-		this.LoginParams = loginParams;
-	}
+	// public setLoginParams(loginParams: LoginParams){
+	// 	this.LoginParams = loginParams;
+	// }
 
 	public async Connect() {
 
@@ -72,18 +73,12 @@ export class NJTelnet {
 	  
 	public async Login():Promise<void>{
 		
-		await this.Send(this.LoginParams.language); //language
-		await this.Send(this.LoginParams.email); //email
-		await this.Send(this.LoginParams.password); //password
-		if(this.LoginParams.database!=undefined && this.LoginParams.database!=null)
-			await this.Send(this.LoginParams.database); //database
-		if(this.LoginParams.warehouse != undefined && this.LoginParams.warehouse!=null)
-			await this.Send(this.LoginParams.warehouse); //warehouse
-	
-		// await this.Send("1");
-        // await this.Send("autorf1-fellowship@wdgcorp.com");
-        // await this.Send("123"); //password
-        // await this.Send("11"); //database
+		// await this.Connect();
+        await this.Send(RF.language);
+        await this.Send(RF.user);
+        await this.Send(RF.password);
+        await this.SelectDatabase(RF.database);
+        await this.SelectWarehouse(RF.warehouse);
 	}
 
 	public async Exec(text: string): Promise<void> {
@@ -127,4 +122,35 @@ export class NJTelnet {
 	public async End(): Promise<void> {{
 		await this.conn.end();
 	}}
+
+	public async SelectWarehouse(warehouse: string): Promise<void> {
+		const APICall = InitAPI();
+		const list = await APICall.getRFWarehouses();
+		const index = list.indexOf(warehouse) +1;
+		// return index>=0? index +1 : index; 
+		if(index>0){
+			await this.Send(index.toString());
+		}
+	}
+
+	public async SelectDatabase(database: string): Promise<void>{
+		const APICall = InitAPI((`${API.url}:${API.port}/${API.version}/preauth/validate/${RF.user}`));
+		const list = await APICall.getRFDatabases();
+		const index = list.indexOf(database)+1;
+		if(index>0){
+			await this.Send(index.toString());
+		}
+		// return index>=0? index +1 : index;
+	}
+
+	public async SelectReceivingOrder(orderNumber: string, wahehouse: string): Promise<void> {
+		const APICall = InitAPI();
+		const wh = await APICall.searchWarehouse(wahehouse);
+		const list = await APICall.getRFReceivingOrderLists(wh?.id!);
+		const index = list.indexOf(orderNumber) +1;
+		// return index>=0? index +1 : index; 
+		if(index>0){
+			await this.Send(index.toString());
+		}
+	}
 }

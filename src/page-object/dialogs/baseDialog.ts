@@ -11,8 +11,8 @@ export abstract class BaseDialog {
     constructor(selector: Selector){
         this._container = selector;
         this.CloseDialog = new Button(this._container.find('.k-dialog-close'));
-        this.Save = new Button(this._container.find('div.save button:not(.mat-menu-trigger)'));
         
+        this.Save = new Button(this._container.find('div.save button:not(.mat-menu-trigger)'));
     }
 
     public async getTitle() {
@@ -20,6 +20,10 @@ export abstract class BaseDialog {
 
     }
     public async Exists(): Promise<boolean> {
+        return await this._container.exists;
+    }
+
+    public async NotExists(): Promise<boolean> {
         return await this._container.exists;
     }
     

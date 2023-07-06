@@ -20,8 +20,8 @@ import { WarehouseAPI } from "../warehouses"
     emptyInventory?: boolean;
     itemCode?: string,
     itemId?: number,
-    status: InventoryAdjustment_Status,
-    qty: number,
+    status?: InventoryAdjustment_Status,
+    qty?: number,
     storageIdentifier: string,
     lpn?: string,
     lot?: string,

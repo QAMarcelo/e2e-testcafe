@@ -8,10 +8,11 @@ import { ItemAPI } from "../api-folder/itemSKUS";
 import { API, SetAPICredentials, SetRFCredentials, SetUICredentials, DVU, WEB } from "../DVU";
 import { APIClass  } from "../api-folder/APIClass";
 import { WarehouseAPI } from "../api-folder/warehouses/warehousesAPI";
-import { iUserCredentials } from "./helpers";
+import { CredentialLanguage, iUserCredentials } from "./helpers";
 import { SequenceAPI } from "../api-folder/Sequences/SequenceAPI";
 import { UserAPI } from "../api-folder/users/userAPI";
 import { UserGroupAPI } from "../api-folder/userGroup";
+//import { SelectDatabaseByText, SelectWarehouseByText } from "./telnet";
 
 export interface iCredentials{
     user: string, 
@@ -23,7 +24,7 @@ export interface iCredentials{
     license: string,
     port: string,
     authorization: string,
-    language: string,
+    language: CredentialLanguage,
     type: string,
 }
 
@@ -56,17 +57,14 @@ export interface scenario {
     /**
      * @example warehouse: {description: 'warehouseX', mode: WarehouseMode.barcodeScanning},
      */
-    warehouse: WarehouseAPI,
-    businessPartners : BusinessPartnerAPI[],
+    warehouse?: WarehouseAPI,
+    businessPartners? : BusinessPartnerAPI[],
     storageLocations? : StorageLocationsAPI,
     items?: ItemAPI[],
     inventoryAdjustment?: InventoryAdjustmentsAPI,
-    
     sequences?: SequenceAPI[],
     users?: UserAPI[],
     userGroups?: UserGroupAPI[],
-
-    
 }
 
 class Initializer {
@@ -80,21 +78,21 @@ class Initializer {
     //load the url from args or the pipeline variable
     private async loadURL(args: initArgs): Promise<void>{
        
-       
-        if(args.Headless!=undefined && args.Headless==true ){
-            await t.navigateTo(WEB?.url);
-        }
-
-        if(!args.Headless || !args.Headless ){ // authenticate without going throught the login page by injecting cookies
-            //TODO
-        }else{ //authenticate going throught the login page
+        await t.navigateTo(WEB?.url);
+        // if(args.Headless!=undefined && args.Headless==true ){
             
-            //Localhost is displaying an error, adding if statement to handle it
-            //one that the local environment works like qa then this statement should be removed
-            if (await DVU.Dialogs.Error.IsVisible()){
-                await DVU.Dialogs.Error.OK.Click();
-            }
-        }
+        // }
+
+        // if(!args.Headless || !args.Headless ){ // authenticate without going throught the login page by injecting cookies
+        //     //TODO
+        // }else{ //authenticate going throught the login page
+            
+        //     //Localhost is displaying an error, adding if statement to handle it
+        //     //one that the local environment works like qa then this statement should be removed
+        //     if (await DVU.Dialogs.Error.IsVisible()){
+        //         await DVU.Dialogs.Error.OK.Click();
+        //     }
+        // }
     }
 
     private async Login(args: initArgs): Promise<void>{
@@ -108,46 +106,52 @@ class Initializer {
         SetRFCredentials(credentialGroup, args?.Credentials?.RF);
         SetAPICredentials(credentialGroup, args?.Credentials?.API);
 
+       
+        // const aux = await SelectDatabaseByText('bstevens');
+        // const warehouse = await SelectWarehouseByText('Automation');
+
         if(args?.Scenario){
-            
-            const APICall = this.InitAPI();
+            const APICall = InitAPI();
 
             const whResp = await APICall.getWarehouse(args.Scenario);
-            if(!whResp) throw new Error(`Error: the warehouse ${args.Scenario.warehouse.description} was not correcly udpated/saved`);
+            if(!whResp) throw new Error(`Error: the warehouse ${args.Scenario?.warehouse?.description} was not correcly udpated/saved`);
 
             const bpResp = await APICall.getVendors(args.Scenario);
-            if(bpResp.length != args.Scenario.businessPartners.length) throw new Error(`Error: not all the accounts were created/updated`);
+            if(args.Scenario.businessPartners && bpResp.length != args.Scenario.businessPartners.length) throw new Error(`Error: not all the accounts were created/updated`);
 
             const sLocationResponse = await APICall.getStorageLocations(args.Scenario, whResp.id!);
-            if(sLocationResponse.length != args.Scenario.storageLocations?.Locations.length) throw new Error(`Error: not all the Storage Locations were created/updated`);
+            if(args.Scenario.storageLocations && sLocationResponse.length != args.Scenario.storageLocations?.Locations?.length) throw new Error(`Error: not all the Storage Locations were created/updated`);
 
             const itemsResponse =  await APICall.getItems(args.Scenario); 
-            if(itemsResponse.length != args.Scenario.items?.length) throw new Error(`Error: not all the items were created/updated`);
+            if(args.Scenario.items && itemsResponse.length != args.Scenario.items?.length) throw new Error(`Error: not all the items were created/updated`);
 
             const invAdjResponse = await APICall.getInventoryAdjustment(args.Scenario, whResp?.id!);
-            if(invAdjResponse.length != args.Scenario.inventoryAdjustment?.itemAdjustment?.length) throw new Error(`Error: not all the inventory adjustment were created/updated`);
+            if(!invAdjResponse) throw new Error(`Error: not all the inventory adjustment were created/updated`);
 
             const seqResponse = await APICall.getSequences(args.Scenario);
-            if(seqResponse.length != args.Scenario.sequences?.length) throw new Error(`Error: not all the sequences were saved`);
+            if(args.Scenario.sequences && seqResponse.length != args.Scenario.sequences?.length) throw new Error(`Error: not all the sequences were saved`);
         }
+
+        
     }
 
-    private InitAPI = (): APIClass => {
+    //private InitAPI 
+}
+export const InitAPI = (url: string|undefined = undefined, headers:{}|undefined = undefined): APIClass => {
 
-        const call = new APIClass( );
-        call.setBaseURL(`${API.url}:${API.port}/${API.version}/${API.license}/${API.database}`);
-        call.setHeaders({
-            'Authorization': API.authorization,
-            'Content-Type': 'application/json'
-        })
-            // `${API.url}:${API.port}/${API.version}/${API.license}/${API.database}`,
-            // {
-            //     'Authorization': API.authorization,
-            //     'Content-Type': 'application/json'
-            // }
-        //);
-        return call;
-    }
+    const call = new APIClass( );
+    call.setBaseURL(url?? (`${API.url}:${API.port}/${API.version}/${API.license}/${API.database}`));
+    call.setHeaders(headers?? {
+        'Authorization': API.authorization,
+        'Content-Type': 'application/json'
+    })
+        // `${API.url}:${API.port}/${API.version}/${API.license}/${API.database}`,
+        // {
+        //     'Authorization': API.authorization,
+        //     'Content-Type': 'application/json'
+        // }
+    //);
+    return call;
 }
 
 export let Init = new Initializer();
