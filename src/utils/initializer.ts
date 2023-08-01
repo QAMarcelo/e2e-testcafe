@@ -5,13 +5,14 @@ import { BusinessPartnerAPI } from '../api-folder/businessPartners';
 import { StorageLocationsAPI } from "../api-folder/storageLocations";
 import { InventoryAdjustmentsAPI } from '../api-folder/inventory';
 import { ItemAPI } from "../api-folder/itemSKUS";
-import { API, SetAPICredentials, SetRFCredentials, SetUICredentials, DVU, WEB } from "../DVU";
+import { API, SetAPICredentials, SetRFCredentials, SetUICredentials, DVU, WEB, RF } from "../DVU";
 import { APIClass  } from "../api-folder/APIClass";
 import { WarehouseAPI } from "../api-folder/warehouses/warehousesAPI";
 import { CredentialLanguage, iUserCredentials } from "./helpers";
 import { SequenceAPI } from "../api-folder/Sequences/SequenceAPI";
 import { UserAPI } from "../api-folder/users/userAPI";
 import { UserGroupAPI } from "../api-folder/userGroup";
+import { warehouse } from "../page-object";
 //import { SelectDatabaseByText, SelectWarehouseByText } from "./telnet";
 
 export interface iCredentials{
@@ -105,8 +106,11 @@ class Initializer {
         SetUICredentials(credentialGroup, args?.Credentials?.UI);
         SetRFCredentials(credentialGroup, args?.Credentials?.RF);
         SetAPICredentials(credentialGroup, args?.Credentials?.API);
+        
+        RF.warehouse = args?.Scenario?.warehouse?.description ?? RF.warehouse;
+        API.warehouse = args?.Scenario?.warehouse?.description ?? API.warehouse;
+        WEB.warehouse = args?.Scenario?.warehouse?.description ?? WEB.warehouse;
 
-       
         // const aux = await SelectDatabaseByText('bstevens');
         // const warehouse = await SelectWarehouseByText('Automation');
 

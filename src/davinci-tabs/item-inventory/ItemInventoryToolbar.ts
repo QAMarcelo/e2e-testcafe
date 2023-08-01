@@ -2,7 +2,7 @@
 import { Button, MenuButton } from "../../basic-objects";
 import { Toolbar } from "../../page-object";
 
-export class ItemInventory_Toolbar extends Toolbar {
+export class ItemInventoryToolbar extends Toolbar {
 
     public View : MenuButton;
     public Refresh: Button;

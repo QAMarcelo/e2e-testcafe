@@ -22,7 +22,7 @@ import { WarehouseAPI } from "../warehouses"
     itemId?: number,
     status?: InventoryAdjustment_Status,
     qty?: number,
-    storageIdentifier: string,
+    storageIdentifier?: string,
     lpn?: string,
     lot?: string,
     sublot?: string,

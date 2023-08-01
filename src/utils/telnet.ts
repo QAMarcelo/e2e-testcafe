@@ -24,11 +24,12 @@ export interface Params{
 
 export class NJTelnet {
 	public conn: Telnet;
+	private ShowConsole : Boolean;
 
 	// private LoginParams: LoginParams;
 	private Params: Params;
-	constructor(){
-		
+	constructor(showConsole: Boolean = false){
+		this.ShowConsole = showConsole;
 		// this.LoginParams = {
 		// 	language: RF.language!,
 		// 	email: RF.user,
@@ -68,7 +69,7 @@ export class NJTelnet {
 		  // handle the throw (timeout)
 		}
 
-		return this;
+		//return this;
 	  }
 	  
 	public async Login():Promise<void>{
@@ -98,25 +99,25 @@ export class NJTelnet {
 		}
 	}
 
-	public async Write(data: string): Promise<void> {
-		
-		await this.conn.write(data, {timeout: 2000 }, (err, value)=>{
-			setTimeout(() => { }, 2000);
+	public async Write(data: string, text: string|undefined = undefined): Promise<void> {
+		await t.wait(500);
+		await this.conn.write(data, { }, async (err, value)=>{
+			
 			console.log(value);
-			console.log("**********************");
-		})
-
-		
-	}
-
-	public async Send(data: string): Promise<void> {
-		
-		await this.conn.send(data, {ors: '\n', timeout: 2000 }, (err, value)=>{
-			setTimeout(() => { }, 2000);
-			console.log(value);
+			// await t.wait(500);
+			
 		})
 		console.log("**********************");
-		
+	}
+
+	public async Send(data: string, waitForText: string|undefined = undefined): Promise<void> {
+		let options = (waitForText)? { waitFor: waitForText } : {};
+		await this.conn.send(data, options, async (err, value)=>{
+			console.log(value);
+			// await t.wait(500);
+		});
+		console.log("**********************");
+		await t.wait(500);
 	}
 
 	public async End(): Promise<void> {{

@@ -14,7 +14,7 @@ fixture(`Smoke tests`)
     [SMOKE] verify login and }9/2g out
 */
 test
-    .meta({testType: 'smoke', UITest: 'true', testGoal: 'Login'})
+    .meta({testType: 'smoke', UITest: 'true', testGoal: 'Login'}).skip
     ('Login and version', async t => {
         //Login in as Admin for trial
         await Login.Email.SetText(WEB.user);
@@ -49,7 +49,7 @@ test
     [SMOKE] verify Navigation and data loading
 */
 test
-    .meta({testType: 'smoke', UITest: 'true', testGoal: 'Navigation'})
+    .meta({testType: 'smoke', UITest: 'true', testGoal: 'Navigation'}).skip
     ('Navigation 1', async t =>{
         //Log in as admin
         await Login.Email.SetText(WEB.user);

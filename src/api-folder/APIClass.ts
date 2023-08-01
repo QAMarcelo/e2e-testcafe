@@ -330,7 +330,6 @@ export class APIClass {
 
         if(scenario.items){
             for await (const item of scenario.items) {
-                
                 const existItem = await this.searchItem(item.ItemCode, true) as iItemAPI; 
                 //const itemToCompare =  await this.updateItem(existItem) ;
                 let itemResponse: iItemAPI | undefined = undefined
@@ -847,5 +846,34 @@ export class APIClass {
             throw new Error(`Error: not able to create a sequence, error : ${seqResponse['status']}`);
         }
         return sequence;
+    }
+
+    public getItemDetail = async(
+        whs: string, 
+        item: string|undefined = undefined, 
+        lCode: string| undefined= undefined, 
+        slCode : string | undefined=undefined,
+        vendor: string | undefined=undefined,
+        sku: string | undefined = undefined
+    )=> {
+
+        const itemCode = `itemCode=${item}`;
+        const vendorDescription = vendor? `&vendorDescription=${vendor}` : '';
+        const lotCode = lCode? `&lotCode=${lCode}`:'';
+        const sublotCode = slCode? `&sublotCode=${slCode}` : '';
+        const SKU = sku? `&sku=${sku}`: '';
+
+        const whsId = (await this.searchWarehouse(whs))?.id;
+        const uri = `/whses/${whsId}/inv/items/?${itemCode}${vendorDescription}${lotCode}${sublotCode}${SKU}`;
+        const whsResponses = await this.Call({Url: uri, method: APIMethods.GET});
+        let whList: string[] = [];
+        
+        let result = {};
+        if(whsResponses['status']==200){
+
+            if((whsResponses['data']).length > 0)
+            result = whsResponses['data'][0];
+        }
+        return result;
     }
 }

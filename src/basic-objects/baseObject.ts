@@ -20,4 +20,6 @@ export abstract class BaseObject {
     public async IsEnable(): Promise<boolean> {
         return false;
     }
+
+ 
 }

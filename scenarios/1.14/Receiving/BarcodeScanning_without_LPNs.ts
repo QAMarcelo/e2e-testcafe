@@ -1,41 +1,53 @@
+
 /*************** IMPORTS ***************/
+import { GeneralProperties_AllocationMode } from "../../../src/api-folder/businessPartners";
 import { Item_UOMType } from "../../../src/api-folder/itemSKUS";
 import { scenario } from "../../../src/utils";
 
-
 /*************** CONSTANS & VARIABLES ***************/
-const warehouse =  `PaperBase`;
-const itemCode = `PaperItem`;
-const account = 'PaperAccount';
-const storage1 = `PaperLocation`;
+const warehouse =  `Barcode Scanning`;
+const itemCode = `T-Shirt`;
+const account = `Automatic Allocation`;
+const storage1 = `Generic1`;
 
 /*************** SCENARIO DEFINITION ***************/
-export const Paper_based_without_LPNs: scenario = {
+export const BarcodeScanning_without_LPNs: scenario = {
     CredentialGroup: 'TRIAL',
     warehouse: {
-        description: warehouse,
-        //mode: WarehouseMode.paper,
+        description: warehouse
     },
+    
     businessPartners: [
-        {
+        { // 1st Business Partner
+            Vendor: account,
             Description: account,
             Attributes: {
+                General_Properties: {
+                    allocation_mode: GeneralProperties_AllocationMode.Automatic,
+                },
                 Receiving: {
                     LPNs: false,
+                    Barcode_Scanning: true,
                 },
+                Shipping: {
+                    Barcode_Scanning: true,
+                },
+                Inventory: {
+                    Track_lot_codes: true,
+                    Track_Sub_lot_Codes: true
+                }
             },
         }
     ],
     storageLocations: {
-        
-        Locations: [
-            {
+        Locations:[
+            { // 1st Location
                 Description: storage1,
-                Length: 100,
-                Width: 100,
-                Height: 100,
-                MaxWeight: 100,
-                MaxLPN: 1,
+                Height: 99999,
+                Length: 99999,
+                MaxLPN: 99999,
+                MaxWeight: 999999,
+                Width: 99999,
                 LocationType: {
                     Bulk_Storage_Putaway: true,
                     Pick_Allocation: true,
@@ -47,12 +59,11 @@ export const Paper_based_without_LPNs: scenario = {
                     Shipping_Stage: true,
                 },
                 Enabled: true,
-
             }
         ]
     },
     items: [
-        {
+        { // 1st Item
             ItemCode: itemCode,
             UOM_type: Item_UOMType.Each,
             Vendor: account,
@@ -65,18 +76,18 @@ export const Paper_based_without_LPNs: scenario = {
                 Pallet_Tie: 4,
                 Pallet_High: 5
             }
-        }
+        },
     ],
     inventoryAdjustment: {
-        itemAdjustment: [
-            {
-                itemCode: itemCode,
-                emptyInventory: true,
-            }
-        ],
         warehouse: {
             description: warehouse,
             //mode: WarehouseMode.paper,
         },
-    }
+        itemAdjustment: [
+            {
+                itemCode: itemCode,
+                //emptyInventory: true
+            }
+        ]
+    },
 }

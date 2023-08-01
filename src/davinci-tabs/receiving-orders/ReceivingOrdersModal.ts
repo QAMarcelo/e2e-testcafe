@@ -4,6 +4,7 @@ import { BaseObject } from "../../basic-objects/baseObject";
 import { ComboboxWithToolbar } from "../../basic-objects/comboboxWithToolbar";
 import { NumberBox } from "../../basic-objects/numberBox";
 import { BaseDialog } from "../../page-object/dialogs/baseDialog";
+import { ConfirmDialog } from "./confirmDialog";
 
 
 export class ReceivingOrdersModal extends BaseDialog{
@@ -20,6 +21,8 @@ export class ReceivingOrdersModal extends BaseDialog{
 
     public LineEntries: LineEntries;
 
+    public ConfirmDialog: ConfirmDialog;
+
     constructor(selector: Selector){
         super(selector.find('kendo-dialog.largeDialogBox'));
 
@@ -32,6 +35,8 @@ export class ReceivingOrdersModal extends BaseDialog{
         this.Supplier = new ComboboxWithToolbar(this._container.find('span').withText('Supplier').nextSibling('span.searchAndSearchButton'));
         this.ReceivedFrom = new ComboboxWithToolbar(this._container.find('span').withText('Received From').nextSibling('span.searchAndSearchButton'));
         this.OrderNumber = new TextBox(this._container.find('span').withText('Order Number').sibling('input'));
+
+        this.ConfirmDialog = new ConfirmDialog(Selector('.smallDialogBox:not([hidden])'));
     }
 }
 
@@ -103,6 +108,8 @@ export class GeneralPanel extends BaseDialog{
     public Insert: Button;
     public Location : ComboboxWriteAndSearch;
 
+    public LotCode : TextBox;
+    public SublotCode: TextBox;
 
     constructor(selector: Selector){
         super(selector);
@@ -111,6 +118,9 @@ export class GeneralPanel extends BaseDialog{
         this.QtyReceived = new NumberBox(this._container.find('span').withText('Qty Received').nextSibling('kendo-numerictextbox'));
         this.Location = new ComboboxWriteAndSearch(this._container.find('location-combobox'));
         this.Insert = new Button(this._container.find('.save button').withExactText('Insert'));
+
+        this.LotCode = new TextBox(this._container.find('span').withExactText('Lot Code').nextSibling('input'));
+        this.SublotCode = new TextBox(this._container.find('span').withExactText('Sublot Code').nextSibling('input'));
     }
 
     public async Expand(): Promise<void>{

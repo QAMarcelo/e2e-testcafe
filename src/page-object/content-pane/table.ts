@@ -24,7 +24,6 @@ export class Table extends BaseSelector {
         if(query.length>0){
             query = query.substring(0, query.length-4);
             query = "//div[contains(@class, 'k-state-active')] //tr[ " + query + "]";
-            console.log(query);
             await t.click(XPathSelector(query));
         }
     }
@@ -46,10 +45,11 @@ export class Table extends BaseSelector {
         return await this._container.find(findSelector).innerText;
     }
 
-    public async existRowByQuery(...tableQuery : TableQuery[]){
+    public async existRowByQuery(...tableQuery : TableQuery[]): Promise<Boolean>{
         var query = "";
         let exist = false;
         for await (const e of tableQuery) {
+            //var ariacolindex = await Selector('.k-column-title').withText(e.rowTitle).parent('[role="columnheader"]').getAttribute('aria-colindex');
             var ariacolindex = await XPathSelector(`//*[@role='columnheader'][.//span[text()='${e.rowTitle}']]`).getAttribute('aria-colindex');
             query += `.//td[@aria-colindex='${ariacolindex}'][text()='${e.rowValue}'] and `;
         }
@@ -60,10 +60,12 @@ export class Table extends BaseSelector {
             console.log(query);
             exist = await XPathSelector(query).exists;
         }
-
+        
         return exist;
     }
 
-    
+    public async getCellValue(...tableQuery: TableQuery[]): Promise<string> {
+        return '';
+    }
 
 }

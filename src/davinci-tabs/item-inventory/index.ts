@@ -1,1 +1,1 @@
-export {itemInventory} from './itemInventory'
+export {itemInventory} from './ItemInventory'

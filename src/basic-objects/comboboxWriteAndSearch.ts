@@ -16,6 +16,11 @@ export class ComboboxWriteAndSearch extends BaseObject{
 
 
     public async Search(text: string): Promise<void>{
+        const clear = this._container.find('.k-clear-value');
+        if(await clear.exists ){
+            await t.click(clear);
+        }
+
         await t.typeText(this._container.find( 'kendo-searchbar input'), text);
         await t.click(Selector('.k-popup .k-list-ul li').withText(text));
     }

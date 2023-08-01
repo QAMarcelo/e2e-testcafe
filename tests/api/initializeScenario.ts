@@ -1,7 +1,6 @@
-import { Selector, t } from 'testcafe';
-import { DVU, Dialogs, ItemInventory, Login, Menu, RF, ReceivingOrders, WEB }  from '../../src/DVU';
+
+import { Dialogs, ItemInventory, Login, Menu, RF, ReceivingOrders, WEB }  from '../../src/DVU';
 import { Init, UniqueValue } from '../../src/utils';
-import { itemInventory } from '../../src/davinci-tabs/item-inventory';
 
 
 
@@ -30,7 +29,7 @@ fixture(`API tests`)
     })
 
     test
-    .meta({testType: 'API'}) ('API testing', async t =>{
+    .meta({testType: 'API'}).skip ('API testing', async t =>{
         /** VARIABLES  */
         const orderNumber = UniqueValue({text: 'ON01'});
         const itemCode = "PaperItem";

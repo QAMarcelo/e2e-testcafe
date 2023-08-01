@@ -9,6 +9,6 @@ export class TextBox extends BaseObject{
    }
     
    public async SetText(text: string): Promise<void>{
-      await t.typeText(this._container, text)
+      await t.typeText(this._container, text, {replace: true})
    }
 }

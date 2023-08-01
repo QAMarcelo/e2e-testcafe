@@ -7,14 +7,18 @@ import { receivingOrders } from './davinci-tabs/receiving-orders/ReceivingOrders
 import { UserData } from './utils/userData';
 
 import { OverReceivedDialog } from './page-object/dialogs/overReceivedDialog';
-import { itemInventory } from './davinci-tabs/item-inventory';
+import { itemInventory } from './davinci-tabs/Item-Inventory';
+import { itemSKUS } from './davinci-tabs/items-skus/itemSkus';
+import { inventoryDetail } from './davinci-tabs/inventory-Detail/inventoryDetail';
+import { NJTelnet } from './utils/telnet';
+import { backEnd } from './utils/backEnd';
 
 
 class dialog{
 
-    WareHouse : warehouse;
-    Error: errorDialog;
-    OverReceived: OverReceivedDialog;
+    public WareHouse : warehouse;
+    public Error: errorDialog;
+    public OverReceived: OverReceivedDialog;
     constructor (){
         this.WareHouse = new warehouse();
         this.Error = new errorDialog();
@@ -123,3 +127,8 @@ export const HomeHeader = new homeHeader();
 export const ReceivingOrders = new receivingOrders();
 export const ItemInventory = new itemInventory();
 export const Dialogs = new dialog();
+export const ItemSKUs = new itemSKUS();
+
+
+
+export const BackEnd = new backEnd();

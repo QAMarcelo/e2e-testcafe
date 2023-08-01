@@ -20,15 +20,18 @@ export abstract class BaseDialog {
 
     }
     public async Exists(): Promise<boolean> {
+        await t.wait(1000);
         return await this._container.exists;
     }
 
     public async NotExists(): Promise<boolean> {
+        await t.wait(1000);
         return await this._container.exists;
     }
     
 
     public async IsVisible(): Promise<boolean> {
+        await t.wait(1000);
         return await this._container.visible;
     }
 }
