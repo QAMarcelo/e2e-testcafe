@@ -2,7 +2,7 @@ import { Button, Combobox, TextBox } from "../../../basic-objects";
 import { ComboboxSearch } from "../../../basic-objects/combobox-Search";
 import { BaseDialog } from "../../../page-object/dialogs/baseDialog";
 
-export class ItemSkus_CreateDialog extends BaseDialog{
+export class ItemSkus_Search extends BaseDialog{
 
     public Account: ComboboxSearch;
     public SKU: TextBox;
@@ -15,8 +15,8 @@ export class ItemSkus_CreateDialog extends BaseDialog{
     constructor(selector: Selector){
         super(selector);
 
-        const searchSelector = this._container.find('span').withText('Account');
-        this.Account = new ComboboxSearch(searchSelector.nextSibling(1));
+       // const searchSelector = this._container.find('span').withText('Account');
+        this.Account = new ComboboxSearch(this._container.find('span').withText('Account').nextSibling('span'));
         this.SKU = new TextBox(this._container.find('span').withText('SKU').nextSibling('input'));
         this.ItemCode = new TextBox(this._container.find('span').withText('Item Code').nextSibling('input'));
         this.Description = new TextBox(this._container.find('span').withText('Description').nextSibling('input'));

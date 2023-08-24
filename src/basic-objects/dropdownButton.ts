@@ -11,9 +11,9 @@ export class DropdownButton extends BaseObject{
 
     public async SelectByIndex(index: number) : Promise<void>
     {
-        this.Click();
+        await this.Click();
         let areaowns = await this._container.getAttribute('aria-owns');
-        await t.click(Selector(`#${areaowns}`).find(`li:nth-child(${index})`));
+        await t.click(Selector(`[id='${areaowns}']`).find(`li:nth-child(${index})`));
     }
 
     public async SelectByText(text: string, selectType: StringOptions = StringOptions.equal ) : Promise<void>

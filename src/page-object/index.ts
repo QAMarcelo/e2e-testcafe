@@ -5,11 +5,11 @@ export {Table} from './content-pane/table';
 export {Toolbar} from './content-pane/toolbar';
 
 //Dialogs
-export {ErrorDialog} from './dialogs/errorDailog';
-export {Warehouse} from './dialogs/wareHouse';
+export {errorDialog} from './dialogs/errorDailog';
+export {warehouse} from './dialogs/wareHouse';
 
 //HomeHeader
-export { HomeHeader } from './homeHeader/homeHeader';
+export { homeHeader } from './homeHeader/homeHeader';
 
 //Menu
 export { menu } from './menu/menu';

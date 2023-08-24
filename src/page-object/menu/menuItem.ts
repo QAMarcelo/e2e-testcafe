@@ -13,6 +13,9 @@ export class MenuItem {
             this.Parent = parent;
     }
     
+    /**
+     * Go to the selected tab
+     */
     public async GoTo(): Promise<void>{
         if(this.Parent == null){
             await t.click(Selector('[data-testid="toolbar.menu"]')); //click on the toolbar menu icon
@@ -23,6 +26,9 @@ export class MenuItem {
     
     }
 
+    /**
+     * Click on the menu option
+     */
     public async click(): Promise<void> {
         if( await this._container.hasAttribute('aria-expanded') )
             await t.click(this._container);
@@ -30,6 +36,10 @@ export class MenuItem {
             await t.click(this._container);
     }
 
+    /**
+     * Get the text from a specific menu option
+     * @returns menu text
+     */
     public async getText(): Promise<string> {
         return await this._container.find("i").innerText;
     }

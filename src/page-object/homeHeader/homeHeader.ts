@@ -3,7 +3,7 @@ import { Button, Combobox } from "../../basic-objects";
 import { DropdownButton } from "../../basic-objects/dropdownButton";
 
 
-export class HomeHeader{
+export class homeHeader{
 
   
     public Profile: DropdownButton;

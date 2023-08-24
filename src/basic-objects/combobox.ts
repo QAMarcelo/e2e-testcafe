@@ -1,4 +1,5 @@
 import { t, Selector } from 'testcafe';
+import { StringOptions } from '../utils';
 import { BaseObject } from './baseObject';
 import { Button } from './button';
 

@@ -1,6 +1,6 @@
 import { t } from "testcafe";
 
-export abstract class BaseObject{
+export abstract class BaseObject {
 
     _container : Selector;
     
@@ -20,4 +20,6 @@ export abstract class BaseObject{
     public async IsEnable(): Promise<boolean> {
         return false;
     }
+
+ 
 }

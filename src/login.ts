@@ -2,7 +2,8 @@ import { Selector, t } from 'testcafe';
 import { Button } from './basic-objects/button';
 import { Dropdown } from './basic-objects/dropdown';
 import { TextBox } from './basic-objects/textbox';
-export class Login{
+import { Dialogs, WEB } from './DVU';
+export class login{
 
     Email : TextBox; 
     Next : Button;
@@ -21,9 +22,27 @@ export class Login{
         this.Password = new TextBox(Selector('[data-testid="login.password"]'));
     } 
 
-    public async Displayed() {
+    public async Displayed() : Promise<boolean> {
         return await Selector('.login').exists;
     }
-   
-   
+   /**
+    * Loggin in with the default data
+    */
+    public async LoginIn() : Promise<void>{
+
+        await this.Email.SetText(WEB.user);
+        await this.Next.Click();
+
+        await this.Password.SetText(WEB.password);
+        await this.Database.SelectByText(WEB.database);
+        await this.Login.Click()
+        
+        // if the Select warehouse dialog is displayed then close it
+        if( await Dialogs.WareHouse.IsVisible() )
+        {
+            await Dialogs.WareHouse.selectWarehouse.SelectByText(WEB.warehouse);
+            await Dialogs.WareHouse.OK.Click();
+            await t.expect(await Dialogs.WareHouse.Exists()).notOk("WareHouse dialog is still displayed");
+        }
+    }
 }
