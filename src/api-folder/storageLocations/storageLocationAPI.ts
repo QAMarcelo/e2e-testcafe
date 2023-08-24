@@ -46,6 +46,11 @@ export interface StorageLocationAPI {
     MaxLPN?: number,
     Group?: string,
     Rate?: number,
+    Inventory_Type?: {
+        Each_Or_Equivalent?: boolean,
+        Case_MasterPack_InnerPack_Kit_Or_Equivalent?: boolean,
+        LPN_Or_Equivalent?: boolean
+    },
     LocationType?: {
         Receiving_Dock?: boolean, //modeRecvDock
         Receiving_Stage?: boolean, //modeRecvStage

@@ -1,25 +1,5 @@
 import {CredentialLanguage, CredentialType} from './helpers'
 
-
-// export const environments = {
-//     QA: {
-//         version : "v1",
-//         port : "8443", 
-//         license : "0000000007",
-//         address :"https://qa-ecs.wdgcorp.com",
-//         rfAddress: "qa.rf.wdgcorp.com",
-//         rfPort : "5023"
-//     },
-//     TRIAL: {
-//         version : "v1",
-//         port : "8443", 
-//         license : "0000000008",
-//         url :"https://trial.wdgcorp.com",
-//         rfAddress: "trial.rf.wdgcorp.com",
-//         rfPort : "5023"
-//     }
-// }
-
 export const UserData = 
 {
     QA: 
@@ -144,7 +124,47 @@ export const UserData =
             type : CredentialType.API,
             language : CredentialLanguage.English,
         }
-    }
+    },
+    Syamir: {
+        DVU : {
+            user : "adminqa2-trial@wdgcorp.com",
+            password : "123",
+            database : "bstevens",
+            warehouse : "Automation",
+            version : "v1",
+            port : "8443", 
+            license : "0000000008",
+            url :"https://trial.wdgcorp.com",
+            authorization : "Basic YWRtaW5xYTItdHJpYWxAd2RnY29ycC5jb206MTIz",
+            type : CredentialType.UI,
+            language : CredentialLanguage.English
+        },
+        RF : {
+            user : "test@mail.com",
+            password : "123",
+            database : "bstevens",
+            warehouse : "Automation",
+            version : "v1",
+            port : "5023", 
+            license : "0000000008",
+            url : "trial.rf.wdgcorp.com",
+            authorization : "Basic dGVzdEBtYWlsLmNvbToxMjM=",
+            language : CredentialLanguage.English
+        }, 
+        API : {
+            user : "api1@gmail.com",
+            password : "123",
+            database : "bstevens",
+            warehouse : "Automation",
+            version : "v1",
+            port : "8443", 
+            license : "0000000008",
+            url : "https://trial.wdgcorp.com",
+            authorization : "Basic YXBpMUBnbWFpbC5jb206MTIz",
+            type : CredentialType.API,
+            language : CredentialLanguage.English,
+        }
+    },
 
 }
 

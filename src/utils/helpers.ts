@@ -46,7 +46,12 @@ export enum StringOptions {
 }
 
 export enum Keys {
-  ESC = '\u001b'
+  ESC = '\u001b',
+  SPACE = '\u0020',
+  ENTER = '\u000D',
+  TAB = '\u0009',
+  BACKSPACE = '\u0008',
+  DELETE = '\u007F'
 }
 
 export const setPrefix = (text: string) => {

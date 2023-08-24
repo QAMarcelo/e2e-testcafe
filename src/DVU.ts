@@ -12,6 +12,7 @@ import { itemSKUS } from './davinci-tabs/items-skus/itemSkus';
 import { inventoryDetail } from './davinci-tabs/inventory-Detail/inventoryDetail';
 import { NJTelnet } from './utils/telnet';
 import { backEnd } from './utils/backEnd';
+import { shippingOrders } from './davinci-tabs/shipping-orders/ShippingOrders';
 
 
 class dialog{
@@ -28,20 +29,35 @@ class dialog{
 
 
 class davinci{
-    // public Login : Login;
-    // public Menu : menu;
-    // public HomeHeader: HomeHeader;
-    // public ReceivingOrders: ReceivingOrders;
-    // public Dialogs : dialog;
+
+    public Login : login;
+    public Menu : menu;
+    public HomeHeader : homeHeader;
+
+    //**** ORDERS ****//
+    public ReceivingOrders : receivingOrders;
+    public ShippingOrders: shippingOrders;
+    
+    //**** Warehouse ****//
+    public ItemInventory : itemInventory;
+    public Dialogs : dialog;
+    public ItemSKUs : itemSKUS;
+    public BackEnd : backEnd;
+
    
 
     //Dialog : dialog;
     constructor (){
-        // this.Login = new Login();
-        // this.Menu = new menu();
-        // this.HomeHeader = new HomeHeader();
-        // this.ReceivingOrders = new ReceivingOrders();
-        // this.Dialogs = new dialog();
+        this.Login = new login();
+        this.Menu = new menu();
+        this.HomeHeader = new homeHeader();
+        this.ReceivingOrders = new receivingOrders();
+        this.ItemInventory = new itemInventory();
+        this.Dialogs = new dialog();
+        this.ItemSKUs = new itemSKUS();
+        this.BackEnd = new backEnd();
+
+        this.ShippingOrders = new shippingOrders();
     }
 
     public async verifyAPIVersion(): Promise<boolean>{
@@ -121,14 +137,54 @@ export const SetAPICredentials = (credentialGroup: string | undefined, APICreden
 }
 
 export const DVU = new davinci();
+/**
+ * DAVINCI: Login actions
+ */
 export const Login = new login();
+
+/**
+ * DAVINCI: Menú Options
+ */
 export const Menu = new menu();
+/**
+ * DAVINCI: HomeHeader actions
+ */
 export const HomeHeader = new homeHeader();
+/**
+ * DAVINCI: Receiving orders actions
+ */
 export const ReceivingOrders = new receivingOrders();
+/**
+ * DAVINCI: Item Inventory actions
+ */
 export const ItemInventory = new itemInventory();
+/**
+ * DAVINCI: Dialgos actions
+ */
 export const Dialogs = new dialog();
+/**
+ * DAVINCI: Item/SKUs actions
+ */
 export const ItemSKUs = new itemSKUS();
 
 
-
+/**
+ * DAVINCI: BackEnd actions
+ */
 export const BackEnd = new backEnd();
+
+export enum TestType {
+    UI= 'UI',
+    RF='RF',
+    API='API'
+}
+
+export enum TestGroup {
+    Allocation = 'Allocation'
+  
+}
+
+export enum TestArea {
+    Receiving = 'Receiving',
+    Shipping = 'Shipping'
+}

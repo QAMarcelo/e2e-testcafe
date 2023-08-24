@@ -7,9 +7,21 @@ import { Dropdown } from "./dropdown";
 
 export class ComboboxWithToolbar extends BaseObject{
 
+    /**
+     * ListBox : input field
+     */
     public Find: ComboboxWriteAndSearch;
+    /**
+     * Button: Insert
+     */
     public Insert: Button;
+    /**
+     * Button: Edit
+     */
     public Edit: Button;
+    /**
+     * Button Search
+     */
     public Search: Button;
 
     constructor(selector: Selector){
@@ -21,6 +33,10 @@ export class ComboboxWithToolbar extends BaseObject{
     }
 
 
+
+    public async SearchAndSelect(text: string): Promise<void> {
+        await this.Find.Search(text);
+    }
   
 
 }

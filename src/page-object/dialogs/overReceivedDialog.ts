@@ -7,7 +7,7 @@ export class OverReceivedDialog extends BaseDialog{
     public Yes: Button;
     public No: Button;
     constructor() {
-        super(Selector('.dialogHeader .title').withExactText('Over Receive').parent('.autoDialogBox '));  
+        super(Selector('.dialogHeader .title').withExactText('Over Receive').parent('.autoDialogBox'));  
         this.Yes= new Button(this._container.find('.confirmDialogButtons button').withText('Yes'));
         this.No= new Button(this._container.find('.confirmDialogButtons button').withText('No'));
     }

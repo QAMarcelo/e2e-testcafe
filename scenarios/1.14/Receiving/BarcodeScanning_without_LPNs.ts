@@ -7,12 +7,13 @@ import { scenario } from "../../../src/utils";
 /*************** CONSTANS & VARIABLES ***************/
 const warehouse =  `Barcode Scanning`;
 const itemCode = `T-Shirt`;
+const itemDescription = 'T-Shirt';
 const account = `Automatic Allocation`;
 const storage1 = `Generic1`;
 
 /*************** SCENARIO DEFINITION ***************/
 export const BarcodeScanning_without_LPNs: scenario = {
-    CredentialGroup: 'TRIAL',
+    CredentialGroup: 'Syamir',
     warehouse: {
         description: warehouse
     },
@@ -65,6 +66,7 @@ export const BarcodeScanning_without_LPNs: scenario = {
     items: [
         { // 1st Item
             ItemCode: itemCode,
+            Description: itemDescription,
             UOM_type: Item_UOMType.Each,
             Vendor: account,
             Enabled: true,

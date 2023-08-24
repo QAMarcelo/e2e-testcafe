@@ -30,7 +30,7 @@ export class NumberBox extends BaseObject {
     public async Increase(number: Number): Promise<void> {
         // click in the field in order to Update the actual value
         await t.click(this._container.find('.k-spinner-decrease'));
-        await t.click(this._container.find('input'));
+        //await t.click(this._container.find('input'));
         await t.click(this._container);
         
         //Increase the inventory

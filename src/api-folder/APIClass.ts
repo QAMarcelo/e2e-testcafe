@@ -2,9 +2,9 @@
 import { t } from 'testcafe';
 import { LoadItemData, LoadStorageLocationsData, LoadVendorAssignedCodes, LoadVendorData, LoadVendorDefaultBilling, LoadWarehouseData } from './APIHelper/APIHelper';
 import { BusinessPartnerAPI } from './businessPartners';
-import { iSequenceAPI, iBusinessPartnerAPI, iInvAdjustmentDetailAPI, iInventoryAdjustmentAPI, iItemAPI, iStorageLocationAPI, iUser, iWarehouseAPI } from './interfaces/';
+import { iSequenceAPI, iBusinessPartnerAPI, iInvAdjustmentDetailAPI, iInventoryAdjustmentAPI, iItemAPI, iStorageLocationAPI, iUser, iWarehouseAPI, iVendorAPI } from './interfaces/';
 
-import { InventoryAdjustmentsAPI } from './inventory';
+import { InventoryAdjustment_Status, InventoryAdjustmentsAPI } from './inventory';
 import { StorageLocationsAPI } from './storageLocations';
 import { WarehouseAPI } from './warehouses';
 import { API, RF, WEB } from '../DVU';
@@ -113,7 +113,7 @@ export class APIClass {
      * @param Scenario 
      * @returns 
      */
-    public getWarehouse = async(Scenario: scenario): Promise<iWarehouseAPI|undefined> => {
+    public getWarehouse = async(Scenario: scenario, assignToUsers: boolean=true): Promise<iWarehouseAPI|undefined> => {
 
         let whResponse: iWarehouseAPI | undefined = {};
         
@@ -131,7 +131,9 @@ export class APIClass {
                 whResponse = await this.createWarehouse(whLoaded);
             }
 
-            await this.assignWarehouseToUsers(whResponse?.id!);
+            if(assignToUsers){
+                await this.assignWarehouseToUsers(whResponse?.id!);
+            }
             WEB.warehouse = whResponse?.description!;
         }
         return whResponse;
@@ -301,6 +303,13 @@ export class APIClass {
                     const storageLocation = await this.searchStorageLocation(sLocation.Description, warehouseId);
                     var slLoaded: iStorageLocationAPI;
                     let response: iStorageLocationAPI|undefined = undefined;
+                    let vendor : iBusinessPartnerAPI|undefined;
+                
+                    if(sLocation.Vendor){
+                        
+                        storageLocation?.vendors?.push(await this.searchVendor(sLocation.Vendor) as iVendorAPI);
+                        sLocation.Vendor = undefined;
+                    }
 
                     if(storageLocation){
                         slLoaded = LoadStorageLocationsData(sLocation, storageLocation);
@@ -330,7 +339,7 @@ export class APIClass {
 
         if(scenario.items){
             for await (const item of scenario.items) {
-                const existItem = await this.searchItem(item.ItemCode, true) as iItemAPI; 
+                const existItem = await this.searchItem({itemCode: item.ItemCode, itemDescription: item.Description, account: item.Vendor}, true) as iItemAPI; 
                 //const itemToCompare =  await this.updateItem(existItem) ;
                 let itemResponse: iItemAPI | undefined = undefined
                 let itemLoaded : iItemAPI;
@@ -414,15 +423,17 @@ export class APIClass {
         if(inventoryAdjustment){
             for await (const invA of inventoryAdjustment?.itemAdjustment) {
                 
+                const vendor = invA.vendor ?? inventoryAdjustment.vendor;
                 //const itemUri = `/items?itemCode=${invA.itemCode}`;
                 const whId = inventoryAdjustment.warehouse?.id ?? (invA.warehouseId ?? warehouseId) ?? (await this.searchWarehouse(inventoryAdjustment.warehouse?.description!))?.id;
-                const item = invA.itemCode ? (await this.searchItem(invA.itemCode)): undefined; 
+                const item = invA.itemCode ? (await this.searchItem({itemCode: invA.itemCode, itemDescription: invA.itemDescription, account: vendor})): undefined; 
                 const sLocation = invA.storageIdentifier ? (await this.searchStorageLocation(invA.storageIdentifier, whId!)) : undefined; 
 
                 if(invA.emptyInventory){
                     await this.cleanInventory(
                         item? item.itemCode: undefined, 
-                        sLocation ? sLocation.storageId : undefined , 
+                        //sLocation ? sLocation.storageId : undefined , 
+                        undefined,
                         whId
                     );
                 }
@@ -433,7 +444,7 @@ export class APIClass {
                         lot: invA.lot,
                         lpn: invA.lpn,
                         qty: invA.qty,
-                        status: invA.status!,
+                        status: invA.status ?? InventoryAdjustment_Status.available,
                         storageId: sLocation?.id!,
                         sublot: invA.sublot,
                         unitGwt: invA.gWeigth,
@@ -679,19 +690,30 @@ export class APIClass {
      * @param ItemCode:(string)=> ItemCode
      * @returns ItemAPI object or undefined if there is an error
      */
-    public searchItem = async(itemCode: string, fullItem?: boolean) : Promise<iItemAPI | undefined> => {
+
+    public searchItem = async(item: {itemCode: string, itemDescription?: string, account?: string, SKU?: string, userDef0?: string, userDef1?: string}, fullItem?: boolean) : Promise<iItemAPI | undefined> => {
         
-        const itemUri = `/items?enabled=1&enabled=0&type=1&pageSize=10000&pageOffset=1&itemCode=${itemCode}&sortColumn=itemCode`;
+        const code = `&itemCode=${item.itemCode}`;
+        const description = item.itemDescription? `&itemDescription=${item.itemDescription}` : '';
+        const vendor = item.account ? `&vendorDescription=${item.account}`:'';
+        const sku = item.SKU ? `&sku=${item.SKU}` : '';
+        const userDef0 = item.userDef0 ? `&itemUserDefFv0=${item.userDef0}`:'';
+        const userDef1 = item.userDef1 ? `&itemUserDefFv1=${item.userDef1}`:'';
+        const itemUri = `/items?enabled=1&type=1&pageSize=10000&pageOffset=1${code}${description}${vendor}${sku}${userDef0}${userDef1}&sortColumn=itemCode`;
+        //const itemUri = `/items?enabled=1&enabled=0&type=1&pageSize=10000&pageOffset=1&itemCode=${itemCode}&sortColumn=itemCode`;
         const result = await this.Call({Url: itemUri, method: APIMethods.GET});
 
         let existItem : iItemAPI | undefined = undefined;
         
         if(result['status']==200){
-            const itemList : iItemAPI[] = result['data'];
+            const itemList = result['data'] as iItemAPI[];
+
             itemList.forEach(value => {
-                if(value.itemCode == itemCode){
+
+                if(value.itemCode == item.itemCode){
                     existItem = value as iItemAPI;
                 }
+
             });
             
             if(itemList.length>0 && fullItem){
@@ -700,7 +722,7 @@ export class APIClass {
             }
         
          }else{
-            throw new Error(`Error: search item: '${itemCode}', throw an error = ${result['status']}`);
+            throw new Error(`Error: search item: '${item.itemCode}', throw an error = ${result['status']}`);
         }
         return existItem as iItemAPI;
     }
@@ -847,8 +869,23 @@ export class APIClass {
         }
         return sequence;
     }
+    public getItemDetails = async(whs: string, itemCode: string, vendor: string) => {
+        const whsId = (await this.searchWarehouse(whs))?.id;
+        const itemId = (await this.searchItem({itemCode: itemCode, account: vendor}))?.id;
+        //whses/16/inv/detail?itemType=1&exact=lotCode&exact=sublotCode&exact=lpn&lotCode=&sublotCode=&pageSize=10000&pageOffset=1&itemId=156
+        const uri = `/whses/${whsId}/inv/detail?itemType=1&exact=lotCode&exact=sublotCode&exact=lpn&lotCode=&sublotCode=&pageSize=10000&pageOffset=1&itemId=${itemId}`;
+        const whsResponses = await this.Call({Url: uri, method: APIMethods.GET});
+        let result = {};
+        if(whsResponses['status']==200){
 
-    public getItemDetail = async(
+            if((whsResponses['data']).length > 0)
+            result = whsResponses['data'];
+        }
+        return result;
+    }
+
+
+    public getItemQties = async(
         whs: string, 
         item: string|undefined = undefined, 
         lCode: string| undefined= undefined, 
@@ -863,8 +900,9 @@ export class APIClass {
         const sublotCode = slCode? `&sublotCode=${slCode}` : '';
         const SKU = sku? `&sku=${sku}`: '';
 
+        //whses/16/inv/detail?itemType=1&exact=lotCode&exact=sublotCode&exact=lpn&lotCode=&sublotCode=&pageSize=10000&pageOffset=1&itemId=15653
         const whsId = (await this.searchWarehouse(whs))?.id;
-        const uri = `/whses/${whsId}/inv/items/?${itemCode}${vendorDescription}${lotCode}${sublotCode}${SKU}`;
+        const uri = `/whses/${whsId}/inv/items?${itemCode}${vendorDescription}${lotCode}${sublotCode}${SKU}`;
         const whsResponses = await this.Call({Url: uri, method: APIMethods.GET});
         let whList: string[] = [];
         

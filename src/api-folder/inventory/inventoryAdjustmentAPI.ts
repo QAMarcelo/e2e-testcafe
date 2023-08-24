@@ -13,12 +13,14 @@ import { WarehouseAPI } from "../warehouses"
   }
   export interface InventoryAdjustmentsAPI{
     warehouse? : WarehouseAPI,
+    vendor?: string,
     itemAdjustment: InventoryAdjustmentAPI[]
   }
   
   export interface InventoryAdjustmentAPI{
     emptyInventory?: boolean;
     itemCode?: string,
+    itemDescription? : string,
     itemId?: number,
     status?: InventoryAdjustment_Status,
     qty?: number,
@@ -28,4 +30,5 @@ import { WarehouseAPI } from "../warehouses"
     sublot?: string,
     warehouseId?: number,
     gWeigth?: number,
+    vendor?: string
   }

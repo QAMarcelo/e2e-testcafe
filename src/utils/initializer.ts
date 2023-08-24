@@ -100,39 +100,39 @@ class Initializer {
 
     }
     
-    public async LoadScenario(args: initArgs): Promise<void> {
-        
-        const credentialGroup : string | undefined =  args.CredentialGroup ?? args?.Scenario?.CredentialGroup; 
-        SetUICredentials(credentialGroup, args?.Credentials?.UI);
-        SetRFCredentials(credentialGroup, args?.Credentials?.RF);
-        SetAPICredentials(credentialGroup, args?.Credentials?.API);
-        
-        RF.warehouse = args?.Scenario?.warehouse?.description ?? RF.warehouse;
-        API.warehouse = args?.Scenario?.warehouse?.description ?? API.warehouse;
-        WEB.warehouse = args?.Scenario?.warehouse?.description ?? WEB.warehouse;
+        public async LoadScenario(args: initArgs): Promise<void> {
+            
+            const credentialGroup : string | undefined =  args.CredentialGroup ?? args?.Scenario?.CredentialGroup; 
+            SetUICredentials(credentialGroup, args?.Credentials?.UI);
+            SetRFCredentials(credentialGroup, args?.Credentials?.RF);
+            SetAPICredentials(credentialGroup, args?.Credentials?.API);
+            
+            RF.warehouse = args?.Scenario?.warehouse?.description ?? RF.warehouse;
+            API.warehouse = args?.Scenario?.warehouse?.description ?? API.warehouse;
+            WEB.warehouse = args?.Scenario?.warehouse?.description ?? WEB.warehouse;
 
-        // const aux = await SelectDatabaseByText('bstevens');
-        // const warehouse = await SelectWarehouseByText('Automation');
+            // const aux = await SelectDatabaseByText('bstevens');
+            // const warehouse = await SelectWarehouseByText('Automation');
 
-        if(args?.Scenario){
-            const APICall = InitAPI();
+            if(args?.Scenario){
+                const APICall = InitAPI();
 
-            const whResp = await APICall.getWarehouse(args.Scenario);
-            if(!whResp) throw new Error(`Error: the warehouse ${args.Scenario?.warehouse?.description} was not correcly udpated/saved`);
+                const whResp = await APICall.getWarehouse(args.Scenario);
+                if(!whResp) throw new Error(`Error: the warehouse ${args.Scenario?.warehouse?.description} was not correcly udpated/saved`);
 
-            const bpResp = await APICall.getVendors(args.Scenario);
-            if(args.Scenario.businessPartners && bpResp.length != args.Scenario.businessPartners.length) throw new Error(`Error: not all the accounts were created/updated`);
+                const bpResp = await APICall.getVendors(args.Scenario);
+                if(args.Scenario.businessPartners && bpResp.length != args.Scenario.businessPartners.length) throw new Error(`Error: not all the accounts were created/updated`);
 
-            const sLocationResponse = await APICall.getStorageLocations(args.Scenario, whResp.id!);
-            if(args.Scenario.storageLocations && sLocationResponse.length != args.Scenario.storageLocations?.Locations?.length) throw new Error(`Error: not all the Storage Locations were created/updated`);
+                const sLocationResponse = await APICall.getStorageLocations(args.Scenario, whResp.id!);
+                if(args.Scenario.storageLocations && sLocationResponse.length != args.Scenario.storageLocations?.Locations?.length) throw new Error(`Error: not all the Storage Locations were created/updated`);
 
-            const itemsResponse =  await APICall.getItems(args.Scenario); 
-            if(args.Scenario.items && itemsResponse.length != args.Scenario.items?.length) throw new Error(`Error: not all the items were created/updated`);
+                const itemsResponse =  await APICall.getItems(args.Scenario); 
+                if(args.Scenario.items && itemsResponse.length != args.Scenario.items?.length) throw new Error(`Error: not all the items were created/updated`);
 
-            const invAdjResponse = await APICall.getInventoryAdjustment(args.Scenario, whResp?.id!);
-            if(!invAdjResponse) throw new Error(`Error: not all the inventory adjustment were created/updated`);
+                const invAdjResponse = await APICall.getInventoryAdjustment(args.Scenario, whResp?.id!);
+                if(!invAdjResponse) throw new Error(`Error: not all the inventory adjustment were created/updated`);
 
-            const seqResponse = await APICall.getSequences(args.Scenario);
+                const seqResponse = await APICall.getSequences(args.Scenario);
             if(args.Scenario.sequences && seqResponse.length != args.Scenario.sequences?.length) throw new Error(`Error: not all the sequences were saved`);
         }
 

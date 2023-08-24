@@ -88,5 +88,39 @@
 			"}",
 		],
 		"description": "Create a template for a new Scenario"
+	},
+
+	"New Test": {
+		"scope": "javascript,typescript",
+		"prefix": "tst",
+		"body": [
+			"import { Login, Menu } from '../../src/DVU';",
+			"import { Init } from \"../../src/utils\";",
+			"\n",
+
+
+			"fixture(`Fixture tests`) .meta({fixtureType: 'fixture Type'})",
+
+			".beforeEach(async t=>{",
+
+			"\tawait Init.Load({ ",
+			"\t\tCredentialGroup: 'Trial',",
+			"\t\t});",
+			"\t})",
+			"\n",
+			"test",
+				"\t.meta( {testType: 'testType', group:'testGroup', area: 'TestArea', parallel: false}) ",
+				"\t('Test Nae', async t =>{",
+
+				"\t\t/** VARIABLES  */",
+				"\t\tconst account = 'Automatic Allocation';",
+
+				"\t\t// write email, password and select warehouse",
+				"\t\tawait Login.LoginIn();",
+
+
+			"});"
+		],
+		"description": "Test template"
 	}
 }

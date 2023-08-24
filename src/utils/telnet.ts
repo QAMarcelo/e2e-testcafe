@@ -112,12 +112,15 @@ export class NJTelnet {
 
 	public async Send(data: string, waitForText: string|undefined = undefined): Promise<void> {
 		let options = (waitForText)? { waitFor: waitForText } : {};
+		let output : string | undefined = '';
 		await this.conn.send(data, options, async (err, value)=>{
-			console.log(value);
-			// await t.wait(500);
+			//console.log(value);
+			output = value;
+	
 		});
+		console.log(output);
 		console.log("**********************");
-		await t.wait(500);
+		await t.wait(650);
 	}
 
 	public async End(): Promise<void> {{
