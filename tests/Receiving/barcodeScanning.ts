@@ -56,27 +56,28 @@ test
     await ReceivingOrders.CreateReceivingOrder.Status.SelectByText('In Process');
     await ReceivingOrders.CreateReceivingOrder.Save.Click();
     await ReceivingOrders.CreateReceivingOrder.CloseDialog.Click();
-    const itemStock = await BackEnd.GetItemStockDetail({Item: item, Vendor: account, Warehouse: 'Barcode Scanning', Lot: lotCode, SubLot: subLotCode});
+    const itemStock = await BackEnd.GetItemStock({Item: item, Vendor: account, Warehouse: 'Barcode Scanning', Lot: lotCode, SubLot: subLotCode});
    
     ///////RF /////////
     const RFTelnet = new NJTelnet(true); 
-    await RFTelnet.Connect(); // Init telnet conection
-    await RFTelnet.Login(); //Login to RF
-    await RFTelnet.Send("3"); //Select Receiving
+    await RFTelnet.Connect(); //Init telnet conection
+    await RFTelnet.Login();     //Login to RF
+    await RFTelnet.Send("3"); //Select Receviving
     await RFTelnet.Send("1"); //Select Existing Receipt
     await RFTelnet.Send("1"); //Select By Order Number
     await RFTelnet.Send(orderNumber); //scan Order number
     await RFTelnet.Send('1'); // Select continue
-    await RFTelnet.Send(location); // Select Staging Location
-    await RFTelnet.Send("3"); // Select Select the Item
-    await RFTelnet.Send("10"); // Insert Enter Qty 
-    await RFTelnet.Send("1"); // Accept Overage
+    await RFTelnet.Send(location); // SCAN STAGING LOCATION-
+    await RFTelnet.Send("3"); // Select the Item
+    await RFTelnet.Send("10"); // ENTER QTY-
+    await RFTelnet.Send("1"); // ACCEPT OVERAGE? YES
     await RFTelnet.Send(Keys.ESC);// pres ESC to return to the order
-    await RFTelnet.Send("1"); // Accept Overage
+    await RFTelnet.Send("1"); // ACCEPT OVERAGE? YES
     await RFTelnet.Send(Keys.ESC);// pres ESC to exit the order
-    await RFTelnet.Send("2");// Select Not Complete the order
-    await RFTelnet.Send("m");// back to menu
-    await RFTelnet.Send("6");// Logoff
+    await RFTelnet.Send("2");// RECEIVING COMPLETED? NO
+    await RFTelnet.Send("m");// M MAIN MENU
+    await RFTelnet.Send("6");// 6 LOGOFF
+
     await RFTelnet.End();   // end telnet session
 
     // Open the order
