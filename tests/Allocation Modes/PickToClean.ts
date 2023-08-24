@@ -1,6 +1,4 @@
 import { PickToCleanScenario } from '../../scenarios/Regression/Allocation Mode/PickToCleanScenario';
-import { PickToCleanManual } from '../../scenarios/Regression/Allocation Mode/PickToCleanManual';
-import { LocAscNone } from '../../scenarios/Regression/Putaway/LocationAscending.ts/LocAsc_StyleNone';
 import { BackEnd, DVU, Login, TestArea, TestGroup, TestType } from '../../src/DVU';
 
 import { Init, Keys, UniqueValue } from "../../src/utils";
