@@ -3,11 +3,11 @@ import { InventoryAdjustment_Status } from "../../../src/api-folder/inventory"
 import { Item_UOMType } from "../../../src/api-folder/itemSKUS"
 import { scenario } from "../../../src/utils"
 
-
+const WarehouseDescription = 'Barcode Scanning';
 
 export const PickToCleanScenario : scenario ={
 
-    warehouse: { description: 'Barcode Scanning'},
+    warehouse: { description: WarehouseDescription},
     businessPartners: [
         {
             Description: 'Allocation Account',
@@ -122,5 +122,17 @@ export const PickToCleanScenario : scenario ={
                 qty: 2
             }
         ]
-    }
+    },
+    storageGroups: [
+        {
+            name: "ReplenishGroup",
+            storageLocations: [ 
+                "Allocation G1",
+                "Allocation G2",
+                "Allocation G3",
+                "Allocation G4",
+            ],
+            warehouse: WarehouseDescription
+        }
+    ]
 }
