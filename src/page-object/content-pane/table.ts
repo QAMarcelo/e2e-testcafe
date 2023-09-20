@@ -87,8 +87,24 @@ export class Table extends BaseSelector {
         return exist.every( ele => ele === true);
     }
 
-    public async getCellValue(...tableQuery: TableQuery[]): Promise<string> {
-        return '';
+    public async getCellValue(column: {targed: string}, ...tableQuery: TableQuery[]): Promise<string> {
+        var query = "";
+        let cellValue = '';
+        
+        for await (const e of tableQuery) {
+            var ariacolindex = await this._container.find('.k-column-title').withExactText(e.rowTitle).parent('[role="columnheader"]').getAttribute('aria-colindex');
+            //var ariacolindex = await XPathSelector(`//*[@role='columnheader'][.//span[text()='${e.rowTitle}']]`).getAttribute('aria-colindex');
+            query += `.//td[@aria-colindex='${ariacolindex}'][text()='${e.rowValue}'] and `;
+        }
+        
+        var targedAriacolindex = await this._container.find('.k-column-title').withExactText(column.targed).parent('[role="columnheader"]').getAttribute('aria-colindex');
+        if(query.length>0){
+            query = query.substring(0, query.length-4);
+            query = "//div[contains(@class, 'k-state-active')] //tr[ " + query + "] //td[ @aria-colindex='"+targedAriacolindex+"'   ]";
+            cellValue= await XPathSelector(query).innerText;
+            //await t.click(XPathSelector(query));
+        }
+        return cellValue;
     }
 
 }

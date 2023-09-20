@@ -1,48 +1,24 @@
 import { t } from 'testcafe';
-import { Telnet } from "telnet-client";
+import { ConnectOptions, SendOptions, Telnet } from "telnet-client";
 import {Socket} from 'net';
 import { API, RF } from '../DVU';
 import { InitAPI } from './initializer';
-
-export interface Params{
-	host: string,
-	port: number,
-	shellPrompt?: string,  
-	negotiationMandatory?: boolean,
-	timeout?: number
-}
-
-// export interface LoginParams{
-// 	language: string,
-// 	email: string,
-// 	password: string,
-// 	database: string,
-// 	warehouse: string
-// }
-
-
 
 export class NJTelnet {
 	public conn: Telnet;
 	private ShowConsole : Boolean;
 
 	// private LoginParams: LoginParams;
-	private Params: Params;
+	private Params: ConnectOptions;
 	constructor(showConsole: Boolean = false){
 		this.ShowConsole = showConsole;
-		// this.LoginParams = {
-		// 	language: RF.language!,
-		// 	email: RF.user,
-		// 	password: RF.password,
-		// 	database: RF.database!,
-		// 	warehouse: RF.warehouse!
-		// }
 
 		this.Params = {
 			host: RF.url,
 			port: Number(RF.port!),
+			//shellPrompt: /\\r\u0000\\r\\u/,
 			negotiationMandatory: false,
-			timeout: 2000
+			timeout: 20000
 		}
 	}
 
@@ -54,75 +30,78 @@ export class NJTelnet {
 
 		this.conn = new Telnet();
 		let params = this.Params;
-		// let params = {
-		//   host: 'qa.rf.wdgcorp.com',
-		//   port: 5023,
-		//   //shellPrompt: '/ # ', // or 
-		//   negotiationMandatory: false,
-		//   timeout: 1500
-		// }
-	  
+
 		try {
-		  await this.conn.connect(params)
+		  await this.conn.connect(params);
 		} catch (error) {
 			console.log(error);
-		  // handle the throw (timeout)
-		}
 
-		//return this;
+		}
+		await t.wait(1500);
+		// this.conn.on('timeout', () => {
+		// 	console.log('TimeOut');
+		// 	throw new Error('TimeOut!!');
+		// });
+
 	  }
 	  
-	public async Login():Promise<void>{
-		
-		// await this.Connect();
-        await this.Send(RF.language);
-        await this.Send(RF.user);
-        await this.Send(RF.password);
-        await this.SelectDatabase(RF.database);
-        await this.SelectWarehouse(RF.warehouse);
+	public async Login():Promise<string>
+	{
+		let screens = '';
+        screens+=await this.Send(RF.language);
+		screens+=await this.Send(RF.user);
+		screens+=await this.Send(RF.password);
+		screens+= await this.SelectDatabase(RF.database);
+		screens+= await this.SelectWarehouse(RF.warehouse);
+		return screens;
 	}
 
-	public async Exec(text: string): Promise<void> {
-		let res = await this.conn.exec(text, (error, response) => {
-			console.log('async result:', response)
-			console.log('async error:', error)
-		})
+	// public async Exec(text: string): Promise<void> {
+	// 	let res = await this.conn.exec(text, (error, response) => {
+	// 		console.log('async result:', response)
+	// 		console.log('async error:', error)
+	// 	})
 		
-	}
+	// }
 
 	public async GetNext(): Promise<string> {
-		let data = await this.conn.nextData();
-		if(data !=null)
-			return data.toString();
-		else{
-			return 'END'
-		}
+		const output = await this.conn.nextData();
+		return output!=null? output:'';
 	}
 
-	public async Write(data: string, text: string|undefined = undefined): Promise<void> {
-		await t.wait(500);
-		await this.conn.write(data, { }, async (err, value)=>{
-			
+	public async NextScreen():Promise<string>{
+		let screens : string = '';
+		screens += await this.GetNext(); //1
+        screens += await this.GetNext(); //2
+        screens += await this.GetNext(); //3
+        screens += await this.GetNext(); //4
+        screens += await this.GetNext(); //5
+        screens += await this.GetNext(); //6
+        screens += await this.GetNext(); //7
+        screens += await this.GetNext(); //8
+        screens += await this.GetNext(); //9
+        screens += await this.GetNext(); //10
+		screens += await this.GetNext(); //11
+
+
+		return screens;
+	}
+	/**
+	* send a text to RF,
+	* returns a string with the RF screen response 
+	*/
+	public async Send(data: string, waitForText: string|false = false ): Promise<string> {
+		let options: SendOptions = {shellPrompt: /\r\r/};
+		
+		/*await this.conn.send(data, options, async (err, value)=>{
 			console.log(value);
-			// await t.wait(500);
-			
-		})
-		console.log("**********************");
-	}
-
-	public async Send(data: string, waitForText: string|undefined = undefined): Promise<void> {
-		let options = (waitForText)? { waitFor: waitForText } : {};
-		let output : string | undefined = '';
-		await this.conn.send(data, options, async (err, value)=>{
-			//console.log(value);
 			output = value;
 	
-		});
-		console.log(output);
-		console.log("**********************");
-		await t.wait(650);
+		});*/
+		return await this.conn.send(data, options);
 	}
 
+	
 	public async End(): Promise<void> {{
 		await this.conn.end();
 	}}
@@ -132,29 +111,34 @@ export class NJTelnet {
 		const list = await APICall.getRFWarehouses();
 		const index = list.indexOf(warehouse) +1;
 		// return index>=0? index +1 : index; 
-		if(index>0){
+		if(index>=0){
+			console.log('warehouse index= ' + index.toString())
 			await this.Send(index.toString());
 		}
 	}
 
-	public async SelectDatabase(database: string): Promise<void>{
+	public async SelectDatabase(database: string): Promise<string>{
 		const APICall = InitAPI((`${API.url}:${API.port}/${API.version}/preauth/validate/${RF.user}`));
 		const list = await APICall.getRFDatabases();
 		const index = list.indexOf(database)+1;
+		let output:string='';
 		if(index>0){
-			await this.Send(index.toString());
+			output = await this.Send(index.toString());
 		}
+		return output;
 		// return index>=0? index +1 : index;
 	}
 
-	public async SelectReceivingOrder(orderNumber: string, wahehouse: string): Promise<void> {
+	public async SelectReceivingOrder(orderNumber: string, wahehouse: string): Promise<string> {
 		const APICall = InitAPI();
 		const wh = await APICall.searchWarehouse(wahehouse);
 		const list = await APICall.getRFReceivingOrderLists(wh?.id!);
 		const index = list.indexOf(orderNumber) +1;
 		// return index>=0? index +1 : index; 
+		let output:string='';
 		if(index>0){
-			await this.Send(index.toString());
+			output = await this.Send(index.toString());
 		}
+		return output;
 	}
 }

@@ -13,8 +13,8 @@ export class inventoryDetail extends BaseDialog{
     public Table : Table;
 
     // public AllocationDetail: AllocationDetail;
-    constructor(){
-        super(Selector('inventory-detail'));
+    constructor(selector: Selector = Selector('inventory-detail')){
+        super(selector);
 
         this.StatusPanel = new StatusQuantityPanel(this._container.find('.mat-card'));
         this.Toolbar = new InventoryDetail_Toolbar(this._container); 

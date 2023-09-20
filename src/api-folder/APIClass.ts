@@ -11,6 +11,8 @@ import { API, RF, WEB } from '../DVU';
 
 
 import { scenario } from '../utils';
+import { iStorageGroupAPI } from './interfaces/iStorageGroupsAPI';
+import { StorageGroupAPI } from './storageGroups/storageGroupsAPI';
 
 
 export enum APIMethods {
@@ -488,11 +490,37 @@ export class APIClass {
         return seqResponse;
     }
 
+    public getStorageGroup = async(Scenario: scenario): Promise<iStorageGroupAPI[]> => {
+        let storageGroups : iStorageGroupAPI[] = [];
+
+        let uri=`/storage/group`;
+
+        if(Scenario.storageGroups){
+            for await (const group of Scenario.storageGroups) 
+            {
+                let storageLocations : number[] = [];
+                let warehouseId = (await this.searchWarehouse(group.warehouse, false))?.id!;
+                
+
+                for await (const location of group.storageLocations) {
+                   //storageLocations.push( ( await this.searchStorageLocation(location, warehouseId) )?.id! );
+                }
+                let dataGroup :iStorageGroupAPI = {
+                    name : group.name,
+                    storageIds: storageLocations,
+                    warehouseId: warehouseId
+                }
+                //storageGroups.push( await this.Call({Url: uri, method: APIMethods.PUT, data: dataGroup }) );
+            }
+        }
+        
+        return storageGroups;
+    }
     /**
      * Get list of Warehouses per User
      */
     public getRFWarehouses = async(): Promise<string[]>  => {
-        const uri = `/whses?enabled=1&sortColumn=description`;
+        const uri = `/whses?enabled=1`;
         const whsResponses = await this.Call({Url: uri, method: APIMethods.GET});
         let whList: string[] = [];
         
@@ -873,7 +901,8 @@ export class APIClass {
         const whsId = (await this.searchWarehouse(whs))?.id;
         const itemId = (await this.searchItem({itemCode: itemCode, account: vendor}))?.id;
         //whses/16/inv/detail?itemType=1&exact=lotCode&exact=sublotCode&exact=lpn&lotCode=&sublotCode=&pageSize=10000&pageOffset=1&itemId=156
-        const uri = `/whses/${whsId}/inv/detail?itemType=1&exact=lotCode&exact=sublotCode&exact=lpn&lotCode=&sublotCode=&pageSize=10000&pageOffset=1&itemId=${itemId}`;
+        const others='&exact=lotCode&exact=sublotCode&exact=lpn&lotCode=&sublotCode=';
+        const uri = `/whses/${whsId}/inv/detail?itemType=1&pageSize=10000&pageOffset=1&itemId=${itemId}`;
         const whsResponses = await this.Call({Url: uri, method: APIMethods.GET});
         let result = {};
         if(whsResponses['status']==200){

@@ -13,7 +13,7 @@ export const attributesIds = {
     Barcode_Scanning: {
         Pick_to_Mode: 566,
         Putaway_Prioritizaion: 1019,
-        Putaway_Style: 56,
+        Putaway_Style: 561,
         Enable_Variable_lot_Code: 378,
         Enable_Variable_Sub_Lot_code: 379,
         Pallet_LPN_Label_type: 540

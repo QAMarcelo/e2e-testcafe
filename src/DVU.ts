@@ -1,5 +1,5 @@
 import { t } from 'testcafe';
-import { XPathSelector, iCredentials, iUserCredentials } from './utils';
+import { XPathSelector, iCredentials, iUserCredentials, initArgs } from './utils';
 
 import { errorDialog, warehouse, homeHeader, menu } from './page-object';
 import { login } from './login';
@@ -13,6 +13,9 @@ import { inventoryDetail } from './davinci-tabs/inventory-Detail/inventoryDetail
 import { NJTelnet } from './utils/telnet';
 import { backEnd } from './utils/backEnd';
 import { shippingOrders } from './davinci-tabs/shipping-orders/ShippingOrders';
+import { InventoryByLocation } from './davinci-tabs/inventoryByLocation/inventorytByLocation';
+import { InventoryByLPNToolbar } from './davinci-tabs/inventoryByLPN/InventoryByLPNToolbar';
+import { InventoryByLPN } from './davinci-tabs/inventoryByLPN/InventoryByLPN';
 
 
 class dialog{
@@ -43,7 +46,8 @@ class davinci{
     public Dialogs : dialog;
     public ItemSKUs : itemSKUS;
     public BackEnd : backEnd;
-
+    public InventoryByLocation: InventoryByLocation;
+    public InventoryByLPN: InventoryByLPN;
    
 
     //Dialog : dialog;
@@ -58,6 +62,8 @@ class davinci{
         this.BackEnd = new backEnd();
 
         this.ShippingOrders = new shippingOrders();
+        this.InventoryByLocation = new InventoryByLocation();
+        this.InventoryByLPN = new InventoryByLPN;
     }
 
     public async verifyAPIVersion(): Promise<boolean>{
@@ -75,10 +81,12 @@ export let WEB : iCredentials;
 export let RF : iCredentials;
 export let API : iCredentials;
 
-export const SetUICredentials = (credentialGroup: string | undefined, DVUCredentials: iUserCredentials| undefined) => {
+export const SetUICredentials = (credentialGroup: string | undefined, scenario: initArgs) => {
+    const DVUCredentials: iUserCredentials| undefined = scenario.Credentials?.UI;
     try {
         WEB = {
             authorization : DVUCredentials?.authorization ?? UserData[credentialGroup ?? 'QA'].DVU?.authorization,
+            database :      DVUCredentials?.database ?? UserData[credentialGroup ?? 'QA'].DVU?.database,
             language :      DVUCredentials?.language ?? UserData[credentialGroup ?? 'QA'].DVU?.language,
             license :       DVUCredentials?.license ?? UserData[credentialGroup ?? 'QA'].DVU?.license,
             password :      DVUCredentials?.password ?? UserData[credentialGroup ?? 'QA'].DVU?.password,
@@ -87,15 +95,16 @@ export const SetUICredentials = (credentialGroup: string | undefined, DVUCredent
             url :           DVUCredentials?.url ?? UserData[credentialGroup ?? 'QA'].DVU?.url,
             user :          DVUCredentials?.user ?? UserData[credentialGroup ?? 'QA'].DVU?.user,
             version :       DVUCredentials?.version ?? UserData[credentialGroup ?? 'QA'].DVU?.version,
-            warehouse :     DVUCredentials?.warehouse ?? UserData[credentialGroup ?? 'QA'].DVU?.warehouse,
-            database :      DVUCredentials?.database ?? UserData[credentialGroup ?? 'QA'].DVU?.database,
+            warehouse :     scenario.Scenario?.warehouse?.description ?? DVUCredentials?.warehouse ?? UserData[credentialGroup ?? 'QA'].DVU?.warehouse,
         };
     } catch (error) {
         throw new Error('there was an error trying to load the DVU credential data. Review the Credential Group. ');
     }
    
 }
-export const SetRFCredentials = (credentialGroup: string | undefined, RFCredentials: iUserCredentials| undefined) => {
+export const SetRFCredentials = (credentialGroup: string | undefined, scenario: initArgs) => {
+    const RFCredentials :iUserCredentials | undefined = scenario.Credentials?.RF;
+
     try{
         RF = {
             authorization : RFCredentials?.authorization?? UserData[credentialGroup ?? 'QA'].RF.authorization,
@@ -108,14 +117,15 @@ export const SetRFCredentials = (credentialGroup: string | undefined, RFCredenti
             url :           RFCredentials?.url?? UserData[credentialGroup ?? 'QA'].RF.url,
             user :          RFCredentials?.user?? UserData[credentialGroup ?? 'QA'].RF.user,
             version :       RFCredentials?.version?? UserData[credentialGroup ?? 'QA'].RF.version,
-            warehouse :     RFCredentials?.warehouse?? UserData[credentialGroup ?? 'QA'].RF.warehouse,
+            warehouse :     scenario.Scenario?.warehouse?.description ?? RFCredentials?.warehouse?? UserData[credentialGroup ?? 'QA'].RF.warehouse,
         }
     } catch (error) {
         throw new Error('there was an error trying to load the RF credential data. Review the Credential Group. ');
     }
 
 }
-export const SetAPICredentials = (credentialGroup: string | undefined, APICredentials: iUserCredentials| undefined) => {
+export const SetAPICredentials = (credentialGroup: string | undefined, scenario: initArgs) => {
+    const APICredentials: iUserCredentials| undefined = scenario.Credentials?.API;
     try{
         API = {
             authorization : APICredentials?.authorization?? UserData[credentialGroup ?? 'QA'].API.authorization,
@@ -128,7 +138,7 @@ export const SetAPICredentials = (credentialGroup: string | undefined, APICreden
             url :           APICredentials?.url?? UserData[credentialGroup ?? 'QA'].API.url,
             user :          APICredentials?.user?? UserData[credentialGroup ?? 'QA'].API.user,
             version :       APICredentials?.version?? UserData[credentialGroup ?? 'QA'].API.version,
-            warehouse :     APICredentials?.warehouse?? UserData[credentialGroup ?? 'QA'].API.warehouse,
+            warehouse :     scenario.Scenario?.warehouse?.description ?? APICredentials?.warehouse?? UserData[credentialGroup ?? 'QA'].API.warehouse,
         }
     } catch (error) {
         throw new Error('there was an error trying to load the API credential data. Review the Credential Group. ');
