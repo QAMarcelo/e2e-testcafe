@@ -18,7 +18,7 @@ export class NJTelnet {
 			port: Number(RF.port!),
 			//shellPrompt: /\\r\u0000\\r\\u/,
 			negotiationMandatory: false,
-			timeout: 20000
+			timeout: 2000
 		}
 	}
 
@@ -35,7 +35,8 @@ export class NJTelnet {
 		  await this.conn.connect(params);
 		} catch (error) {
 			console.log(error);
-
+			throw new Error("Cannot connect to RF");
+			
 		}
 		await t.wait(1500);
 		// this.conn.on('timeout', () => {
@@ -91,14 +92,12 @@ export class NJTelnet {
 	* returns a string with the RF screen response 
 	*/
 	public async Send(data: string, waitForText: string|false = false ): Promise<string> {
-		let options: SendOptions = {shellPrompt: /\r\r/};
-		
-		/*await this.conn.send(data, options, async (err, value)=>{
+		await t.wait(600);
+		return await this.conn.send(data, async (err, value)=>{
 			console.log(value);
-			output = value;
-	
-		});*/
-		return await this.conn.send(data, options);
+			
+			return value;
+		});
 	}
 
 	

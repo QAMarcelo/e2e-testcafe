@@ -165,6 +165,47 @@ export const UserData =
             language : CredentialLanguage.English,
         }
     },
+    ADJMI: {
+        DVU : {
+            user : "msanabriaqa1@wdgcorp.com",
+            password : "123",
+            database : "Adjmi",
+            warehouse : "Automation",
+            version : "v1",
+            port : "8443", 
+            license : "0000000007",
+            url :"https://qa-ecs.wdgcorp.com",
+            authorization : "Basic bXNhbmFicmlhcWExQHdkZ2NvcnAuY29tOjEyMw==",
+            type : CredentialType.UI,
+            language : CredentialLanguage.English
+        },
+        RF : {
+            user : "msanabriarf1@wdgcorp.com",
+            password : "123",
+            database : "Adjmi",
+            warehouse : "Automation",
+            version : "v1",
+            port : "5023", 
+            license : "0000000007",
+            url : "qa.rf.wdgcorp.com",
+            authorization : "Basic bXNhbmFicmlhcmYxQHdkZ2NvcnAuY29tOjEyMw==",
+            type : CredentialType.RF,
+            language : CredentialLanguage.English
+        }, 
+        API : {
+            user : "msanabriaapi1@wdgcorp.com",
+            password : "123",
+            database : "Adjmi",
+            warehouse : "Automation",
+            version : "v1",
+            port : "8443", 
+            license : "0000000007",
+            url : "https://qa-ecs.wdgcorp.com",
+            authorization : "Basic bXNhbmFicmlhYXBpMUB3ZGdjb3JwLmNvbToxMjM=",
+            type : CredentialType.API,
+            language : CredentialLanguage.English,
+        }
+    },
 
 }
 

@@ -66,7 +66,7 @@ export const PutawayScenario: scenario = {
             }
         }
     ],
-    storageLocations: {
+    /*storageLocations: {
         Locations:[
             { // Receive location
                 Description: PutawayVariables.Receive,
@@ -226,8 +226,8 @@ export const PutawayScenario: scenario = {
                 }
             }
         ]
-    },
-    items: [
+    },*/
+    /*items: [
         { // 1st Item
             ItemCode : PutawayVariables.itemCode, 
             Vendor: PutawayVariables.account,
@@ -242,7 +242,7 @@ export const PutawayScenario: scenario = {
                 Pallet_High: 4
             }
         }
-    ],
+    ],*/
     inventoryAdjustment: {
         itemAdjustment: [
             { // Receiving  | RCV-00 | t-shirt   | WHT | M       | 10
