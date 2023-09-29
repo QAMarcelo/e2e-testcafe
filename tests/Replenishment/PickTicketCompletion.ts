@@ -20,11 +20,15 @@ test.meta( {testType: 'regression', group:'replenishment', area: 'on pick ticket
         const orderNumber = UniqueValue( {text: 'ReplenishmentOrder', suffix:false});
         let businessPartner = ReplenishmentVariables.account;
 
+        // Change the Account configuration
         let updatedAccount = scenario.businessPartners![0];
         if(updatedAccount?.Attributes?.Work_Orders){
+            // Enable On Pick Ticket Completion
             updatedAccount.Attributes.Work_Orders.Replenish_on_Pick_Ticket_Completion= true;
+            // Disable On Pick Ticket Creation
             updatedAccount.Attributes.Work_Orders.Replenish_on_Pick_Ticket_creation= false;
         }
+        // Load the Changes
         await BackEnd.LoadAccount(updatedAccount!);
     
         // write email, password and select warehouse
