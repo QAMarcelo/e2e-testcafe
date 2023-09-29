@@ -8,7 +8,7 @@ export const LoadInventoryAdjustment = (invAdjs : InventoryAdjustmentAPI, itemId
         itemId: itemId,
         storageId: storageId,
         qty: invAdjs.qty,
-        status: invAdjs.status,
+        status: invAdjs.status? invAdjs.status : 1,
         lot: invAdjs.lot,
         lpn: invAdjs.lpn,
         sublot: invAdjs.sublot

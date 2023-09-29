@@ -9,6 +9,7 @@ export interface iItemAPI {
     category?:                   number;
     itemCode?:                   string;
     description?:                string;
+    itemDescription?:            string;
     valuePerEach?:               number;
     pickStyle?:                  number;
     pickOffset?:                 number;
@@ -53,7 +54,7 @@ export interface iItemAPI {
     kitSubItems?:                any[];
     upcs?:                       iItemUPCAPI[];
     itemWarehouses?:             any[];
-    replenishmentPlans?:         any[];
+    replenishmentPlans?:         iItemReplenishmentPlan[];
     vendorBrief?:                File;
     userDefined?:                {};
     buildable?:                  number;
@@ -61,7 +62,7 @@ export interface iItemAPI {
     vendor?:                     {};
     aliases?:                    any[];
     events?:                     iItemEventAPI[];
-    storageLocations?:           iItemStorageChargeAPI[];
+    storageLocations?:           iItemStorageLocations[];
     nmfcCode?:                   iItemFileAPI;
     hazmat?:                     iItemFileAPI;
     storageCharge?:              iItemStorageChargeAPI;
@@ -294,3 +295,26 @@ export interface iItemUPCAPI {
 //     id:       number;
 //     vendorId: number;
 // }
+
+export interface iItemStorageLocations {
+    id?:              number;
+    type?:            number;
+    itemId?:          number;
+    storageStartId?:  number;
+}
+
+export interface iItemReplenishmentPlan {
+  
+    id?:           number;
+    itemId?:       number;
+    lot?:          string;
+    sublot?:       string;
+    warehouseId?:  number;
+    enabled?:      number;
+    auto?:         number;
+    thresholdQty: number;
+    replenQty:    number;
+    maxQty:       number;
+    storageGroupId? : number;
+
+}

@@ -9,13 +9,12 @@ import { UserData } from './utils/userData';
 import { OverReceivedDialog } from './page-object/dialogs/overReceivedDialog';
 import { itemInventory } from './davinci-tabs/Item-Inventory';
 import { itemSKUS } from './davinci-tabs/items-skus/itemSkus';
-import { inventoryDetail } from './davinci-tabs/inventory-Detail/inventoryDetail';
-import { NJTelnet } from './utils/telnet';
+
 import { backEnd } from './utils/backEnd';
 import { shippingOrders } from './davinci-tabs/shipping-orders/ShippingOrders';
 import { InventoryByLocation } from './davinci-tabs/inventoryByLocation/inventorytByLocation';
-import { InventoryByLPNToolbar } from './davinci-tabs/inventoryByLPN/InventoryByLPNToolbar';
 import { InventoryByLPN } from './davinci-tabs/inventoryByLPN/InventoryByLPN';
+import { workOrders } from './davinci-tabs/workOrders/WorkOrders';
 
 
 class dialog{
@@ -40,6 +39,7 @@ class davinci{
     //**** ORDERS ****//
     public ReceivingOrders : receivingOrders;
     public ShippingOrders: shippingOrders;
+    public WorkOrders: workOrders;
     
     //**** Warehouse ****//
     public ItemInventory : itemInventory;
@@ -61,6 +61,8 @@ class davinci{
         this.ItemSKUs = new itemSKUS();
         this.BackEnd = new backEnd();
 
+        //**** ORDERS ****//
+        this.WorkOrders = new workOrders();
         this.ShippingOrders = new shippingOrders();
         this.InventoryByLocation = new InventoryByLocation();
         this.InventoryByLPN = new InventoryByLPN;

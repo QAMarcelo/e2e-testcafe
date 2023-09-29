@@ -35,9 +35,10 @@ export interface UOMAPI {
     Height?: number, 
     Tare?: number, //Tare
     caseMaxStackWeight?: number,
-    QTY_IP_CS?: number, //eaCaseQty
-    QTY_EA_IP?: number, //ipCaseQty
-    
+    //QTY_IP_CS?: number, //eaCaseQty
+    //QTY_EA_IP?: number, //ipCaseQty
+    CaseQty?: number,
+    InnerQty?: number,
     Pallet_Tie?: number,
     Pallet_High?: number,
     Pallet_MaxStackWeight?: number, 
@@ -51,17 +52,16 @@ export interface ItemsAPI {
 export interface ReplenishmentItemAPI {
     
         id?: number,
-        itemId?: number,
+        //itemId?: number,
         lot?: string,
         sublot?: string,
-        warehouseId?: number,
-        enabled?: boolean,
-        auto?: boolean,
-        thresholdQty?: number,
-        replenQty?: number,
-        maxQty?: number,
-        storageGroupId?: number
-      
+        warehouse: string,
+        enabled: boolean,
+        auto: boolean,
+        thresholdQty: number,
+        replenQty: number,
+        maxQty: number,
+        storageGroup?: string
 }
 
 export interface ItemAPI {
@@ -84,5 +84,18 @@ export interface ItemAPI {
     SpecialInstructions? : string,
     inventoryAdjustment?: InventoryAdjustmentAPI[],
     defaultOuom?: number,
-    Replenishment?: ReplenishmentItemAPI[]
+    Replenishment?: ReplenishmentItemAPI[],
+    Storage?: ItemStorageAPI[]
+}
+
+export interface ItemStorageAPI {
+    Location: string,
+    Type: ItemStorageTypeAPI, 
+    Warehouse: string
+}
+
+export enum ItemStorageTypeAPI {
+    PrimaryPickLocations = 1,
+    ReplenishmentLocations = 2,
+    PutAwayLocations = 3
 }

@@ -116,7 +116,9 @@ class Initializer {
 
             const sLocationResponse = await APICall.getStorageLocations(args.Scenario, whResp.id!);
             if(args.Scenario.storageLocations && sLocationResponse.length != args.Scenario.storageLocations?.Locations?.length) throw new Error(`Error: not all the Storage Locations were created/updated`);
-
+            
+            const storageGroup = await APICall.getStorageGroup(args.Scenario);
+            
             const itemsResponse =  await APICall.getItems(args.Scenario); 
             if(args.Scenario.items && itemsResponse.length != args.Scenario.items?.length) throw new Error(`Error: not all the items were created/updated`);
 
@@ -126,7 +128,6 @@ class Initializer {
             const seqResponse = await APICall.getSequences(args.Scenario);
             if(args.Scenario.sequences && seqResponse.length != args.Scenario.sequences?.length) throw new Error(`Error: not all the sequences were saved`);
 
-            const storageGroup = await APICall.getStorageGroup(args.Scenario);
         }
 
         

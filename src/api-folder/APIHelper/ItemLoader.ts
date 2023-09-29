@@ -1,10 +1,13 @@
-import { iItemAPI, iItemUOMAPI, iItemUPCAPI } from "../interfaces/iItemAPI";
-import { ItemAPI, Item_UOMType, UPCAPI } from "../itemSKUS";
+import { warehouse } from "../../page-object";
+import { APIClass } from "../APIClass";
+import { iStorageLocationAPI } from "../interfaces";
+import { iItemAPI, iItemReplenishmentPlan, iItemStorageLocations, iItemUOMAPI, iItemUPCAPI } from "../interfaces/iItemAPI";
+import { ItemAPI, ItemStorageAPI, Item_UOMType, ReplenishmentItemAPI, UPCAPI } from "../itemSKUS";
 import { Velocity } from "./StorageLocationLoader";
 
 
 
-export const LoadItemData = (item: ItemAPI, iItem?: iItemAPI): iItemAPI => {
+export const LoadItemData = async(item: ItemAPI, iItem: iItemAPI|undefined, apiClass: APIClass|undefined): Promise<iItemAPI> => {
 
     const idata = iItem? {...iItem} : {};
     
@@ -38,7 +41,7 @@ export const LoadItemData = (item: ItemAPI, iItem?: iItemAPI): iItemAPI => {
     //idata.kitSubItems= iItem?.kitSubItems ?? [];
     idata.upcs= loadUPCData(item.UPC ?? [], iItem?.upcs) ;
     idata.itemWarehouses= iItem?.itemWarehouses ?? [];
-    idata.replenishmentPlans= iItem?.replenishmentPlans?? [];
+    idata.replenishmentPlans= await loadItemReplenismentPlan(item?.Replenishment, apiClass!);
     //idata.vendorBrief= {};                
     //idata.userDefined=                iUserDefined;
     idata.buildable= item.buildable ?? (iItem?.buildable?? 1);
@@ -46,7 +49,7 @@ export const LoadItemData = (item: ItemAPI, iItem?: iItemAPI): iItemAPI => {
     //idata.vendor= {id: item.AccoundId};
     //idata.aliases= iItem?.aliases ?? [];
     //idata.events?=                     Event[];
-    //idata.storageLocations?=           any[];
+    idata.storageLocations = await loadItemStorageLocations(item.Storage!, apiClass!);
     //idata.nmfcCode=                   File;
     //idata.hazmat=                     File;
     //idata.storageCharge=              iStorageCharge;
@@ -62,23 +65,10 @@ const loadUOMData = (item: ItemAPI, iItem?: iItemAPI) : iItemUOMAPI => {
     item.UOM_type = item.UOM_type ?? iUom?.defaultOuom?? Item_UOMType.Each;
     let uomValues: iItemUOMAPI = {}
     switch (item.UOM_type) {
-        case Item_UOMType.Case:
-            uomValues = {
-                caseAbbrev :  item.UOM?.Abbreviation ?? iUom?.caseAbbrev ?? "CS",
-                caseDepth:  item.UOM?.Length?? iUom?.caseDepth,
-                caseDescription: item.UOM?.Description ?? iUom?.caseDescription?? "Case",
-                caseHasInnerpack: item.UOM?.HasInnerpack? Number(item.UOM?.HasInnerpack): iUom?.caseHasInnerpack,
-                caseHeight:  item.UOM?.Height?? iUom?.caseHeight,
-                //caseMaxStackWeight: iUom?.caseMaxStackWeight?? 0,
-                caseTare: item.UOM?.GrossLBS?? iUom?.caseTare,
-                caseWeight:  item.UOM?.GrossLBS ?? iUom?.caseWeight,
-                caseWidth:  item.UOM?.Width ?? iUom?.caseWidth,
-            };
-            break;
         case Item_UOMType.Each:
             uomValues = {
                 eaAbbrev: item.UOM?.Abbreviation ?? iUom?.eaAbbrev?? "EA",
-                eaCaseQty: item.UOM?.QTY_IP_CS ?? iUom?.eaCaseQty,
+                eaCaseQty: item.UOM?.CaseQty ?? iUom?.eaCaseQty,
                 eaDepth: item.UOM?.Length ?? iUom?.eaDepth,
                 eaDescription: item.UOM?.Description ?? iUom?.eaDescription ?? "Each", 
                 eaHeight: item.UOM?.Height?? iUom?.eaHeight,
@@ -87,10 +77,25 @@ const loadUOMData = (item: ItemAPI, iItem?: iItemAPI) : iItemUOMAPI => {
                 eaWidth: item.UOM?.Width ?? iUom?.eaWidth,
             };
          break;
+         case Item_UOMType.Case:
+             uomValues = {
+                 caseAbbrev :  item.UOM?.Abbreviation ?? iUom?.caseAbbrev ?? "CS",
+                 caseDepth:  item.UOM?.Length?? iUom?.caseDepth,
+                 caseDescription: item.UOM?.Description ?? iUom?.caseDescription?? "Case",
+                 caseHasInnerpack: item.UOM?.HasInnerpack? Number(item.UOM?.HasInnerpack): iUom?.caseHasInnerpack,
+                 caseHeight:  item.UOM?.Height?? iUom?.caseHeight,
+                 eaCaseQty: item.UOM?.CaseQty?? iUom.eaCaseQty,
+                 //caseMaxStackWeight: iUom?.caseMaxStackWeight?? 0,
+                 caseTare: item.UOM?.GrossLBS?? iUom?.caseTare,
+                 caseWeight:  item.UOM?.GrossLBS ?? iUom?.caseWeight,
+                 caseWidth:  item.UOM?.Width ?? iUom?.caseWidth,
+             };
+        break;
         case Item_UOMType.InnerPack:
             uomValues = {
                 ipAbbrev: item.UOM?.Abbreviation?? iUom?.ipAbbrev?? "IP",
-                ipCaseQty: item.UOM?.QTY_EA_IP?? iUom?.ipCaseQty,
+                eaCaseQty: item.UOM?.CaseQty?? iUom.eaCaseQty,
+                ipCaseQty: item.UOM?.InnerQty?? iUom.ipCaseQty,
                 ipDepth: item.UOM?.Length?? iUom?.ipDepth,
                 ipDescription: item.UOM?.Description ?? iUom?.ipDescription?? "Inner Pack",
                 ipHeight: item.UOM?.Height?? iUom?.ipHeight,
@@ -113,9 +118,9 @@ const loadUOMData = (item: ItemAPI, iItem?: iItemAPI) : iItemUOMAPI => {
 
     return {...uomValues,...pallet};
 }
-export const loadUPCData = (ucps: UPCAPI[], iupcs?: iItemUPCAPI[]): iItemUPCAPI[] => {
+const loadUPCData = (ucps: UPCAPI[], iupcs?: iItemUPCAPI[]): iItemUPCAPI[] => {
 
-    const upcLoaded: iItemUPCAPI[] = []
+    let upcLoaded: iItemUPCAPI[] = []
     ucps?.forEach(upc => {
         let existingUPC = iupcs?.find(x=> {return x.upc == upc.upc && x.itemDescription == upc.description} )
         upcLoaded.push(
@@ -130,4 +135,49 @@ export const loadUPCData = (ucps: UPCAPI[], iupcs?: iItemUPCAPI[]): iItemUPCAPI[
     });
     // return upcLoaded;
     return []
+}
+
+export const loadItemReplenismentPlan = async (replenishmentPlan: ReplenishmentItemAPI[]|undefined, apiClass: APIClass): Promise<iItemReplenishmentPlan[]> =>{
+    let replehisnment : iItemReplenishmentPlan[] = [];
+    //const iRepPlan = {...iReplenishmentPlan};
+
+    if(replenishmentPlan){
+
+        for await (const repPlan of replenishmentPlan) {
+            const warehouseID = (await apiClass.searchWarehouse(repPlan.warehouse))?.id;
+            const storageGroupID = repPlan.storageGroup && repPlan.warehouse? await apiClass.searchStorageGroup(repPlan.storageGroup, warehouseID!) : undefined;
+            replehisnment.push({
+                maxQty : repPlan.maxQty,
+                replenQty: repPlan.replenQty,
+                thresholdQty: repPlan.thresholdQty,
+                auto: Number(repPlan.auto),
+                enabled: repPlan.enabled? Number(repPlan.enabled) : 1,
+                lot: repPlan.lot,
+                sublot: repPlan.sublot,
+                warehouseId: warehouseID,
+                storageGroupId: storageGroupID? storageGroupID?.id : undefined
+            })
+        }
+    }
+  
+    return replehisnment;
+}
+
+export const loadItemStorageLocations = async (itemStorageLocation: ItemStorageAPI[]|undefined, apiClass: APIClass): Promise<iItemStorageLocations[]> => {
+    let storageLocations: iItemStorageLocations[] = [];
+
+    if(itemStorageLocation){
+        for await (const storage of itemStorageLocation) {
+            const warehouseId = (await apiClass.searchWarehouse(storage.Warehouse))?.id;
+            storageLocations.push({
+                type : storage.Type,
+                storageStartId: (await apiClass.searchStorageLocation(storage.Location, warehouseId!))?.id,
+            })
+        }
+      
+        
+        
+    }
+
+    return storageLocations;
 }

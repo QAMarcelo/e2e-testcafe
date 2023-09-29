@@ -15,14 +15,14 @@ export class ComboboxWriteAndSearch extends BaseObject{
     }
 
 
-    public async Search(text: string): Promise<void>{
+    public async Search(searchText: string, selectText: string = ''): Promise<void>{
         const clear = this._container.find('.k-clear-value');
         if(await clear.exists ){
             await t.click(clear);
         }
 
-        await t.typeText(this._container.find( 'kendo-searchbar input'), text);
-        await t.click(Selector('.k-popup .k-list-ul li').withText(text));
+        await t.typeText(this._container.find( 'kendo-searchbar input'), searchText);
+        await t.click(Selector('.k-popup .k-list-ul li span').withText(selectText.length>0? selectText: searchText));
     }
 
     public async Click(): Promise<void> { 

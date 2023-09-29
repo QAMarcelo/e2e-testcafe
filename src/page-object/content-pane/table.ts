@@ -14,6 +14,11 @@ export class Table extends BaseSelector {
         super(selector)
     }
 
+    public async getRowCounts(): Promise<number>{
+        let counter = await this._container.find('tbody tr:not(.k-grid-norecords)').count;
+
+        return counter;
+    }
     public async clickRowByQuery(...tableQuery : TableQuery[]){
         var query = "";
         for await (const e of tableQuery) {

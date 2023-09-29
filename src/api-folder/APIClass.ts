@@ -1,6 +1,6 @@
 
 import { t } from 'testcafe';
-import { LoadItemData, LoadStorageLocationsData, LoadVendorAssignedCodes, LoadVendorData, LoadVendorDefaultBilling, LoadWarehouseData } from './APIHelper/APIHelper';
+import { LoadItemData, LoadStorageLocationsData, LoadVendorAssignedCodes, LoadVendorData, LoadVendorDefaultBilling, LoadWarehouseData, loadItemReplenismentPlan, loadItemStorageLocations } from './APIHelper/APIHelper';
 import { BusinessPartnerAPI } from './businessPartners';
 import { iSequenceAPI, iBusinessPartnerAPI, iInvAdjustmentDetailAPI, iInventoryAdjustmentAPI, iItemAPI, iStorageLocationAPI, iUser, iWarehouseAPI, iVendorAPI } from './interfaces/';
 
@@ -342,6 +342,7 @@ export class APIClass {
         if(scenario.items){
             for await (const item of scenario.items) {
                 const existItem = await this.searchItem({itemCode: item.ItemCode, itemDescription: item.Description, account: item.Vendor}, true) as iItemAPI; 
+                
                 //const itemToCompare =  await this.updateItem(existItem) ;
                 let itemResponse: iItemAPI | undefined = undefined
                 let itemLoaded : iItemAPI;
@@ -352,14 +353,15 @@ export class APIClass {
                 }
 
                 if(existItem){
-                    itemLoaded = LoadItemData(item, existItem) as iItemAPI;
+                    itemLoaded = await LoadItemData(item, existItem, this) as iItemAPI;
+                 
                     //const comparedItems = JSON.stringify(existItem) === JSON.stringify(itemLoaded);
                     //if(!comparedItems){
                         itemResponse = await this.updateItem(itemLoaded);
                     //}
                     
                 }else{
-                    let itemLoaded = LoadItemData(item) as iItemAPI;
+                    let itemLoaded = await LoadItemData(item, undefined, this) as iItemAPI;
                     itemResponse = await this.createItem(itemLoaded);
                 }
                 if(itemResponse){
@@ -370,13 +372,14 @@ export class APIClass {
         return itemList;
     }
 
-    private cleanInventory = async(itemCode: string|undefined = undefined, slocation: string|undefined = undefined,  warehouseId: number):Promise<void> => {
+    private cleanInventory = async(clean:{itemCode: string|undefined, itemDescription: string|undefined, slocation: string|undefined,  warehouseId: number}):Promise<void> => {
         //let itemObject = this.searchItem(ItemCode) as iItemAPI;
         //if(itemObject){
             ///const uri = `/whses/${warehouseId}/inv/detail?itemType=1&exact=lotCode&exact=sublotCode&exact=lpn&lotCode=&sublotCode=&pageSize=10000&pageOffset=1&itemId=${ItemId}`;
-            const itemCodeQuery = itemCode? `&itemCode=${itemCode}` : '';
-            const sLocationQuery = slocation? `&storageLocation=${slocation}`: '';
-            const uri = `/whses/${warehouseId}/inv/detail?itemType=1${itemCodeQuery}${sLocationQuery}&sortColumn=storageLocation`;
+            const itemCodeQuery = clean.itemCode? `&itemCode=${clean.itemCode}` : '';
+            const itemDescriptionQuery = clean.itemDescription? `&itemDescription=${clean.itemDescription}` : '';
+            const sLocationQuery = clean.slocation? `&storageLocation=${clean.slocation}`: '';
+            const uri = `/whses/${clean.warehouseId}/inv/detail?itemType=1${itemCodeQuery}${itemDescriptionQuery}${sLocationQuery}&sortColumn=storageLocation`;
 
            // /whses/15/inv/?itemType=1&pageSize=10000&pageOffset=1&itemCode=paperItem&vendorDescription=PaperAccount&sortColumn=itemCode&warehouseId=15
             
@@ -400,11 +403,13 @@ export class APIClass {
                         unitGwt: detail?.lbs
                     };
 
-                    const invAdjusResponse = await this.Call({Url: `/whses/${warehouseId}/inv/adjustment`, method: APIMethods.POST, data: invAdjustmentData})
+                    const invAdjusResponse = await this.Call({Url: `/whses/${clean.warehouseId}/inv/adjustment`, method: APIMethods.POST, data: invAdjustmentData})
                     if(invAdjusResponse['status']==200){
 
                     }else{
-                        throw new Error(`was not able to adjust inventory : ${itemCode}`);
+                        throw new Error('was not able to adjust inventory : ' 
+                        + (clean.itemCode? `with itemCode=${clean.itemCode}` : '') 
+                        + (clean.itemDescription? ` and itemDescription=${clean.itemDescription}` : '') );
                     }
 
                 }; 
@@ -433,10 +438,17 @@ export class APIClass {
 
                 if(invA.emptyInventory){
                     await this.cleanInventory(
-                        item? item.itemCode: undefined, 
-                        //sLocation ? sLocation.storageId : undefined , 
-                        undefined,
-                        whId
+                        {
+                            itemCode: item? item.itemCode : undefined,
+                            itemDescription: item? item?.description?? item?.itemDescription : undefined,
+                            slocation: undefined,
+                            warehouseId: whId
+                        }
+                        // item? item.itemCode: undefined, 
+                        
+                        // //sLocation ? sLocation.storageId : undefined , 
+                        // undefined,
+                        // whId
                     );
                 }
                 
@@ -516,6 +528,8 @@ export class APIClass {
         
         return storageGroups;
     }
+
+    
     /**
      * Get list of Warehouses per User
      */
@@ -796,7 +810,7 @@ export class APIClass {
         if(iResponse['status']==200){
             itemval = iResponse['data'];
         }else{
-            throw new Error(`Error: API create - Item:'${item.description}' , throw an error = ${iResponse['status']}`);
+            throw new Error(`Error: API create - Item:'${item.itemCode}' , throw an error = ${iResponse['status']}`);
         }
         return itemval; 
     }
@@ -832,6 +846,25 @@ export class APIClass {
         return sLocationFull;
     }
 
+
+    public searchStorageGroup = async(storageGroupName: string, warehouseId: number): Promise<iStorageGroupAPI|undefined> => {
+        const urlGParams = `/storage/group?pageSize=10000&pageOffset=1&name=${storageGroupName}&warehouseId=${warehouseId}&sortColumn=name`;
+        const result = await this.Call({Url: urlGParams, method: APIMethods.GET});
+        let existGroup : iStorageGroupAPI | undefined = undefined;
+        
+        if(result['status']==200){
+            const groupList : iStorageGroupAPI[] = result['data'];
+            groupList.forEach(value => {
+                if(value.name == storageGroupName){
+                    existGroup = value;
+                }
+            });
+           
+         }else{
+            throw new Error(`Error: search warehouse: '${storageGroupName}', throw an error = ${result['status']}`);
+        }
+        return existGroup;
+    }
     /**
      * update a Storage Location using an API endpoint
      * @param storageLocation:(iStorageLocationAPI) object
