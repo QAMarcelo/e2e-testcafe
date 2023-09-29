@@ -63,7 +63,7 @@ test
         await ItemSKUs.InventoryAdjust.CloseDialog.Click();
         
         //Go to Item Inventory tab
-        await Menu.ItemIventory.GoTo();
+        await Menu.ItemInventory.GoTo();
         
         //Search and select the item
         await ItemInventory.Toolbar.Search.Click();

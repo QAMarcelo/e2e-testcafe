@@ -93,7 +93,7 @@ test
 
     
     //verify 
-    await Menu.ItemIventory.GoTo();
+    await Menu.ItemInventory.GoTo();
     await ItemInventory.Toolbar.Search.Click();
     await ItemInventory.SearchDialog.Account.Find.Search(account);
     await ItemInventory.SearchDialog.Search.Click();

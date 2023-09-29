@@ -1,5 +1,5 @@
 import { ReplenishmentScenario, ReplenishmentVariables } from '../../scenarios/Regression/Replenishment/ReplenishmentScenario';
-import { DVU, Login, Menu } from '../../src/DVU';
+import { BackEnd, DVU, Login, Menu } from '../../src/DVU';
 import { Init, UniqueValue } from "../../src/utils";
 import { NJTelnet } from '../../src/utils/telnet';
 
@@ -15,63 +15,90 @@ fixture(`Replenishment`) .meta({fixtureType: 'On Pick ticket Creation'})
 
 
 test.meta( {testType: 'regression', group:'replenishment', area: 'on pick ticket creation', parallel: false}) 
-    ('DPD-1996: On Pick Ticket Creation', async t =>{
+    ('DPD-1997: On Pick Ticket Completion', async t =>{
         /** VARIABLES  */
         const orderNumber = UniqueValue( {text: 'ReplenishmentOrder', suffix:false});
+        let businessPartner = ReplenishmentVariables.account;
+
+        let updatedAccount = scenario.businessPartners![0];
+        if(updatedAccount?.Attributes?.Work_Orders){
+            updatedAccount.Attributes.Work_Orders.Replenish_on_Pick_Ticket_Completion= true;
+            updatedAccount.Attributes.Work_Orders.Replenish_on_Pick_Ticket_creation= false;
+        }
+        await BackEnd.LoadAccount(updatedAccount!);
+    
         // write email, password and select warehouse
         await Login.LoginIn();
 
-        // Go to Work Orders tab
-        await DVU.Menu.WorkOrders.GoTo();
-        // get the qty of rows displayed in the work orders tab
-        const rowCount = await DVU.WorkOrders.Table.getRowCounts();
-
-        // Go to Shipping orders
+        //go to Shipping Orders
         await DVU.Menu.ShippingOrders.GoTo();
-        // Click insert new order
+        //Create a new Shipping order
         await DVU.ShippingOrders.Toolbar.Insert.Click();
-        // Select the Account
+        //select Account
         await DVU.ShippingOrders.CreateOrder.Account.Find.Search(ReplenishmentVariables.account);
-        // Set the Order Number
+        //set a Order Number
         await DVU.ShippingOrders.CreateOrder.OrderNumber.SetText(orderNumber);
-        // Save the Order
+        //Save order
         await DVU.ShippingOrders.CreateOrder.Save.Click();
 
-        // Click on the Side Menu-> LineEntries
+
+        //Go to Line Entries
         await DVU.ShippingOrders.CreateOrder.SideMenu.LineEntries.Click();
-        // Click insert button
+        //Insert a new Line
         await DVU.ShippingOrders.CreateOrder.LineEntries.Toolbar.Insert.Click();
-        // Search the Item
+        //Search the Item and select the one with Eaches
         await DVU.ShippingOrders.CreateOrder.LineEntries.GeneralPanel.ItemCode.Search(ReplenishmentVariables.itemCode, ReplenishmentVariables.itemCode+' EA');
-        // Set the LotCode
+        //Select LotCode
         await DVU.ShippingOrders.CreateOrder.LineEntries.GeneralPanel.LotCode.SetText('A');
-        // Set the Sublot Code
+        //Select Sublot Code
         await DVU.ShippingOrders.CreateOrder.LineEntries.GeneralPanel.SublotCode.SetText('1');
-        // Set the Ordered Qty
+        //set Ordered QTY
         await DVU.ShippingOrders.CreateOrder.LineEntries.GeneralPanel.OrderedQty.Increase(10);
-
-        // CLick insert Line entry
+        //Insert the line intry
         await DVU.ShippingOrders.CreateOrder.LineEntries.GeneralPanel.Insert.Click();
-        // Save Order
+        //Save the Order
         await DVU.ShippingOrders.CreateOrder.Save.Click();
 
-        // Go to Order's general view
+        //Go to general view
         await DVU.ShippingOrders.CreateOrder.SideMenu.General.Click();
-        // Change status to In process
+        //Change status to In Process
         await DVU.ShippingOrders.CreateOrder.Status.SelectByText('In Process');
-        // save Order
+        //Save Order
         await DVU.ShippingOrders.CreateOrder.Save.Click();
-        // Close dialog
+        //Close dialog
         await DVU.ShippingOrders.CreateOrder.CloseDialog.Click();
 
-        // Go to WorkOrder
+        //Go to Work Orders Tab
         await DVU.Menu.WorkOrders.GoTo();
-        // Click on Refres button
+        //Refresh the table
         await DVU.WorkOrders.Toolbar.Refresh.Click();
-        // Verify that there is a new Work order Created
-        await t.expect(await DVU.WorkOrders.Table.getRowCounts()).gt(rowCount, 'there is no new WorkOrder when the pick ticket is created');
+        //Verify that there is no new Order created
+        await t.expect(await DVU.WorkOrders.Table.getRowCounts()).eql(0, 'there is no new WorkOrder when the pick ticket is created');
 
+        // Complete the pick ticket through RF
         const RFTelnet = new NJTelnet(); 
+        await RFTelnet.Connect(); //Init telnet conection
+        await RFTelnet.Login();   //Login to RF
+        await RFTelnet.Send("2"); //Select SHIPPING
+        await RFTelnet.Send("1"); //Select PICK
+        await RFTelnet.Send("1"); //Select BY ORDER NUMBER
+        await RFTelnet.Send("1"); //CONTINUE PICKING
+        await RFTelnet.Send("1"); //1 CONTINUE
+        await RFTelnet.Send("1"); //SELECT ITEM
+        await RFTelnet.Send(ReplenishmentVariables.PickFace); //SCAN LOCTN: Rep-PF1
+        await RFTelnet.Send(ReplenishmentVariables.lpn1); //SCAN LPN: Rep-LPN1
+        await RFTelnet.Send('A'); //SCAN LOT CODE: A
+        await RFTelnet.Send('1'); //PICK SUBLOT CODE : 1
+        await RFTelnet.Send("10"); //PICK QTY :10
+        await RFTelnet.Send(ReplenishmentVariables.PickFace); //SCAN LOCTN: Rep-PF1
+        await RFTelnet.End();   // end telnet session
+
+        //Refres work orders table
+        await DVU.WorkOrders.Toolbar.Refresh.Click();
+        //Verify that a new Work Order is created when
+        await t.expect(await DVU.WorkOrders.Table.getRowCounts()).eql(1, 'there is no new WorkOrder when the pick ticket is completed');
+
+        // Complete the Work Order through RF
         await RFTelnet.Connect(); //Init telnet conection
         await RFTelnet.Login();   //Login to RF
         await RFTelnet.Send("5"); //Select WORK ORDERS
@@ -87,21 +114,20 @@ test.meta( {testType: 'regression', group:'replenishment', area: 'on pick ticket
         await RFTelnet.Send("1"); //REPLENISMENT COMPLETED PRESS 1 to CONTINUE
         await RFTelnet.End();   // end telnet session
 
-        // Go to Item Inventory
+        //go to Item Inventory tab
         await DVU.Menu.ItemInventory.GoTo();
-        // Filter the inventory by Account
         await DVU.ItemInventory.Toolbar.Search.Click();
+        //Filter order by account
         await DVU.ItemInventory.SearchDialog.Account.Find.Search(ReplenishmentVariables.account);
         await DVU.ItemInventory.SearchDialog.Search.Click();
-
-        // Verify that the expected value for Eachs after the replenishment is the expected one
+        //Verify the Eaches inventory is the expected one
         await t.expect(await DVU.ItemInventory.Table.getCellValue(
             {targed: 'Available Qty'},
             {rowTitle: 'Item Code', rowValue: 'ItemRep'},
             {rowTitle: 'UOM', rowValue: 'EA'}
         )).eql('55', 'The replenishment didn\'t relocate the correct amount. Expeacted value = 55');
-        
-        // Verify that the expected value for Cases after the replenishment is the expected one
+
+        //Verify that Item Cases inventory is the expected one
         await t.expect(await DVU.ItemInventory.Table.getCellValue(
             {targed: 'Available Qty'},
             {rowTitle: 'Item Code', rowValue: 'ItemRep'},

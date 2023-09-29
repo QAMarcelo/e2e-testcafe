@@ -64,7 +64,7 @@ test
         await createOrder(account, orderNumber2, [{oQty: 4, sQty: 4}, {oQty: 3, sQty: 3}], item1);
         
         // go to Item Inventory
-        await DVU.Menu.ItemIventory.GoTo();
+        await DVU.Menu.ItemInventory.GoTo();
         // filetr the item by the account
         await DVU.ItemInventory.Toolbar.Search.Click();
         await DVU.ItemInventory.SearchDialog.Account.SearchAndSelect(account);
@@ -287,7 +287,7 @@ test
             await RFTelnet.End();   // end telnet session
 
         // go to Item Inventory
-        await DVU.Menu.ItemIventory.GoTo();
+        await DVU.Menu.ItemInventory.GoTo();
         // filetr the item by the account
         await DVU.ItemInventory.Toolbar.Search.Click();
         await DVU.ItemInventory.SearchDialog.Account.SearchAndSelect(accountDescription);

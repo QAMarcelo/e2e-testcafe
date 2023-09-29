@@ -24,7 +24,7 @@ export class menu {
         Cartonization:MenuItem;
         InventoryByLPN: MenuItem;
         InventoryByLocation: MenuItem;
-        ItemIventory: MenuItem;
+        ItemInventory: MenuItem;
         Items_SKUs: MenuItem;
         KitInventory: MenuItem;
         Kits_BOM: MenuItem;
@@ -117,7 +117,7 @@ export class menu {
             this.Cartonization = new MenuItem('Cartonization', this.Warehouse);
             this.InventoryByLPN = new MenuItem('Inventory By LPN', this.Warehouse);
             this.InventoryByLocation = new MenuItem('Inventory By Location', this.Warehouse);
-            this.ItemIventory = new MenuItem('Item Inventory', this.Warehouse);
+            this.ItemInventory = new MenuItem('Item Inventory', this.Warehouse);
             this.Items_SKUs = new MenuItem('Items / SKUs', this.Warehouse);
             this.KitInventory = new MenuItem('Kit Inventory',  this.Warehouse);
             this.Kits_BOM = new MenuItem('Kits / BOM', this.Warehouse);
