@@ -6,12 +6,14 @@ export interface TableQuery {
     rowTitle : string,
     rowValue: string,
 }
-export class Table extends BaseSelector {
+export class Table  {
     _container : Selector;
+    _containerString: string;
     private Headers: string[];
     
-    constructor( selector: Selector){
-        super(selector)
+    constructor( selector: Selector, xpathString: string=''){
+        this._container=selector;
+        this._containerString=xpathString;
     }
 
     public async getRowCounts(): Promise<number>{
@@ -30,7 +32,11 @@ export class Table extends BaseSelector {
         if(query.length>0){
             query = query.substring(0, query.length-4);
             query = "//div[contains(@class, 'k-state-active')] //tr[ " + query + "]";
-            await t.click(XPathSelector(query));
+            try {
+                await t.click(XPathSelector(query));
+            } catch (error) {
+                throw new Error('the selector \n'+ query + '\n was not able to fin any element in the DOM tree')
+            }
         }
     }
     
@@ -105,7 +111,8 @@ export class Table extends BaseSelector {
         var targedAriacolindex = await this._container.find('.k-column-title').withExactText(column.targed).parent('[role="columnheader"]').getAttribute('aria-colindex');
         if(query.length>0){
             query = query.substring(0, query.length-4);
-            query = "//div[contains(@class, 'k-state-active')] //tr[ " + query + "] //td[ @aria-colindex='"+targedAriacolindex+"'   ]";
+            const parentQuery=this._containerString.length>0? this._containerString : "//div[contains(@class, 'k-state-active')] ";
+            query = `${parentQuery} //tr[ ${query}] //td[ @aria-colindex='${targedAriacolindex}'   ]`;
             cellValue= await XPathSelector(query).innerText;
             //await t.click(XPathSelector(query));
         }

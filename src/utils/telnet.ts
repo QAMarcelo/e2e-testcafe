@@ -92,7 +92,7 @@ export class NJTelnet {
 	* returns a string with the RF screen response 
 	*/
 	public async Send(data: string, waitForText: string|false = false ): Promise<string> {
-		await t.wait(500);
+		await t.wait(650);
 		const result = await this.conn.send(data, async (err, value)=>{
 			if(this.ShowConsole){
 				console.log(value);
