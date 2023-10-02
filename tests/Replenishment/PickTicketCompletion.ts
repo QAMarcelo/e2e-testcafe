@@ -1,27 +1,24 @@
-import { ReplenishmentScenario, ReplenishmentVariables } from '../../scenarios/Regression/Replenishment/ReplenishmentScenario';
+import { Replenishment } from '../../scenarios/Replenishment/ReplenishmentScenario';
 import { BackEnd, DVU, Login, Menu } from '../../src/DVU';
 import { Init, UniqueValue } from "../../src/utils";
 import { NJTelnet } from '../../src/utils/telnet';
-
-const scenario = ReplenishmentScenario;
 
 fixture(`Replenishment`) .meta({fixtureType: 'On Pick ticket Creation'})
     .beforeEach(async t=>{
         await Init.Load({ 
             CredentialGroup: 'TRIAL',
-            Scenario: scenario
+            Scenario: Replenishment.Scenario
         });
     })
 
 
-test.meta( {testType: 'regression', group:'replenishment', area: 'on pick ticket creation', parallel: false}) 
+test.meta( {testType: 'regression', group:'replenishment', area: 'on completion', parallel: false}) 
     ('DPD-1997: On Pick Ticket Completion', async t =>{
         /** VARIABLES  */
         const orderNumber = UniqueValue( {text: 'ReplenishmentOrder', suffix:false});
-        let businessPartner = ReplenishmentVariables.account;
 
         // Change the Account configuration
-        let updatedAccount = scenario.businessPartners![0];
+        let updatedAccount = Replenishment.Scenario.businessPartners![0];
         if(updatedAccount?.Attributes?.Work_Orders){
             // Enable On Pick Ticket Completion
             updatedAccount.Attributes.Work_Orders.Replenish_on_Pick_Ticket_Completion= true;
@@ -39,7 +36,7 @@ test.meta( {testType: 'regression', group:'replenishment', area: 'on pick ticket
         //Create a new Shipping order
         await DVU.ShippingOrders.Toolbar.Insert.Click();
         //select Account
-        await DVU.ShippingOrders.CreateOrder.Account.Find.Search(ReplenishmentVariables.account);
+        await DVU.ShippingOrders.CreateOrder.Account.Find.Search(Replenishment.Variables.account);
         //set a Order Number
         await DVU.ShippingOrders.CreateOrder.OrderNumber.SetText(orderNumber);
         //Save order
@@ -51,7 +48,7 @@ test.meta( {testType: 'regression', group:'replenishment', area: 'on pick ticket
         //Insert a new Line
         await DVU.ShippingOrders.CreateOrder.LineEntries.Toolbar.Insert.Click();
         //Search the Item and select the one with Eaches
-        await DVU.ShippingOrders.CreateOrder.LineEntries.GeneralPanel.ItemCode.Search(ReplenishmentVariables.itemCode, ReplenishmentVariables.itemCode+' EA');
+        await DVU.ShippingOrders.CreateOrder.LineEntries.GeneralPanel.ItemCode.Search(Replenishment.Variables.itemCode, Replenishment.Variables.itemCode+' EA');
         //Select LotCode
         await DVU.ShippingOrders.CreateOrder.LineEntries.GeneralPanel.LotCode.SetText('A');
         //Select Sublot Code
@@ -89,12 +86,12 @@ test.meta( {testType: 'regression', group:'replenishment', area: 'on pick ticket
         await RFTelnet.Send("1"); //CONTINUE PICKING
         await RFTelnet.Send("1"); //1 CONTINUE
         await RFTelnet.Send("1"); //SELECT ITEM
-        await RFTelnet.Send(ReplenishmentVariables.PickFace); //SCAN LOCTN: Rep-PF1
-        await RFTelnet.Send(ReplenishmentVariables.lpn1); //SCAN LPN: Rep-LPN1
+        await RFTelnet.Send(Replenishment.Variables.PickFace); //SCAN LOCTN: Rep-PF1
+        await RFTelnet.Send(Replenishment.Variables.lpn1); //SCAN LPN: Rep-LPN1
         await RFTelnet.Send('A'); //SCAN LOT CODE: A
         await RFTelnet.Send('1'); //PICK SUBLOT CODE : 1
         await RFTelnet.Send("10"); //PICK QTY :10
-        await RFTelnet.Send(ReplenishmentVariables.PickFace); //SCAN LOCTN: Rep-PF1
+        await RFTelnet.Send(Replenishment.Variables.PickFace); //SCAN LOCTN: Rep-PF1
         await RFTelnet.End();   // end telnet session
 
         //Refres work orders table
@@ -109,12 +106,12 @@ test.meta( {testType: 'regression', group:'replenishment', area: 'on pick ticket
         await RFTelnet.Send("1"); //Select EXISTING ORDER
         await RFTelnet.Send("1"); //Select BY ORDER NUMBER
         await RFTelnet.Send("1"); //1 CONTINUE
-        await RFTelnet.Send(ReplenishmentVariables.Loc1); //WORK ORDER LOCTN: Rep-Loc1
-        await RFTelnet.Send(ReplenishmentVariables.itemCode); //WORK ORDER ITEM CODE: ItemRep
+        await RFTelnet.Send(Replenishment.Variables.Loc1); //WORK ORDER LOCTN: Rep-Loc1
+        await RFTelnet.Send(Replenishment.Variables.itemCode); //WORK ORDER ITEM CODE: ItemRep
         await RFTelnet.Send('A'); //WORK ORDER LOT CODE: A
         await RFTelnet.Send('1'); //WORK ORDER SUBLOT CO: 1
         await RFTelnet.Send('8'); //WORK ORDER RELOCATE: 8
-        await RFTelnet.Send(ReplenishmentVariables.PickFace); //WORK ORDER ITEM CODE: Rep-PF1
+        await RFTelnet.Send(Replenishment.Variables.PickFace); //WORK ORDER ITEM CODE: Rep-PF1
         await RFTelnet.Send("1"); //REPLENISMENT COMPLETED PRESS 1 to CONTINUE
         await RFTelnet.End();   // end telnet session
 
@@ -122,7 +119,7 @@ test.meta( {testType: 'regression', group:'replenishment', area: 'on pick ticket
         await DVU.Menu.ItemInventory.GoTo();
         await DVU.ItemInventory.Toolbar.Search.Click();
         //Filter order by account
-        await DVU.ItemInventory.SearchDialog.Account.Find.Search(ReplenishmentVariables.account);
+        await DVU.ItemInventory.SearchDialog.Account.Find.Search(Replenishment.Variables.account);
         await DVU.ItemInventory.SearchDialog.Search.Click();
         //Verify the Eaches inventory is the expected one
         await t.expect(await DVU.ItemInventory.Table.getCellValue(

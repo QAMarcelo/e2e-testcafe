@@ -1,18 +1,18 @@
 import { t } from "testcafe";
 
 //API
-import { BusinessPartnerAPI } from '../api-folder/businessPartners';
-import { StorageLocationsAPI } from "../api-folder/storageLocations";
-import { InventoryAdjustmentsAPI } from '../api-folder/inventory';
-import { ItemAPI } from "../api-folder/itemSKUS";
+import { BusinessPartnerAPI } from '../apiFolder/businessPartners';
+import { StorageLocationsAPI } from "../apiFolder/storageLocations";
+import { InventoryAdjustmentsAPI } from '../apiFolder/inventory';
+import { ItemAPI } from "../apiFolder/itemSKUS";
 import { API, SetAPICredentials, SetRFCredentials, SetUICredentials, WEB, RF } from "../DVU";
-import { APIClass  } from "../api-folder/APIClass";
-import { WarehouseAPI } from "../api-folder/warehouses/warehousesAPI";
+import { APIClass  } from "../apiFolder/APIClass";
+import { WarehouseAPI } from "../apiFolder/warehouses/warehousesAPI";
 import { CredentialLanguage, iUserCredentials } from "./helpers";
-import { SequenceAPI } from "../api-folder/Sequences/SequenceAPI";
-import { UserAPI } from "../api-folder/users/userAPI";
-import { UserGroupAPI } from "../api-folder/userGroup";
-import { StorageGroupAPI } from "../api-folder/storageGroups/storageGroupsAPI";
+import { SequenceAPI } from "../apiFolder/Sequences/SequenceAPI";
+import { UserAPI } from "../apiFolder/users/userAPI";
+import { UserGroupAPI } from "../apiFolder/userGroup";
+import { StorageGroupAPI } from "../apiFolder/storageGroups/storageGroupsAPI";
 //import { SelectDatabaseByText, SelectWarehouseByText } from "./telnet";
 
 export interface iCredentials{

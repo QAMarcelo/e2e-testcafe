@@ -1,4 +1,4 @@
-import { BarcodeScanning_without_LPNs } from "../../scenarios/1.14/Receiving/BarcodeScanning_without_LPNs";
+import { Scenario as BarcodeScanning } from "../../scenarios/Receiving/BarcodeScanning_without_LPNs";
 import { BackEnd, Dialogs, ItemInventory, Login, Menu, ReceivingOrders } from "../../src/DVU";
 import { Init, Keys, UniqueValue } from "../../src/utils";
 import { NJTelnet } from "../../src/utils/telnet";
@@ -10,10 +10,7 @@ fixture(`BarcodeScanning tests`) .meta({fixtureType: 'UI'})
 
    await Init.Load({ 
         CredentialGroup: 'TRIAL',
-        // Scenario: {
-        //     warehouse: { description: 'Barcode Scanning'}
-        // }
-        Scenario: BarcodeScanning_without_LPNs
+        Scenario: BarcodeScanning.Scenario
     });
 })
 
@@ -22,12 +19,12 @@ test
     ('BarcodeScanning without LPN', async t =>{
 
     /** VARIABLES  */
-    const account = 'Automatic Allocation';
-    const item = "T-Shirt";
-    const location = "Generic1";
+    // const account = 'Automatic Allocation';
+    // const item = "T-Shirt";
+    // const location = "Generic1";
     let orderNumber = UniqueValue({text: 'ON01-'});
-    const lotCode = 'BLK';
-    const subLotCode = 'L';
+    // const lotCode = 'BLK';
+    // const subLotCode = 'L';
 
     // write email, password and select warehouse
     await Login.LoginIn();
@@ -37,17 +34,17 @@ test
 
     //Create a new order
     await ReceivingOrders.Toolbar.Insert.SelectValue('Create New Receipt');
-    await ReceivingOrders.CreateReceivingOrder.Account.Find.Search(account);
+    await ReceivingOrders.CreateReceivingOrder.Account.Find.Search(BarcodeScanning.Variable.account);
     await ReceivingOrders.CreateReceivingOrder.OrderNumber.SetText(orderNumber);
     await ReceivingOrders.CreateReceivingOrder.Save.Click();
 
     // add a entry line with qty planned = 5 and qty received = 10
     await ReceivingOrders.CreateReceivingOrder.SideMenu.LineEntries.Click();
     await ReceivingOrders.CreateReceivingOrder.LineEntries.Toolbar.Insert.Click();
-    await ReceivingOrders.CreateReceivingOrder.LineEntries.GeneralPanel.ItemCode.Search(item);
+    await ReceivingOrders.CreateReceivingOrder.LineEntries.GeneralPanel.ItemCode.Search(BarcodeScanning.Variable.itemCode);
     await ReceivingOrders.CreateReceivingOrder.LineEntries.GeneralPanel.QtyPlanned.Increase(5);
-    await ReceivingOrders.CreateReceivingOrder.LineEntries.GeneralPanel.LotCode.SetText(lotCode);
-    await ReceivingOrders.CreateReceivingOrder.LineEntries.GeneralPanel.SublotCode.SetText(subLotCode);
+    await ReceivingOrders.CreateReceivingOrder.LineEntries.GeneralPanel.LotCode.SetText(BarcodeScanning.Variable.lotCode);
+    await ReceivingOrders.CreateReceivingOrder.LineEntries.GeneralPanel.SublotCode.SetText(BarcodeScanning.Variable.subLotCode);
     await ReceivingOrders.CreateReceivingOrder.LineEntries.GeneralPanel.Insert.Click();
     await ReceivingOrders.CreateReceivingOrder.Save.Click();
 
@@ -56,7 +53,7 @@ test
     await ReceivingOrders.CreateReceivingOrder.Status.SelectByText('In Process');
     await ReceivingOrders.CreateReceivingOrder.Save.Click();
     await ReceivingOrders.CreateReceivingOrder.CloseDialog.Click();
-    const itemStock = await BackEnd.GetItemStock({Item: item, Vendor: account, Warehouse: 'Barcode Scanning', Lot: lotCode, SubLot: subLotCode});
+    const itemStock = await BackEnd.GetItemStock({Item: BarcodeScanning.Variable.itemCode, Vendor: BarcodeScanning.Variable.account, Warehouse: 'Barcode Scanning', Lot: BarcodeScanning.Variable.lotCode, SubLot: BarcodeScanning.Variable.subLotCode});
    
     ///////RF /////////
     const RFTelnet = new NJTelnet(true); 
@@ -67,7 +64,7 @@ test
     await RFTelnet.Send("1"); //Select By Order Number
     await RFTelnet.Send(orderNumber); //scan Order number
     await RFTelnet.Send('1'); // Select continue
-    await RFTelnet.Send(location); // SCAN STAGING LOCATION-
+    await RFTelnet.Send(BarcodeScanning.Variable.storage1); // SCAN STAGING LOCATION-
     await RFTelnet.Send("3"); // Select the Item
     await RFTelnet.Send("10"); // ENTER QTY-
     await RFTelnet.Send("1"); // ACCEPT OVERAGE? YES
@@ -95,12 +92,12 @@ test
     //verify 
     await Menu.ItemInventory.GoTo();
     await ItemInventory.Toolbar.Search.Click();
-    await ItemInventory.SearchDialog.Account.Find.Search(account);
+    await ItemInventory.SearchDialog.Account.Find.Search(BarcodeScanning.Variable.account);
     await ItemInventory.SearchDialog.Search.Click();
     await t.expect(await ItemInventory.Table.existRowByQuery(
-        {rowTitle: 'Item Code', rowValue: item},
-        {rowTitle: 'Lot Code', rowValue: lotCode},
-        {rowTitle: 'Sublot Code', rowValue: subLotCode},
+        {rowTitle: 'Item Code', rowValue: BarcodeScanning.Variable.itemCode},
+        {rowTitle: 'Lot Code', rowValue: BarcodeScanning.Variable.lotCode},
+        {rowTitle: 'Sublot Code', rowValue: BarcodeScanning.Variable.subLotCode},
         {rowTitle: 'Available Qty', rowValue: (itemStock.qtyAvailable + 10).toString()}
     )).ok('the item inventory is incorrect');
 

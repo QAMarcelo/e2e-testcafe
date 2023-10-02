@@ -1,20 +1,20 @@
 import { t } from 'testcafe';
 import { XPathSelector, iCredentials, iUserCredentials, initArgs } from './utils';
 
-import { errorDialog, warehouse, homeHeader, menu } from './page-object';
+import { errorDialog, warehouse, homeHeader, menu } from './pageObject';
 import { login } from './login';
-import { receivingOrders } from './davinci-tabs/receiving-orders/ReceivingOrders';
+import { receivingOrders } from './davinciTabs/receivingOrders/ReceivingOrders';
 import { UserData } from './utils/userData';
 
-import { OverReceivedDialog } from './page-object/dialogs/overReceivedDialog';
-import { itemInventory } from './davinci-tabs/Item-Inventory';
-import { itemSKUS } from './davinci-tabs/items-skus/itemSkus';
+import { OverReceivedDialog } from './pageObject/dialogs/overReceivedDialog';
+import { itemInventory } from './davinciTabs/itemInventory';
+import { itemSKUS } from './davinciTabs/itemsSKUs/itemSkus';
 
 import { backEnd } from './utils/backEnd';
-import { shippingOrders } from './davinci-tabs/shipping-orders/ShippingOrders';
-import { InventoryByLocation } from './davinci-tabs/inventoryByLocation/inventorytByLocation';
-import { InventoryByLPN } from './davinci-tabs/inventoryByLPN/InventoryByLPN';
-import { workOrders } from './davinci-tabs/workOrders/WorkOrders';
+import { shippingOrders } from './davinciTabs/shippingOrders/ShippingOrders';
+import { InventoryByLocation } from './davinciTabs/inventoryByLocation/inventorytByLocation';
+import { InventoryByLPN } from './davinciTabs/inventoryByLPN/InventoryByLPN';
+import { workOrders } from './davinciTabs/workOrders/WorkOrders';
 
 
 class dialog{

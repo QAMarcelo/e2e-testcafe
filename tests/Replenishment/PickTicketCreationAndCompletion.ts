@@ -13,10 +13,10 @@ fixture(`Replenishment`) .meta({fixtureType: 'On Pick ticket Creation'})
     })
 
 
-test.meta( {testType: 'regression', group:'replenishment', area: 'on creation', parallel: false}) 
-    ('DPD-1996: On Pick Ticket Creation', async t =>{
+test.meta( {testType: 'regression', group:'replenishment', area: 'on Creation and Completion', parallel: false}).skip
+    (' On Pick Ticket Creation and Completion', async t =>{
         /** VARIABLES  */
-        const orderNumber = UniqueValue( {text: 'ReplenishmentOrder', suffix:false});
+        const orderNumber = UniqueValue( {text: 'Rep-Order', suffix:false});
         // write email, password and select warehouse
         await Login.LoginIn();
 

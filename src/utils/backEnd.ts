@@ -1,5 +1,5 @@
 import { API, RF, SetAPICredentials, SetRFCredentials, SetUICredentials, WEB } from "../DVU";
-import { BusinessPartnerAPI } from "../api-folder/businessPartners";
+import { BusinessPartnerAPI } from "../apiFolder/businessPartners";
 import { InitAPI, initArgs, scenario } from "./initializer";
 
 

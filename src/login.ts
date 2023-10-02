@@ -1,7 +1,7 @@
 import { Selector, t } from 'testcafe';
-import { Button } from './basic-objects/button';
-import { Dropdown } from './basic-objects/dropdown';
-import { TextBox } from './basic-objects/textbox';
+import { Button } from './basicObjects/button';
+import { Dropdown } from './basicObjects/dropdown';
+import { TextBox } from './basicObjects/textbox';
 import { Dialogs, WEB } from './DVU';
 export class login{
 
