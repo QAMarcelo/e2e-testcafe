@@ -18,7 +18,7 @@ export class inventoryDetail extends BaseDialog{
 
         this.StatusPanel = new StatusQuantityPanel(this._container.find('.mat-card'));
         this.Toolbar = new InventoryDetail_Toolbar(this._container); 
-        this.Table = new Table(this._container.find('[role=grid]'));
+        this.Table = new Table(this._container.find('[role=grid]'), "//div[@role='dialog'][.//*[@class='dialogHeader']/*[contains(text(), 'Inventory Detail')] ]");
 
     }
 }
