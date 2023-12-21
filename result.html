@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/drvic10k/bootstrap-sortable/ff650fd1/Contents/bootstrap-sortable.css">
+    <script
+            src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="https://cdn.rawgit.com/drvic10k/bootstrap-sortable/ff650fd1/Scripts/bootstrap-sortable.js"></script>
+    <script src="https://cdn.rawgit.com/drvic10k/bootstrap-sortable/ff650fd1/Scripts/moment.min.js"></script>
+    <style>
+      body {font-family: Arial, Helvetica, sans-serif;}
+
+      .thumbImg {
+        width: 100%;
+        max-width: 35px;
+        border-radius: 3px;
+        cursor: pointer;
+        margin-bottom: 5px;
+        border-width: 1px;
+        border-color: #f1f1f1;
+        border-style: solid;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        padding-top: 100px;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.7);
+      }
+
+      .modal-content {
+        margin: auto;
+        display: block;
+        width: 80%;
+        max-width: 700px;
+      }
+
+      .closeModal {
+        position: absolute;
+        top: 15px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        transition: 0.3s;
+      }
+
+      .closeModal:hover,
+      .closeModal:focus {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="myModal" class="modal">
+      <span class="closeModal">&times;</span>
+      <img class="modal-content" id="modelImage">
+    </div>
+    <div class="container">
+
+      <h1 class="text-primary">TestCafe Test Summary</h1>
+      <div class="client-logo" style="padding:15px"></div>
+      <div class="bg-primary" style="padding:15px;box-shadow: 6px 6px 6px 6px #00000033;border-radius: 10px;">
+        <h3>Summary</h3><br>
+        <p class="lead">Start Time: Mon Oct 23 2023 17:14:47 GMT-0400 (Bolivia Time)</p>
+        <p class="lead">Browsers: Chrome 118.0.0.0 / Windows 10</p>
+        <p class="lead">Duration: 21m 46s</p>
+        <p class="lead">Tests Failed: 7 out of 14</p>
+        <p class="lead">Tests Skipped: 0</p>
+      </div><br>
+      <table class="table sortable" style="padding:15px;box-shadow: 6px 6px 6px 6px #00000033;border-radius: 10px;">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Fixture</th>
+            <th>Test Name</th>
+            <th>Browsers</th>
+            <th>Duration</th>
+            <th>Result</th>
+          </tr>
+        </thead>
+        <tbody>
+           <tr class="danger">
+  <td>1</td>
+  <td>Fixture tests</td>
+  <td>By Piece/Case - Item Code</td>
+  <td>Chrome 118.0.0.0 / Windows 10</td>
+  <td>1m 46s</td>
+  <td><a href="#test-1">failed</a></td>
+ </tr>
+ <tr class="success">
+  <td>2</td>
+  <td>Fixture tests</td>
+  <td>By Piece/Case - Item and Lot Codes</td>
+  <td>Chrome 118.0.0.0 / Windows 10</td>
+  <td>1m 36s</td>
+  <td>passed</td>
+ </tr>
+ <tr class="success">
+  <td>3</td>
+  <td>Fixture tests</td>
+  <td>By Piece/Case - Item, Lot and Sublot Codes</td>
+  <td>Chrome 118.0.0.0 / Windows 10</td>
+  <td>1m 24s</td>
+  <td>passed</td>
+ </tr>
+ <tr class="danger">
+  <td>4</td>
+  <td>Fixture tests</td>
+  <td>By Piece/Case - Lot Codes</td>
+  <td>Chrome 118.0.0.0 / Windows 10</td>
+  <td>1m 35s</td>
+  <td><a href="#test-4">failed</a></td>
+ </tr>
+ <tr class="danger">
+  <td>5</td>
+  <td>Fixture tests</td>
+  <td>By Piece/Case - Sublot Codes</td>
+  <td>Chrome 118.0.0.0 / Windows 10</td>
+  <td>1m 40s</td>
+  <td><a href="#test-5">failed</a></td>
+ </tr>
+ <tr class="danger">
+  <td>6</td>
+  <td>Location Ascending - Manual Allocation</td>
+  <td>DPD-1889: By Piece/Case - Item Code</td>
+  <td>Chrome 118.0.0.0 / Windows 10</td>
+  <td>1m 36s</td>
+  <td><a href="#test-6">failed</a></td>
+ </tr>
+ <tr class="success">
+  <td>7</td>
+  <td>Location Ascending - Manual Allocation</td>
+  <td>DPD-1891: By Piece/Case - Item, Lot and Sublot Code</td>
+  <td>Chrome 118.0.0.0 / Windows 10</td>
+  <td>1m 26s</td>
+  <td>passed</td>
+ </tr>
+ <tr class="danger">
+  <td>8</td>
+  <td>Location Ascending - Manual Allocation</td>
+  <td>DPD-1892: By Piece/Case - Lot Code</td>
+  <td>Chrome 118.0.0.0 / Windows 10</td>
+  <td>1m 21s</td>
+  <td><a href="#test-8">failed</a></td>
+ </tr>
+ <tr class="danger">
+  <td>9</td>
+  <td>Location Ascending - Manual Allocation</td>
+  <td>DPD-1893: By Piece/Case - SubLot Code</td>
+  <td>Chrome 118.0.0.0 / Windows 10</td>
+  <td>1m 37s</td>
+  <td><a href="#test-9">failed</a></td>
+ </tr>
+ <tr class="success">
+  <td>10</td>
+  <td>Fixture tests</td>
+  <td>By Piece/Case - Item Code</td>
+  <td>Chrome 118.0.0.0 / Windows 10</td>
+  <td>1m 35s</td>
+  <td>passed</td>
+ </tr>
+ <tr class="success">
+  <td>11</td>
+  <td>Fixture tests</td>
+  <td>By Piece/Case - Item and Lot Code</td>
+  <td>Chrome 118.0.0.0 / Windows 10</td>
+  <td>1m 37s</td>
+  <td>passed</td>
+ </tr>
+ <tr class="danger">
+  <td>12</td>
+  <td>Fixture tests</td>
+  <td>By Piece/Case - Item Lot and Sublot Code</td>
+  <td>Chrome 118.0.0.0 / Windows 10</td>
+  <td>1m 25s</td>
+  <td><a href="#test-12">failed</a></td>
+ </tr>
+ <tr class="success">
+  <td>13</td>
+  <td>Fixture tests</td>
+  <td>By Piece/Case - Lot Code</td>
+  <td>Chrome 118.0.0.0 / Windows 10</td>
+  <td>1m 36s</td>
+  <td>passed</td>
+ </tr>
+ <tr class="success">
+  <td>14</td>
+  <td>Fixture tests</td>
+  <td>By Piece/Case - SubLot Code</td>
+  <td>Chrome 118.0.0.0 / Windows 10</td>
+  <td>1m 31s</td>
+  <td>passed</td>
+ </tr>
+
+        </tbody>
+        <thead>
+          <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+      </table>
+      <br>
+      <h3>Error Details</h3>
+       <h4 id="test-1" style="color: red;">1. Fixture tests - By Piece/Case - Item Code</h4>
+ <pre style="padding:15px;box-shadow: 6px 6px 6px 6px #00000033;border-radius: 10px;">Error: the selector 
+//div[contains(@class, &#39;k-state-active&#39;)] //tr[ .//td[@aria-colindex=&#39;1&#39;][text()=&#39;PA-Loc1&#39;] and .//td[@aria-colindex=&#39;5&#39;][text()=&#39;BLK&#39;] and .//td[@aria-colindex=&#39;6&#39;][text()=&#39;L&#39;] ]
+was not able to fin any element in the DOM tree
+
+Browser: Chrome 118.0.0.0 / Windows 10
+
+   33 |            query = query.substring(0, query.length-4);
+   34 |            query = &quot;//div[contains(@class, &#39;k-state-active&#39;)] //tr[ &quot; + query + &quot;]&quot;;
+   35 |            try &#123
+   36 |                await t.click(XPathSelector(query));
+   37 |            &#125 catch (error) {
+ &gt; 38 |                throw new Error(&#39;the selector \n&#39;+ query + &#39;\n was not able to fin any element in the DOM tree&#39;)
+   39 |            }
+   40 |        }
+   41 |    }
+   42 |    
+   43 |    public async clickRow(index: number): Promise&lt;void&gt;{
+
+   at Table.&lt;anonymous&gt; (C:\home\davinci\src\test\davinci-e2e-testcafe\src\pageObject\content-pane\table.ts:38:23)
+   at rejected (C:\home\davinci\src\test\davinci-e2e-testcafe\src\pageObject\content-pane\table.ts:6:65) </pre><br> <h4 id="test-4" style="color: red;">4. Fixture tests - By Piece/Case - Lot Codes</h4>
+ <pre style="padding:15px;box-shadow: 6px 6px 6px 6px #00000033;border-radius: 10px;">Cannot obtain information about the node because the specified selector does not match any node in the DOM tree.
+
+ &gt; | Selector([function])
+
+Browser: Chrome 118.0.0.0 / Windows 10
+
+   122 |        var targedAriacolindex = await this._container.find(&#39;.k-column-title&#39;).withExactText(column.targed).parent(&#39;[role=&quot;columnheader&quot;]&#39;).getAttribute(&#39;aria-colindex&#39;);
+   123 |        if(query.length&gt;0)&#123
+   124 |            query = query.substring(0, query.length-4);
+   125 |            const parentQuery=this._containerString.length&gt;0? this._containerString : &quot;//div[contains(@class, &#39;k-state-active&#39;)] &quot;;
+   126 |            query = `${parentQuery&#125 //tr[ ${query}] //td[ @aria-colindex=&#39;${targedAriacolindex}&#39;   ]`;
+ &gt; 127 |            cellValue= await XPathSelector(query).innerText;
+   128 |            //await t.click(XPathSelector(query));
+   129 |        }
+   130 |        return cellValue;
+   131 |    }
+   132 |
+
+   at Table.&lt;anonymous&gt; (C:\home\davinci\src\test\davinci-e2e-testcafe\src\pageObject\content-pane\table.ts:127:50)
+   at fulfilled (C:\home\davinci\src\test\davinci-e2e-testcafe\src\pageObject\content-pane\table.ts:5:58) </pre><br> <h4 id="test-5" style="color: red;">5. Fixture tests - By Piece/Case - Sublot Codes</h4>
+ <pre style="padding:15px;box-shadow: 6px 6px 6px 6px #00000033;border-radius: 10px;">Cannot obtain information about the node because the specified selector does not match any node in the DOM tree.
+
+ &gt; | Selector([function])
+
+Browser: Chrome 118.0.0.0 / Windows 10
+
+   122 |        var targedAriacolindex = await this._container.find(&#39;.k-column-title&#39;).withExactText(column.targed).parent(&#39;[role=&quot;columnheader&quot;]&#39;).getAttribute(&#39;aria-colindex&#39;);
+   123 |        if(query.length&gt;0)&#123
+   124 |            query = query.substring(0, query.length-4);
+   125 |            const parentQuery=this._containerString.length&gt;0? this._containerString : &quot;//div[contains(@class, &#39;k-state-active&#39;)] &quot;;
+   126 |            query = `${parentQuery&#125 //tr[ ${query}] //td[ @aria-colindex=&#39;${targedAriacolindex}&#39;   ]`;
+ &gt; 127 |            cellValue= await XPathSelector(query).innerText;
+   128 |            //await t.click(XPathSelector(query));
+   129 |        }
+   130 |        return cellValue;
+   131 |    }
+   132 |
+
+   at Table.&lt;anonymous&gt; (C:\home\davinci\src\test\davinci-e2e-testcafe\src\pageObject\content-pane\table.ts:127:50)
+   at fulfilled (C:\home\davinci\src\test\davinci-e2e-testcafe\src\pageObject\content-pane\table.ts:5:58) </pre><br> <h4 id="test-6" style="color: red;">6. Location Ascending - Manual Allocation - DPD-1889: By Piece/Case - Item Code</h4>
+ <pre style="padding:15px;box-shadow: 6px 6px 6px 6px #00000033;border-radius: 10px;">Error: the selector 
+//div[contains(@class, &#39;k-state-active&#39;)] //tr[ .//td[@aria-colindex=&#39;1&#39;][text()=&#39;PA-Loc1&#39;] and .//td[@aria-colindex=&#39;5&#39;][text()=&#39;BLK&#39;] and .//td[@aria-colindex=&#39;6&#39;][text()=&#39;S&#39;] ]
+was not able to fin any element in the DOM tree
+
+Browser: Chrome 118.0.0.0 / Windows 10
+
+   33 |            query = query.substring(0, query.length-4);
+   34 |            query = &quot;//div[contains(@class, &#39;k-state-active&#39;)] //tr[ &quot; + query + &quot;]&quot;;
+   35 |            try &#123
+   36 |                await t.click(XPathSelector(query));
+   37 |            &#125 catch (error) {
+ &gt; 38 |                throw new Error(&#39;the selector \n&#39;+ query + &#39;\n was not able to fin any element in the DOM tree&#39;)
+   39 |            }
+   40 |        }
+   41 |    }
+   42 |    
+   43 |    public async clickRow(index: number): Promise&lt;void&gt;{
+
+   at Table.&lt;anonymous&gt; (C:\home\davinci\src\test\davinci-e2e-testcafe\src\pageObject\content-pane\table.ts:38:23)
+   at rejected (C:\home\davinci\src\test\davinci-e2e-testcafe\src\pageObject\content-pane\table.ts:6:65) </pre><br> <h4 id="test-8" style="color: red;">8. Location Ascending - Manual Allocation - DPD-1892: By Piece/Case - Lot Code</h4>
+ <pre style="padding:15px;box-shadow: 6px 6px 6px 6px #00000033;border-radius: 10px;">AssertionError: the location PA-Empty6 should have a qty of 5 items wit lot = BLK and sublot L: expected &#39;2&#39; to deeply equal &#39;5&#39;
+
++ expected - actual
+
+-2
++5
+
+
+Browser: Chrome 118.0.0.0 / Windows 10
+
+   401 |    await t.expect(await DVU.InventoryByLocation.Table.getCellValue(
+   402 |        &#123 targed: &#39;Available Qty&#39;&#125,
+   403 |        { rowTitle: &#39;Location&#39;, rowValue: Putaway.Variable.Emtpy6},
+   404 |        { rowTitle: &#39;Lot Code&#39;, rowValue: &#39;BLK&#39;},
+   405 |        { rowTitle: &#39;Sublot Code&#39;, rowValue: &#39;L&#39;},
+ &gt; 406 |    )).eql(&#39;5&#39;, &#39;the location &#39;+Putaway.Variable.Emtpy6+&#39; should have a qty of 5 items wit lot = BLK and sublot L&#39;);
+   407 |
+   408 |    //Verify Empty6 location has available qty=10 of lot=BLK and sublot=S
+   409 |    await t.expect(await DVU.InventoryByLocation.Table.getCellValue(
+   410 |        { targed: &#39;Available Qty&#39;},
+   411 |        { rowTitle: &#39;Location&#39;, rowValue: Putaway.Variable.Emtpy6},
+
+   at &lt;anonymous&gt; (C:\home\davinci\src\test\davinci-e2e-testcafe\tests\Putaway\LocationAscending\LocAsc_ByPieceCase.ts:406:8)
+   at fulfilled (C:\home\davinci\src\test\davinci-e2e-testcafe\tests\Putaway\LocationAscending\LocAsc_ByPieceCase.ts:5:58) </pre><br> <h4 id="test-9" style="color: red;">9. Location Ascending - Manual Allocation - DPD-1893: By Piece/Case - SubLot Code</h4>
+ <pre style="padding:15px;box-shadow: 6px 6px 6px 6px #00000033;border-radius: 10px;">AssertionError: Location=PA-Loc3  should have an available qty of 5: expected &#39;3&#39; to deeply equal &#39;5&#39;
+
++ expected - actual
+
+-3
++5
+
+
+Browser: Chrome 118.0.0.0 / Windows 10
+
+   504 |    await DVU.ItemInventory.Toolbar.View.Click();
+   505 |    await t.expect(await DVU.ItemInventory.Detail.Table.getCellValue(
+   506 |        &#123 targed: &#39;Available&#39;&#125,
+   507 |        { rowTitle: &#39;Location&#39;, rowValue: Putaway.Variable.Loc3},
+   508 |        { rowTitle: &#39;LPN&#39;, rowValue: Putaway.Variable.lpnLoc03},
+ &gt; 509 |    )).eql(&#39;5&#39;, &#39;Location=&#39;+Putaway.Variable.Loc3 + &#39;  should have an available qty of 5&#39;);
+   510 |    await DVU.ItemInventory.Detail.CloseDialog.Click();
+   511 |})
+
+   at &lt;anonymous&gt; (C:\home\davinci\src\test\davinci-e2e-testcafe\tests\Putaway\LocationAscending\LocAsc_ByPieceCase.ts:509:8)
+   at fulfilled (C:\home\davinci\src\test\davinci-e2e-testcafe\tests\Putaway\LocationAscending\LocAsc_ByPieceCase.ts:5:58) </pre><br> <h4 id="test-12" style="color: red;">12. Fixture tests - By Piece/Case - Item Lot and Sublot Code</h4>
+ <pre style="padding:15px;box-shadow: 6px 6px 6px 6px #00000033;border-radius: 10px;">AssertionError: the location PA-Loc1 should have an qty of 15 when Lot=WHT and SubLot=M: expected &#39;5&#39; to deeply equal &#39;15&#39;
+
++ expected - actual
+
+-5
++15
+
+
+Browser: Chrome 118.0.0.0 / Windows 10
+
+   319 |        await DVU.InventoryByLocation.Toolbar.View.Click();
+   320 |        await t.expect(await DVU.InventoryByLocation.Detail.Table.getCellValue(
+   321 |            &#123 targed: &#39;Available&#39;&#125,
+   322 |            { rowTitle: &#39;Location&#39;, rowValue: Putaway.Variable.Loc1},
+   323 |            { rowTitle: &#39;LPN&#39;, rowValue: Putaway.Variable.lpnLoc01}
+ &gt; 324 |        )).eql(&#39;15&#39;, `the location ${Putaway.Variable.Loc1} should have an qty of 15 when Lot=WHT and SubLot=M`);
+   325 |        await DVU.InventoryByLocation.Detail.CloseDialog.Click();
+   326 |    
+   327 |        // 2.Verify there are 17 available qty in location 2 with Lot=BLK and Sublot=S
+   328 |        await DVU.InventoryByLocation.Table.clickRowByQuery(
+   329 |            { rowTitle: &#39;Location&#39;, rowValue: Putaway.Variable.Loc2},
+
+   at &lt;anonymous&gt; (C:\home\davinci\src\test\davinci-e2e-testcafe\tests\Putaway\MostOccupied\MostOcc_ByPieceCase.ts:324:12)
+   at fulfilled (C:\home\davinci\src\test\davinci-e2e-testcafe\tests\Putaway\MostOccupied\MostOcc_ByPieceCase.ts:5:58) </pre><br>
+    </div>
+    <script>
+      const modal = document.getElementById('myModal');
+      const modalImage = document.getElementById("modelImage");
+
+      Array.from(document.getElementsByClassName("thumbImg")).forEach(function(el) {
+        el.onclick = function() {
+          modal.style.display = "block";
+          modalImage.src = this.src;
+        }
+      });
+
+      document.getElementsByClassName("closeModal")[0].onclick = function() {
+        modal.style.display = "none";
+      }
+    </script>
+  </body>
+  <br>
+</html>
